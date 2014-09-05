@@ -1,0 +1,64 @@
+file watcher extension
+==============================
+An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics from file modification.
+
+## Metrics Provided ##
+
+We provide following metric related to modification of a file.
+
+- IsModified : 1 if file is modified in last minute and 0 if not.
+- Size : A positive integer indicating the current size of the file.
+- TimeStamp : Latest timestamp of the modification.
+
+## Installation ##
+
+1. Download and unzip FileWatcher.zip from AppSphere.
+2. Copy the FileWatcher directory to `<MACHINE_AGENT_HOME>/monitors`.
+
+
+## Configuration ##
+
+###Note
+Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator http://yamllint.com/
+
+1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/FileWatcher/`. Below is the format
+
+Important - displayName has to be unique for the file/folder
+
+# List of files
+fileToProcesses:
+  - displayName: "file1"
+    path: "/Users/xyz/Documents/testFolder/file1.txt"
+
+  - displayName: "folder1"
+    path: "/Users/xyz/Documents/testFolder/"
+
+metricPrefix: "Custom Metrics|FileWatcher|"
+
+
+2. Configure the path to the config.yaml file by editing the <task-arguments> in the monitor.xml file. Below is the sample
+
+     <task-arguments>
+         <!-- config file-->
+             <argument name="config-file" is-required="true" default-value="monitors/FileWatcher/config.yml" />
+          ....
+     </task-arguments>
+
+## Contributing ##
+
+Always feel free to fork and contribute any changes directly via [GitHub][].
+
+## Community ##
+
+Find out more in the [Community][].
+
+## Support ##
+
+For any questions or feature request, please contact [AppDynamics Center of Excellence][].
+
+**Version:** 1.0
+**Controller Compatibility:** 3.7 or later
+
+[GitHub]: https://github.com/Appdynamics/FileWatcher
+[Community]: http://community.appdynamics.com/
+[AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com
