@@ -39,7 +39,6 @@ public class FileWatcherMonitorTest {
         Map<String, String> taskArgs = new HashMap();
         taskArgs.put(CONFIG_ARG, "src/test/resources/conf/config.yml");
         try {
-            while(true)
             testClass.execute(taskArgs, null);
         } catch (TaskExecutionException e) {
             e.printStackTrace();
