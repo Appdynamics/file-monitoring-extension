@@ -178,10 +178,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 metricValue = toNumeralString(fileMetric.isChanged());
                 printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
 
-                metricName = "TimeStamp";
-                metricValue = String.valueOf(fileMetric.getTimeStamp());
-                printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
-
             }
         }
     }
