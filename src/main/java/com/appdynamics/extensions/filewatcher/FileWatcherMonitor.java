@@ -5,6 +5,7 @@ import com.appdynamics.extensions.fileWatcher.config.Configuration;
 import com.appdynamics.extensions.fileWatcher.config.FileToProcess;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
@@ -29,6 +30,8 @@ public class FileWatcherMonitor extends AManagedMonitor {
     public static final String METRIC_SEPARATOR = "|";
 
     private static Map<String, FileMetric> mapOfFilesToMonitor = Maps.newHashMap();
+    private Map<String, String> filesToProcessMap = Maps.newHashMap();
+    List<String> pathOfFiles = Lists.newArrayList();
 
     /**
      * This is the entry point to the monitor called by the Machine Agent
@@ -75,15 +78,25 @@ public class FileWatcherMonitor extends AManagedMonitor {
     private String getStatus(Configuration config, String status) {
         try {
             List<FileToProcess> files = config.getFileToProcess();
-            for (FileToProcess fileToProcess : files) {
-                FileMetric fileMetric = getFileMetric(fileToProcess);
+
+            createListOfPaths(files);
+            processDisplayName(files);
+
+            for (String key : filesToProcessMap.keySet()) {
+                FileMetric fileMetric = getFileMetric(key);
                 if (fileMetric != null) {
-                    if (mapOfFilesToMonitor.containsKey(fileToProcess.getDisplayName())) {
-                        if (!fileMetric.getTimeStamp().equals(mapOfFilesToMonitor.get(fileToProcess.getDisplayName()).getTimeStamp())) {
+                    String displayName = filesToProcessMap.get(key);
+                    if (mapOfFilesToMonitor.containsKey(displayName)) {
+                        if (!fileMetric.getTimeStamp().equals(mapOfFilesToMonitor.get(displayName).getTimeStamp())) {
                             fileMetric.setChanged(true);
+
+                        } else {
+                            fileMetric.setChanged(false);
                         }
+                        mapOfFilesToMonitor.put(displayName, fileMetric);
+                    } else {
+                        mapOfFilesToMonitor.put(displayName, fileMetric);
                     }
-                    mapOfFilesToMonitor.put(fileToProcess.getDisplayName(), fileMetric);
                 }
             }
             processMetric();
@@ -94,17 +107,53 @@ public class FileWatcherMonitor extends AManagedMonitor {
         return status;
     }
 
-    private FileMetric getFileMetric(FileToProcess fileToProcess) {
+    private void processDisplayName(List<FileToProcess> files) {
+
+        for (FileToProcess fileToProcess : files) {
+            File file = new File(fileToProcess.getPath());
+            String displayName = fileToProcess.getDisplayName();
+            if (!Strings.isNullOrEmpty(displayName)) {
+                if (!file.isFile()) {
+                    List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
+                    for (File f : file.listFiles()) {
+
+                        if (!pathOfFiles.contains(f.getAbsolutePath())) {
+                            FileToProcess fp = new FileToProcess();
+                            fp.setPath(f.getAbsolutePath());
+                            fp.setDisplayName(displayName.concat(METRIC_SEPARATOR).concat(f.getName()));
+                            directoryFiles.add(fp);
+                        }
+                    }
+                    processDisplayName(directoryFiles);
+                }
+            }
+
+            filesToProcessMap.put(fileToProcess.getPath(), displayName);
+        }
+    }
+
+    private void createListOfPaths(List<FileToProcess> files) {
+        for (FileToProcess fileToProcess : files) {
+            File file = new File(fileToProcess.getPath());
+            pathOfFiles.add(file.getAbsolutePath());
+        }
+    }
+
+    private FileMetric getFileMetric(String filePath) {
         FileMetric fileMetric;
 
-        File file = new File(fileToProcess.getPath());
+        File file = new File(filePath);
         if (file.exists()) {
             fileMetric = new FileMetric();
-            fileMetric.setFileSize(String.valueOf(file.length()));
             fileMetric.setTimeStamp(String.valueOf(file.lastModified()));
+            if (file.isFile()) {
+                fileMetric.setFileSize(String.valueOf(file.length()));
+            } else {
+                fileMetric.setFileSize(String.valueOf(folderSize(file)));
+            }
 
         } else {
-            logger.error("no file exist at path:  " + fileToProcess.getPath());
+            logger.error("no file exist at path:  " + filePath);
             return null;
         }
         return fileMetric;
@@ -138,6 +187,17 @@ public class FileWatcherMonitor extends AManagedMonitor {
         }
     }
 
+    private long folderSize(File folder) {
+        long length = 0;
+        for (File file : folder.listFiles()) {
+            if (file.isFile())
+                length += file.length();
+            else
+                length += folderSize(file);
+        }
+        return length;
+    }
+
     private String toNumeralString(final Boolean input) {
         if (input == null) {
             return "null";
@@ -161,8 +221,8 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 timeRollupType,
                 clusterRollupType
         );
-        System.out.println(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
-                + "] metric = " + metricPath + " = " + metricValue);
+        /*System.out.println(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+                + "] metric = " + metricPath + " = " + metricValue);*/
         if (logger.isDebugEnabled()) {
             logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);
