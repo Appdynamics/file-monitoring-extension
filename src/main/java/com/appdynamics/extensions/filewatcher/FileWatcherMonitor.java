@@ -65,7 +65,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
 
                 status = getStatus(config, status);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error("Exception", e);
             }
 
@@ -113,7 +112,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
             File file = new File(fileToProcess.getPath());
             String displayName = fileToProcess.getDisplayName();
             if (!Strings.isNullOrEmpty(displayName)) {
-                if (!file.isFile()) {
+                if (file.isDirectory()) {
                     List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
                     for (File f : file.listFiles()) {
 
@@ -221,8 +220,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 timeRollupType,
                 clusterRollupType
         );
-        /*System.out.println(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
-                + "] metric = " + metricPath + " = " + metricValue);*/
+
         if (logger.isDebugEnabled()) {
             logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);
