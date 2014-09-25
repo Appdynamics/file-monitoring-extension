@@ -31,7 +31,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
 
     private static Map<String, FileMetric> mapOfFilesToMonitor = Maps.newHashMap();
     private Map<String, String> filesToProcessMap = Maps.newHashMap();
-    List<String> pathOfFiles = Lists.newArrayList();
 
     /**
      * This is the entry point to the monitor called by the Machine Agent
@@ -77,12 +76,13 @@ public class FileWatcherMonitor extends AManagedMonitor {
     private String getStatus(Configuration config, String status) {
         try {
             List<FileToProcess> files = config.getFileToProcess();
-
-            createListOfPaths(files);
-            processDisplayName(files);
+            FileProcessor fp = new FileProcessor();
+            fp.setMETRIC_SEPARATOR(METRIC_SEPARATOR);
+            fp.createListOfPaths(files);
+            filesToProcessMap = fp.processDisplayName(files);
 
             for (String key : filesToProcessMap.keySet()) {
-                FileMetric fileMetric = getFileMetric(key);
+                FileMetric fileMetric = fp.getFileMetric(key);
                 if (fileMetric != null) {
                     String displayName = filesToProcessMap.get(key);
                     if (mapOfFilesToMonitor.containsKey(displayName)) {
@@ -104,58 +104,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
             status = "Failure";
         }
         return status;
-    }
-
-    private void processDisplayName(List<FileToProcess> files) {
-
-        for (FileToProcess fileToProcess : files) {
-            File file = new File(fileToProcess.getPath());
-            String displayName = fileToProcess.getDisplayName();
-            if (!Strings.isNullOrEmpty(displayName)) {
-                if (file.isDirectory()) {
-                    List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
-                    for (File f : file.listFiles()) {
-
-                        if (!pathOfFiles.contains(f.getAbsolutePath())) {
-                            FileToProcess fp = new FileToProcess();
-                            fp.setPath(f.getAbsolutePath());
-                            fp.setDisplayName(displayName.concat(METRIC_SEPARATOR).concat(f.getName()));
-                            directoryFiles.add(fp);
-                        }
-                    }
-                    processDisplayName(directoryFiles);
-                }
-            }
-
-            filesToProcessMap.put(fileToProcess.getPath(), displayName);
-        }
-    }
-
-    private void createListOfPaths(List<FileToProcess> files) {
-        for (FileToProcess fileToProcess : files) {
-            File file = new File(fileToProcess.getPath());
-            pathOfFiles.add(file.getAbsolutePath());
-        }
-    }
-
-    private FileMetric getFileMetric(String filePath) {
-        FileMetric fileMetric;
-
-        File file = new File(filePath);
-        if (file.exists()) {
-            fileMetric = new FileMetric();
-            fileMetric.setTimeStamp(String.valueOf(file.lastModified()));
-            if (file.isFile()) {
-                fileMetric.setFileSize(String.valueOf(file.length()));
-            } else {
-                fileMetric.setFileSize(String.valueOf(folderSize(file)));
-            }
-
-        } else {
-            logger.error("no file exist at path:  " + filePath);
-            return null;
-        }
-        return fileMetric;
     }
 
 
@@ -180,17 +128,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
 
             }
         }
-    }
-
-    private long folderSize(File folder) {
-        long length = 0;
-        for (File file : folder.listFiles()) {
-            if (file.isFile())
-                length += file.length();
-            else
-                length += folderSize(file);
-        }
-        return length;
     }
 
     private String toNumeralString(final Boolean input) {

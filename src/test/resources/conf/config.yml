@@ -1,10 +1,16 @@
-# List of folders
+# List of files
 fileToProcess:
   - displayName: "test1"
     path: "/Users/abhi.pandey/Documents/testFolder/"
 
   - displayName: "test2"
     path: "/Users/abhi.pandey/Documents/testFolder/test2.yml"
+
+
+  - displayName: "test3"
+    path: "/Users/abhi.pandey/Documents/testFolder/test3.txt"
+
+
 
 
 # Make sure the metric prefix ends with a |
