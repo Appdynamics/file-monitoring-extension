@@ -8,7 +8,17 @@ import java.util.List;
 public class Configuration {
 
     private List<FileToProcess> fileToProcess;
-    String metricPrefix;
+
+    private Boolean isFileCountRequired;
+    private String metricPrefix;
+
+    public Boolean getIsFileCountRequired() {
+        return isFileCountRequired;
+    }
+
+    public void setIsFileCountRequired(Boolean isFileCountRequired) {
+        this.isFileCountRequired = isFileCountRequired;
+    }
 
     public List<FileToProcess> getFileToProcess() {
         return fileToProcess;

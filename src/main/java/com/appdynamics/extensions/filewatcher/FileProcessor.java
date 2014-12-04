@@ -45,6 +45,12 @@ public class FileProcessor {
             } else {
                 fileMetric.setFileSize(String.valueOf(folderSize(file)));
             }
+            if(file.isDirectory()){
+
+                fileMetric.setNumberOfFiles(file.listFiles().length);
+            }else{
+                fileMetric.setNumberOfFiles(-1);
+            }
 
         } else {
             logger.error("no file exist at path:  " + filePath);

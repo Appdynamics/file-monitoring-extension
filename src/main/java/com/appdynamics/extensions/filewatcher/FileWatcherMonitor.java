@@ -5,7 +5,6 @@ import com.appdynamics.extensions.fileWatcher.config.Configuration;
 import com.appdynamics.extensions.fileWatcher.config.FileToProcess;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
@@ -15,7 +14,6 @@ import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.io.File;
 
 /**
  * Created by abhi.pandey on 8/19/14.
@@ -24,6 +22,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
 
     protected final Logger logger = Logger.getLogger(FileWatcherMonitor.class.getName());
     private String metricPrefix;
+    private boolean isFileCountRequired;
     public static final String CONFIG_ARG = "config-file";
     public static final String LOG_PREFIX = "log-prefix";
     private static String logPrefix;
@@ -60,6 +59,8 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 if (config.getFileToProcess().isEmpty()) {
                     return new TaskOutput("Failure");
                 }
+
+                this.isFileCountRequired = config.getIsFileCountRequired();
                 processMetricPrefix(config.getMetricPrefix());
 
                 status = getStatus(config, status);
@@ -125,6 +126,12 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 metricName = "IsModified";
                 metricValue = toNumeralString(fileMetric.isChanged());
                 printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
+
+                if (this.isFileCountRequired && fileMetric.getNumberOfFiles() >= 0) {
+                    metricName = "FileCount";
+                    metricValue = String.valueOf(fileMetric.getNumberOfFiles());
+                    printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
+                }
 
             }
         }

@@ -10,14 +10,10 @@ fileToProcess:
   - displayName: "test2"
     path: "/Users/abhi.pandey/Documents/testFolder/testFolder2/"
 
-
-
-
-
-
-
-
+# If true then an extra metric will be shown that will give number of files in the directories specified above.
+# For files given above it will show zero
+isFileCountRequired: true
 
 # Make sure the metric prefix ends with a |
-
 metricPrefix: "Custom Metrics|FileWatcher|"
+

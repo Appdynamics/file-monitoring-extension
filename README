@@ -8,7 +8,7 @@ We provide following metric related to modification of a file.
 
 - IsModified : 1 if file is modified in last minute and 0 if not.
 - Size : A positive integer indicating the current size of the file.
-- TimeStamp : Latest timestamp of the modification.
+- FileCount: Count of files in a directory.
 
 ## Installation ##
 
@@ -32,6 +32,10 @@ fileToProcesses:
 
   - displayName: "folder1"
     path: "/Users/xyz/Documents/testFolder/"
+    
+# If true then an extra metric will be shown that will give number of files in the directories specified above.
+# For files given above it will show zero
+isFileCountRequired: true
 
 metricPrefix: "Custom Metrics|FileWatcher|"
 
@@ -56,9 +60,9 @@ Find out more in the [Community][].
 
 For any questions or feature request, please contact [AppDynamics Center of Excellence][].
 
-**Version:** 1.0
+**Version:** 1.1
 **Controller Compatibility:** 3.7 or later
 
-[GitHub]: https://github.com/Appdynamics/FileWatcher
+[GitHub]: https://github.com/Appdynamics/FileWatcher-extension
 [Community]: http://community.appdynamics.com/
 [AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com

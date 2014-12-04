@@ -8,6 +8,7 @@ public class FileMetric {
     private boolean isChanged;
     private String fileSize;
     private String timeStamp;
+    private int numberOfFiles;
 
     public boolean isChanged() {
         return isChanged;
@@ -30,4 +31,11 @@ public class FileMetric {
     public void setTimeStamp(String timeStamp) {this.timeStamp = timeStamp;}
 
 
+    public void setNumberOfFiles(int numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
+
+    public int getNumberOfFiles() {
+        return numberOfFiles;
+    }
 }
