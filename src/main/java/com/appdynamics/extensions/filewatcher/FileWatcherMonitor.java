@@ -13,6 +13,7 @@ import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -62,10 +63,10 @@ public class FileWatcherMonitor extends AManagedMonitor {
                     return new TaskOutput("Failure");
                 }
 
-                this.isFileCountRequired = config.getIsFileCountRequired();
-                this.isDirectoryDetailsRequired = config.getIsDirectoryDetailsRequired();
-                this.ignoreHiddenFiles = config.getIgnoreHiddenFiles();
-                this.isOldestFileAgeMetricRequired = config.getIsOldestFileAgeMetricRequired();
+                isFileCountRequired = config.getIsFileCountRequired();
+                isDirectoryDetailsRequired = config.getIsDirectoryDetailsRequired();
+                ignoreHiddenFiles = config.getIgnoreHiddenFiles();
+                isOldestFileAgeMetricRequired = config.getIsOldestFileAgeMetricRequired();
                 processMetricPrefix(config.getMetricPrefix());
 
                 status = getStatus(config, status);
@@ -201,14 +202,14 @@ public class FileWatcherMonitor extends AManagedMonitor {
             return "";
         }
         //for absolute paths
-        if (new java.io.File(filename).exists()) {
+        if (new File(filename).exists()) {
             return filename;
         }
         //for relative paths
-        java.io.File jarPath = PathResolver.resolveDirectory(AManagedMonitor.class);
+        File jarPath = PathResolver.resolveDirectory(AManagedMonitor.class);
         String configFileName = "";
         if (!Strings.isNullOrEmpty(filename)) {
-            configFileName = jarPath + java.io.File.separator + filename;
+            configFileName = jarPath + File.separator + filename;
         }
         return configFileName;
     }

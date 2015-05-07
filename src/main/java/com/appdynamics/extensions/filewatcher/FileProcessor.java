@@ -62,15 +62,12 @@ public class FileProcessor {
     private long getOldestFileAge(File directory) {
         File[] files = directory.listFiles();
         long oldestFileLastModifiedTimeStamp = files[0].lastModified();
-   //     String nameOfOldestFile = files[0].getName();
 
         for (int i = 1; i < files.length; i++) {
             if (files[i].lastModified() < oldestFileLastModifiedTimeStamp) {
                 oldestFileLastModifiedTimeStamp = files[i].lastModified();
-   //             nameOfOldestFile = files[i].getName();
             }
         }
-      //  System.out.println("Name of oldest File in directory " + directory.getName() + " is: " + nameOfOldestFile);
 
         long currentTimeInMillis = System.currentTimeMillis();
         long oldestFileAge = -1;
