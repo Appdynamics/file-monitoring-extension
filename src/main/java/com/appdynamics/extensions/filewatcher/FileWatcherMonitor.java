@@ -1,8 +1,8 @@
-package com.appdynamics.extensions.fileWatcher;
+package com.appdynamics.extensions.filewatcher;
 
 import com.appdynamics.extensions.PathResolver;
-import com.appdynamics.extensions.fileWatcher.config.Configuration;
-import com.appdynamics.extensions.fileWatcher.config.FileToProcess;
+import com.appdynamics.extensions.filewatcher.config.Configuration;
+import com.appdynamics.extensions.filewatcher.config.FileToProcess;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -23,11 +23,13 @@ public class FileWatcherMonitor extends AManagedMonitor {
     protected final Logger logger = Logger.getLogger(FileWatcherMonitor.class.getName());
     private String metricPrefix;
     private boolean isFileCountRequired;
-    public static final String CONFIG_ARG = "config-file";
-    public static final String LOG_PREFIX = "log-prefix";
+    private boolean isDirectoryDetailsRequired;
+    private boolean ignoreHiddenFiles;
+    private boolean isOldestFileAgeMetricRequired;
+    private static final String CONFIG_ARG = "config-file";
+    private static final String LOG_PREFIX = "log-prefix";
     private static String logPrefix;
-    public static final String METRIC_SEPARATOR = "|";
-
+    private static final String METRIC_SEPARATOR = "|";
     private static Map<String, FileMetric> mapOfFilesToMonitor = Maps.newHashMap();
     private Map<String, String> filesToProcessMap = Maps.newHashMap();
 
@@ -61,6 +63,9 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 }
 
                 this.isFileCountRequired = config.getIsFileCountRequired();
+                this.isDirectoryDetailsRequired = config.getIsDirectoryDetailsRequired();
+                this.ignoreHiddenFiles = config.getIgnoreHiddenFiles();
+                this.isOldestFileAgeMetricRequired = config.getIsOldestFileAgeMetricRequired();
                 processMetricPrefix(config.getMetricPrefix());
 
                 status = getStatus(config, status);
@@ -78,12 +83,12 @@ public class FileWatcherMonitor extends AManagedMonitor {
         try {
             List<FileToProcess> files = config.getFileToProcess();
             FileProcessor fp = new FileProcessor();
-            fp.setMETRIC_SEPARATOR(METRIC_SEPARATOR);
+            fp.setMetricSeparator(METRIC_SEPARATOR);
             fp.createListOfPaths(files);
-            filesToProcessMap = fp.processDisplayName(files);
+            filesToProcessMap = fp.processDisplayName(files, isDirectoryDetailsRequired);
 
             for (String key : filesToProcessMap.keySet()) {
-                FileMetric fileMetric = fp.getFileMetric(key);
+                FileMetric fileMetric = fp.getFileMetric(key, ignoreHiddenFiles);
                 if (fileMetric != null) {
                     String displayName = filesToProcessMap.get(key);
                     if (mapOfFilesToMonitor.containsKey(displayName)) {
@@ -127,9 +132,15 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 metricValue = toNumeralString(fileMetric.isChanged());
                 printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
 
-                if (this.isFileCountRequired && fileMetric.getNumberOfFiles() >= 0) {
+                if (isFileCountRequired && fileMetric.getNumberOfFiles() >= 0) {
                     metricName = "FileCount";
                     metricValue = String.valueOf(fileMetric.getNumberOfFiles());
+                    printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
+                }
+
+                if (isOldestFileAgeMetricRequired && fileMetric.getOldestFileAge() >= 0) {
+                    metricName = "OldestFileAge";
+                    metricValue = String.valueOf(fileMetric.getOldestFileAge());
                     printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
                 }
 

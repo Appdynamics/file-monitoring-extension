@@ -1,6 +1,6 @@
-package com.appdynamics.monitors.FileWatcher;
+package com.appdynamics.monitors.filewatcher;
 
-import com.appdynamics.extensions.fileWatcher.FileWatcherMonitor;
+import com.appdynamics.extensions.filewatcher.FileWatcherMonitor;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.junit.Before;
 import org.junit.Test;

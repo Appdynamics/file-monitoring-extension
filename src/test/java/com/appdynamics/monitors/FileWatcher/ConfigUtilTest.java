@@ -1,6 +1,6 @@
-package com.appdynamics.monitors.FileWatcher;
+package com.appdynamics.monitors.filewatcher;
 
-import com.appdynamics.extensions.fileWatcher.config.Configuration;
+import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.yml.YmlReader;
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.appdynamics.extensions.fileWatcher;
+package com.appdynamics.extensions.filewatcher;
 
 /**
  * Created by abhi.pandey on 9/4/14.
@@ -9,6 +9,7 @@ public class FileMetric {
     private String fileSize;
     private String timeStamp;
     private int numberOfFiles;
+    private long oldestFileAge;
 
     public boolean isChanged() {
         return isChanged;
@@ -26,16 +27,27 @@ public class FileMetric {
         this.fileSize = fileSize;
     }
 
-    public String getTimeStamp() { return timeStamp; }
+    public String getTimeStamp() {
+        return timeStamp;
+    }
 
-    public void setTimeStamp(String timeStamp) {this.timeStamp = timeStamp;}
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
+    public int getNumberOfFiles() {
+        return numberOfFiles;
+    }
 
     public void setNumberOfFiles(int numberOfFiles) {
         this.numberOfFiles = numberOfFiles;
     }
 
-    public int getNumberOfFiles() {
-        return numberOfFiles;
+    public long getOldestFileAge() {
+        return oldestFileAge;
+    }
+
+    public void setOldestFileAge(long oldestFileAge) {
+        this.oldestFileAge = oldestFileAge;
     }
 }

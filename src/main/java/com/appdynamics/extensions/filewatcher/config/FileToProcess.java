@@ -1,4 +1,4 @@
-package com.appdynamics.extensions.fileWatcher.config;
+package com.appdynamics.extensions.filewatcher.config;
 
 /**
  * Created by abhi.pandey on 8/27/14.
