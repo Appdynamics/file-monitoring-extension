@@ -59,8 +59,13 @@ public class FileProcessor {
         return fileMetric;
     }
 
-    private long getOldestFileAge(File directory) {
-        File[] files = directory.listFiles();
+    private long getOldestFileAge(File file) {
+        if (file.listFiles() == null) {
+            logger.debug("directory- " + file.getAbsolutePath() + " has no files");
+            return -1;
+        }
+
+        File[] files = file.listFiles();
         long oldestFileLastModifiedTimeStamp = files[0].lastModified();
 
         for (int i = 1; i < files.length; i++) {
@@ -68,7 +73,6 @@ public class FileProcessor {
                 oldestFileLastModifiedTimeStamp = files[i].lastModified();
             }
         }
-
         long currentTimeInMillis = System.currentTimeMillis();
         long oldestFileAge = -1;
         if (oldestFileLastModifiedTimeStamp < currentTimeInMillis) {
@@ -77,32 +81,40 @@ public class FileProcessor {
         return oldestFileAge;
     }
 
-    private long directorySize(File folder, boolean ignoreHiddenFiles) {
+    private long directorySize(File file, boolean ignoreHiddenFiles) {
+        if (file.listFiles() == null) {
+            logger.debug("directorySize called on a non directory.");
+            return file.length();
+        }
         long size = 0;
-        if (ignoreHiddenFiles)
-            for (File file : folder.listFiles()) {
-                if (file.isFile() && !file.isHidden())
-                    size += file.length();
-                else if (!file.isHidden()) {
-                    size += directorySize(file, ignoreHiddenFiles);
+        if (ignoreHiddenFiles) {
+            for (File f : file.listFiles()) {
+                if (!f.isHidden()) {
+                    if (f.isDirectory()) {
+                        size += directorySize(f, ignoreHiddenFiles);
+                    } else {
+                        size += f.length();
+                    }
                 }
             }
-        else {
-            for (File file : folder.listFiles()) {
-                if (file.isFile())
-                    size += file.length();
-                else {
-                    size += directorySize(file, ignoreHiddenFiles);
+        } else {
+            for (File f : file.listFiles()) {
+                if (f.isDirectory()) {
+                    size += directorySize(f, ignoreHiddenFiles);
+                } else {
+                    size += f.length();
                 }
             }
-
         }
         return size;
     }
 
     private int countOfFilesInDirectory(File file, boolean ignoreHiddenFiles) {
         int count = 0;
-
+        if (file.listFiles() == null) {
+            logger.debug("directory- " + file.getAbsolutePath() + " has no files");
+            return count;
+        }
         for (File f : file.listFiles()) {
             if (ignoreHiddenFiles) {
                 if (!f.isHidden()) {
