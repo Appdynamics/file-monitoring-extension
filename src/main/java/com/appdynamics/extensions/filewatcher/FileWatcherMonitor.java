@@ -31,7 +31,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
     private static final String LOG_PREFIX = "log-prefix";
     private static String logPrefix;
     private static final String METRIC_SEPARATOR = "|";
-    private static Map<String, FileMetric> mapOfFilesToMonitor = Maps.newHashMap();
     private Map<String, String> filesToProcessMap = Maps.newHashMap();
 
     /**
@@ -67,9 +66,15 @@ public class FileWatcherMonitor extends AManagedMonitor {
                 isDirectoryDetailsRequired = config.getIsDirectoryDetailsRequired();
                 ignoreHiddenFiles = config.getIgnoreHiddenFiles();
                 isOldestFileAgeMetricRequired = config.getIsOldestFileAgeMetricRequired();
+                logger.debug("Dumping the configurations: ");
+                logger.debug("Total files to process = " + config.getFileToProcess().size());
+                logger.debug("Options set in config file: isFileCountRequired = " + isFileCountRequired + " ,isDirectoryDetailsRequired = " + isDirectoryDetailsRequired +
+                        " ,ignoreHiddenFiles = " + ignoreHiddenFiles + " ,isOldestFileAgeMetricRequired = " + isOldestFileAgeMetricRequired);
+                logger.debug("Metric prefix = " + metricPrefix);
                 processMetricPrefix(config.getMetricPrefix());
 
                 status = getStatus(config, status);
+                logger.info("Status = " + status);
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
@@ -82,6 +87,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
 
     private String getStatus(Configuration config, String status) {
         try {
+            Map<String, FileMetric> mapOfFilesToMonitor = Maps.newHashMap();
             List<FileToProcess> files = config.getFileToProcess();
             FileProcessor fp = new FileProcessor();
             fp.setMetricSeparator(METRIC_SEPARATOR);
@@ -105,8 +111,9 @@ public class FileWatcherMonitor extends AManagedMonitor {
                     }
                 }
             }
-            processMetric();
+            processMetric(mapOfFilesToMonitor);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Error in processing the files:" + e);
             status = "Failure";
         }
@@ -114,16 +121,16 @@ public class FileWatcherMonitor extends AManagedMonitor {
     }
 
 
-    private void processMetric() {
-        if (!mapOfFilesToMonitor.isEmpty()) {
+    private void processMetric(Map<String, FileMetric> mapOfFiles) {
+        if (!mapOfFiles.isEmpty()) {
 
-            Set<String> keys = mapOfFilesToMonitor.keySet();
+            Set<String> keys = mapOfFiles.keySet();
 
             for (String key : keys) {
                 StringBuffer metricPath = new StringBuffer();
                 metricPath.append(metricPrefix).append(key).append(METRIC_SEPARATOR);
 
-                FileMetric fileMetric = mapOfFilesToMonitor.get(key);
+                FileMetric fileMetric = mapOfFiles.get(key);
 
                 String metricName = "Size";
                 String metricValue = fileMetric.getFileSize();
@@ -177,6 +184,10 @@ public class FileWatcherMonitor extends AManagedMonitor {
             logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                     + "] metric = " + metricPath + " = " + metricValue);
         }
+
+        /*System.out.println((getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+                + "] metric = " + metricPath + " = " + metricValue));*/
+
         metricWriter.printMetric(metricValue);
     }
 
@@ -198,6 +209,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
      */
 
     private String getConfigFilename(String filename) {
+        logger.debug("Getting config file name for " + filename);
         if (filename == null) {
             return "";
         }
@@ -215,7 +227,7 @@ public class FileWatcherMonitor extends AManagedMonitor {
     }
 
     private void processMetricPrefix(String metricPrefix) {
-
+        logger.debug("Processing the metric prefix");
         if (!metricPrefix.endsWith("|")) {
             metricPrefix = metricPrefix + "|";
         }

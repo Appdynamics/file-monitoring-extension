@@ -60,7 +60,7 @@ public class FileProcessor {
     }
 
     private long getOldestFileAge(File file) {
-        if (file.listFiles() == null) {
+        if (file.listFiles().length == 0) {
             logger.debug("directory- " + file.getAbsolutePath() + " has no files");
             return -1;
         }
@@ -131,25 +131,29 @@ public class FileProcessor {
 
         for (FileToProcess fileToProcess : files) {
             File file = new File(fileToProcess.getPath());
-            String displayName = fileToProcess.getDisplayName();
+            if (file.exists()) {
+                String displayName = fileToProcess.getDisplayName();
 
-            if (!Strings.isNullOrEmpty(displayName)) {
-                if (isDirectoryDetailsRequired && file.isDirectory()) {
-                    List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
+                if (!Strings.isNullOrEmpty(displayName)) {
+                    if (isDirectoryDetailsRequired && file.isDirectory()) {
+                        List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
 
-                    for (File f : file.listFiles()) {
-                        if (!pathOfFiles.contains(f.getAbsolutePath())) {
-                            FileToProcess fp = new FileToProcess();
-                            fp.setPath(f.getAbsolutePath());
-                            fp.setDisplayName(displayName.concat(metricSeparator).concat(f.getName()));
-                            directoryFiles.add(fp);
+                        for (File f : file.listFiles()) {
+                            if (!pathOfFiles.contains(f.getAbsolutePath())) {
+                                FileToProcess fp = new FileToProcess();
+                                fp.setPath(f.getAbsolutePath());
+                                fp.setDisplayName(displayName.concat(metricSeparator).concat(f.getName()));
+                                directoryFiles.add(fp);
+                            }
                         }
+                        processDisplayName(directoryFiles, isDirectoryDetailsRequired);
                     }
-                    processDisplayName(directoryFiles, isDirectoryDetailsRequired);
                 }
-            }
 
-            filesToProcessMap.put(fileToProcess.getPath(), displayName);
+                filesToProcessMap.put(fileToProcess.getPath(), displayName);
+            }else{
+                logger.error("File doesn't exist "+ file.getAbsolutePath());
+            }
         }
         return filesToProcessMap;
     }
