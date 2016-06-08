@@ -113,7 +113,6 @@ public class FileWatcherMonitor extends AManagedMonitor {
             }
             processMetric(mapOfFilesToMonitor);
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Error in processing the files:" + e);
             status = "Failure";
         }
