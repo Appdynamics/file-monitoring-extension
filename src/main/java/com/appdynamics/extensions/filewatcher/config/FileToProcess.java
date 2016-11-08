@@ -7,6 +7,7 @@ public class FileToProcess {
 
     private String displayName;
     private String path;
+    private Boolean isDirectoryDetailsRequired;
 
     public String getDisplayName() {
         return displayName;
@@ -23,6 +24,14 @@ public class FileToProcess {
     public void setPath(String path) {
         this.path = path;
     }
+
+	public Boolean getIsDirectoryDetailsRequired() {
+		return isDirectoryDetailsRequired;
+	}
+
+	public void setIsDirectoryDetailsRequired(Boolean isDirectoryDetailsRequired) {
+		this.isDirectoryDetailsRequired = isDirectoryDetailsRequired;
+	}
 
 
 
