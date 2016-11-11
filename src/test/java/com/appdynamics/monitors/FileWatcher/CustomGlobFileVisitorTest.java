@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
@@ -22,8 +21,6 @@ public class CustomGlobFileVisitorTest {
 
 	private CustomGlobFileVisitor globPathFileVisitor;
 	
-	@Mock
-	private Path path;
 
 	@Test
 	public void test1AllFilesAndDirectoriesRecursivelySuccess() throws Exception{

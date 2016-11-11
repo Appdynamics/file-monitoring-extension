@@ -39,9 +39,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 		if(file.getIgnoreHiddenFiles()  && path.toFile().isHidden()){
 			return FileVisitResult.CONTINUE;
 		}
-		if(path.toString().contains("/Users/deepak.kalra/Documents")){
-			System.out.println();
-		}
+		
 		if(!file.getIsDirectoryDetailsRequired()){
 			return FileVisitResult.CONTINUE;
 		}
@@ -52,7 +50,6 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 				StringBuilder builder = new StringBuilder();
 				builder.append(file.getDisplayName());
 				builder.append(path.toString().replaceAll(baseDir.substring(0, baseDir.length()-1), "").replaceAll("/", "|"));
-				System.out.println(path.toString() + " " +builder.toString());
 				getFilesToProcessMap().put(path.toString(), builder.toString());
 			}
 		}
@@ -79,7 +76,6 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 					StringBuilder builder = new StringBuilder();
 					builder.append(file.getDisplayName());
 					builder.append(path.toString().replaceAll(baseDir.substring(0, baseDir.length()-1), "").replaceAll("/", "|"));
-					System.out.println(path.toString() + " " +builder.toString());
 					getFilesToProcessMap().put(path.toString(), builder.toString());
 				}
 			}

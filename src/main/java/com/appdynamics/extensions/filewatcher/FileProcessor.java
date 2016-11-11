@@ -1,7 +1,6 @@
 package com.appdynamics.extensions.filewatcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -158,7 +157,7 @@ public class FileProcessor {
 		GlobPathMatcher globPathMatcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, fileToProcess, conf);
 		try {
 			filesToProcessMap.putAll(FilePathVisitor.walkFilesByGlobMatcher(fileToProcess, globPathMatcher));
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("Error in walking file to process path " + e);
 		}
 		

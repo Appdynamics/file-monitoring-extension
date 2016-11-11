@@ -35,6 +35,7 @@ public class FilePathVisitor {
 		if(baseDir.isEmpty()){
 			baseDir = "/";
 		}
+		logger.debug("Base dir initialised for " + file.getPath().toString() + " to " + baseDir);
 		Files.walkFileTree(Paths.get(baseDir),new CustomGlobFileVisitor(file, matcher, filesToProcessMap, baseDir));
 		return filesToProcessMap;
 
