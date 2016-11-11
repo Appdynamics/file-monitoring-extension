@@ -1,4 +1,4 @@
-package com.appdynamics.monitors.filewatcher;
+package com.appdynamics.monitors.FileWatcher;
 
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.yml.YmlReader;

@@ -91,9 +91,8 @@ public class FileWatcherMonitor extends AManagedMonitor {
             List<FileToProcess> files = config.getFileToProcess();
             FileProcessor fp = new FileProcessor();
             fp.setMetricSeparator(METRIC_SEPARATOR);
-            fp.createListOfPaths(files);
-            filesToProcessMap = fp.processDisplayName(files, isDirectoryDetailsRequired);
-
+            filesToProcessMap = fp.processDisplayName(config,files, isDirectoryDetailsRequired);
+        
             for (String key : filesToProcessMap.keySet()) {
                 FileMetric fileMetric = fp.getFileMetric(key, ignoreHiddenFiles);
                 if (fileMetric != null) {

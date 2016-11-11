@@ -1,14 +1,10 @@
 # List of files
 fileToProcess:
 
-  - displayName: "test3"
-    path: "/Users/abhi.pandey/Documents/testFolder/test3.txt"
-
   - displayName: "test1"
-    path: "/Users/abhi.pandey/Documents/testFolder/"
-
-  - displayName: "test2"
-    path: "/Users/abhi.pandey/Documents/testFolder/testFolder2/"
+    path: "**/Users/deepak.kalra/Documents/**"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI

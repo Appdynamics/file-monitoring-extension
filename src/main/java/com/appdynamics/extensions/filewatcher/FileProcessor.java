@@ -1,15 +1,19 @@
 package com.appdynamics.extensions.filewatcher;
 
-import com.appdynamics.extensions.filewatcher.config.FileToProcess;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.log4j.Logger;
-
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.appdynamics.extensions.filewatcher.config.Configuration;
+import com.appdynamics.extensions.filewatcher.config.FileToProcess;
+import com.appdynamics.extensions.filewatcher.pathmatcher.GlobPathMatcher;
+import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory;
+import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory.PathMatcherTypes;
+import com.appdynamics.extensions.filewatcher.pathmatcher.visitors.FilePathVisitor;
+import com.google.common.collect.Maps;
 
 /**
  * Created by abhi.pandey on 9/17/14.
@@ -17,19 +21,11 @@ import java.util.Map;
 public class FileProcessor {
 
     protected final Logger logger = Logger.getLogger(FileProcessor.class.getName());
-    private List<String> pathOfFiles = Lists.newArrayList();
     private Map<String, String> filesToProcessMap = Maps.newHashMap();
     private String metricSeparator;
 
     public void setMetricSeparator(String metricSeparator) {
         this.metricSeparator = metricSeparator;
-    }
-
-    public void createListOfPaths(List<FileToProcess> files) {
-        for (FileToProcess fileToProcess : files) {
-            File file = new File(fileToProcess.getPath());
-            pathOfFiles.add(file.getAbsolutePath());
-        }
     }
 
     public FileMetric getFileMetric(String filePath, boolean ignoreHiddenFiles) {
@@ -127,35 +123,48 @@ public class FileProcessor {
         return count;
     }
 
-    public Map<String, String> processDisplayName(List<FileToProcess> files, boolean isDirectoryDetailsRequired) {
+    public Map<String, String> processDisplayName(Configuration conf,List<FileToProcess> files, boolean isDirectoryDetailsRequired) {
 
-        for (FileToProcess fileToProcess : files) {
-            File file = new File(fileToProcess.getPath());
-            if (file.exists()) {
-                String displayName = fileToProcess.getDisplayName();
-
-                if (!Strings.isNullOrEmpty(displayName)) {
-                    if (isDirectoryDetailsRequired && file.isDirectory()) {
-                        List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
-
-                        for (File f : file.listFiles()) {
-                            if (!pathOfFiles.contains(f.getAbsolutePath())) {
-                                FileToProcess fp = new FileToProcess();
-                                fp.setPath(f.getAbsolutePath());
-                                fp.setDisplayName(displayName.concat(metricSeparator).concat(f.getName()));
-                                directoryFiles.add(fp);
-                            }
-                        }
-                        processDisplayName(directoryFiles, isDirectoryDetailsRequired);
-                    }
-                }
-
-                filesToProcessMap.put(fileToProcess.getPath(), displayName);
-            }else{
-                logger.error("File doesn't exist "+ file.getAbsolutePath());
-            }
-        }
-        return filesToProcessMap;
+//        for (FileToProcess fileToProcess : files) {
+//            File file = new File(fileToProcess.getPath());
+//            if (file.exists()) {
+//                String displayName = fileToProcess.getDisplayName();
+//
+//                if (!Strings.isNullOrEmpty(displayName)) {
+//                    if (isDirectoryDetailsRequired && file.isDirectory()) {
+//                        List<FileToProcess> directoryFiles = new ArrayList<FileToProcess>();
+//
+//                        for (File f : file.listFiles()) {
+//                            if (!pathOfFiles.contains(f.getAbsolutePath())) {
+//                                FileToProcess fp = new FileToProcess();
+//                                fp.setPath(f.getAbsolutePath());
+//                                fp.setDisplayName(displayName.concat(metricSeparator).concat(f.getName()));
+//                                directoryFiles.add(fp);
+//                            }
+//                        }
+//                        processDisplayName(directoryFiles, isDirectoryDetailsRequired);
+//                    }
+//                }
+//                System.out.println(fileToProcess.getPath() + " " + displayName);
+//                filesToProcessMap.put(fileToProcess.getPath(), displayName);
+//            }else{
+//                logger.error("File doesn't exist "+ file.getAbsolutePath());
+//            }
+//        }
+//        
+//        return filesToProcessMap;
+    	
+    	for(FileToProcess fileToProcess : files){
+		GlobPathMatcher globPathMatcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, fileToProcess, conf);
+		try {
+			filesToProcessMap.putAll(FilePathVisitor.walkFilesByGlobMatcher(fileToProcess, globPathMatcher));
+		} catch (IOException e) {
+			logger.error("Error in walking file to process path " + e);
+		}
+		
+	}	
+    return filesToProcessMap;
+    	
     }
 
 
