@@ -10,12 +10,15 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.filewatcher.FileWatcherMonitor;
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
 import com.appdynamics.extensions.filewatcher.pathmatcher.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory;
 import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory.PathMatcherTypes;
 import com.appdynamics.extensions.filewatcher.pathmatcher.visitors.CustomGlobFileVisitor;
+import com.appdynamics.extensions.util.MetricWriteHelperFactory;
 
 public class CustomGlobFileVisitorTest {
 
@@ -29,7 +32,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/**");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+		
 		Path a = Paths.get("/A/D/a.zip");
 		Path b = Paths.get("/A/D/b.zip");
 		Path c = Paths.get("/A/D/dir");
@@ -57,7 +61,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/**");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/Deepak66/a.zip");
 		Path b = Paths.get("/D/Deepak77/b.zip");
 		Path c = Paths.get("/A/Deepak88/dir");
@@ -85,7 +90,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/ABC.XYZ");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/ABC.XYZ");
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
 		Map<String,String> map = new HashMap<String, String>();
@@ -104,7 +110,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/ABC.XYZ");
 		Path b = Paths.get("/A/D/A");
 		Path c  = Paths.get("/A/D/F/G");
@@ -132,7 +139,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(false);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/ABC.XYZ");
 		Path b = Paths.get("/A/D/A");
 		Path c  = Paths.get("/A/D/F/G");
@@ -160,7 +168,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/*.*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/ABC.XYZ");
 		Path b = Paths.get("/A/D/A");
 		Path c  = Paths.get("/A/D/F/G");
@@ -188,7 +197,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/C");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.XYZ");
 		Path b = Paths.get("/A/D/C");
 		List<Path> paths = Arrays.asList(a,b);
@@ -214,7 +224,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/C/**/*.zip");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -244,7 +255,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/C/**");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -274,7 +286,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/C/*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -304,7 +317,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("/A/D/C/*.zip");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -334,7 +348,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("*/A/D/C/*.zip");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -364,7 +379,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("*/A/D/C/*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -394,7 +410,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("**/A/D/C/*");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -424,7 +441,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("**/A/D/C/**");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");
@@ -454,7 +472,8 @@ public class CustomGlobFileVisitorTest {
 		f.setPath("**/A/*/C/**");
 		f.setIgnoreHiddenFiles(false);
 		f.setIsDirectoryDetailsRequired(true);
-		Configuration conf = new Configuration();
+		Configuration conf = new Configuration("Custom Metrics|FileWatcher|", new Runnable(){public void run(){}},MetricWriteHelperFactory.create(new FileWatcherMonitor()));
+;
 		Path a = Paths.get("/A/D/C/ABC.zip");
 		Path b = Paths.get("/A/D/C/D/E/123.zip");
 		Path c = Paths.get("/A/D/55.zip");

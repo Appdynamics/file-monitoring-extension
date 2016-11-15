@@ -25,11 +25,12 @@ public class FileWatcherMonitorTest {
     }
 
 
+    @Ignore
     @Test(expected = TaskExecutionException.class)
     public void testWithNullArgsShouldResultInException() throws Exception {
         testClass.execute(null, null);
     }
-
+    @Ignore
     @Test(expected = TaskExecutionException.class)
     public void testWithEmptyArgsShouldResultInException() throws Exception {
         testClass.execute(new HashMap<String, String>(), null);
