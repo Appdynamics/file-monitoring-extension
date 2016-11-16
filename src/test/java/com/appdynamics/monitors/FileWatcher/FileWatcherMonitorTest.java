@@ -36,7 +36,7 @@ public class FileWatcherMonitorTest {
         testClass.execute(new HashMap<String, String>(), null);
     }
 
-    @Ignore
+    
     @Test
     public void testFileWatcherExtension() throws TaskExecutionException {
 

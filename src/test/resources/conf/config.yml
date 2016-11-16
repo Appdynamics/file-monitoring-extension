@@ -2,7 +2,7 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "**/Users/deepak.kalra/Documents/**"
+    path: "/Users/deepak.kalra/Documents/**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
   
@@ -31,3 +31,4 @@ ignoreHiddenFiles: true
 # Make sure the metric prefix ends with a |
 metricPrefix: "Custom Metrics|FileWatcher|"
 
+numberOfThreads: 5
