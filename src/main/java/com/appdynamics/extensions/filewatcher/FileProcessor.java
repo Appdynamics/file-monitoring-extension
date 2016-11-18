@@ -27,6 +27,8 @@ public class FileProcessor {
 		this.metricSeparator = metricSeparator;
 	}
 
+	//#TODO this is not needed as in the CustomGlobFileVisitor you get information about the Basic File attributes.
+	//#TODO Please revisit.
 	public static FileMetric getFileMetric(String filePath, boolean ignoreHiddenFiles) {
 		FileMetric fileMetric;
 
@@ -122,6 +124,7 @@ public class FileProcessor {
 		return count;
 	}
 
+	//TODO The method name doesn't match with the functionality
 	public Map<String, String> processDisplayName(Configuration conf,FileToProcess file) {
 
 		GlobPathMatcher globPathMatcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, file, conf);

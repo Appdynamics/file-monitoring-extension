@@ -32,6 +32,7 @@ public class FilePathVisitor {
 		else {
 			baseDir = file.getPath().substring(0,file.getPath().lastIndexOf('/')+1);
 		}
+		//#TODO this will not work on Windows.
 		if(baseDir.isEmpty()){
 			baseDir = "/";
 		}

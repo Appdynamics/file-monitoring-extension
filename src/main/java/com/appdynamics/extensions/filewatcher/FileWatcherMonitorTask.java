@@ -28,6 +28,8 @@ public class FileWatcherMonitorTask implements Runnable{
 		FileWatcherMonitor.getLatch().countDown();
 	}
 
+	//#TODO This method will no longer be needed and have to be referenced from FileWatcherMonitor once you have reporting piece moved in here.
+
 	public static Map<String, String> getFilestoprocess() {
 		return filesToProcess;
 	}

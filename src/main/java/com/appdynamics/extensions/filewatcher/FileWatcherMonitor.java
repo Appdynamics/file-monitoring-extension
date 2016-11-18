@@ -117,6 +117,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 			processMetricPrefix(this.configuration.getMetricPrefix());
 			latch = new CountDownLatch(configuration.getFileToProcess().size());
 			configuration.executeTask();
+			//#TODO latch is not needed. Please move the reporting part in FileWatcherMonitorTask
 			getLatch().await();
 			status = getStatus(configuration, status);
 			logger.info("Status = " + status);

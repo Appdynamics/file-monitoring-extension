@@ -49,6 +49,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			if(!getFilesToProcessMap().containsKey(path.toString())){
 				StringBuilder builder = new StringBuilder();
 				builder.append(file.getDisplayName());
+				//TODO will not work for Windows.
 				builder.append(path.toString().replaceAll(baseDir.substring(0, baseDir.length()-1), "").replaceAll("/", "|"));
 				getFilesToProcessMap().put(path.toString(), builder.toString());
 			}
@@ -67,6 +68,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 	public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs)
 			throws IOException
 	{
+			//#TODO It would be a good idea to log all the files which are being skipped so that we can debug easily.
 			if(file.getIgnoreHiddenFiles() && path.toFile().isHidden()){
 				return FileVisitResult.CONTINUE;
 			}
