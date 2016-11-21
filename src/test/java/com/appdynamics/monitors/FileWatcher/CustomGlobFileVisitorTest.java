@@ -11,12 +11,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.filewatcher.FileMetric;
 import com.appdynamics.extensions.filewatcher.FileWatcherMonitor;
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
 import com.appdynamics.extensions.filewatcher.pathmatcher.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory;
 import com.appdynamics.extensions.filewatcher.pathmatcher.factory.PathMatcherFactory.PathMatcherTypes;
+import com.appdynamics.extensions.filewatcher.pathmatcher.helpers.DisplayNameHelper;
 import com.appdynamics.extensions.filewatcher.pathmatcher.visitors.CustomGlobFileVisitor;
 import com.appdynamics.extensions.util.MetricWriteHelperFactory;
 
@@ -39,7 +41,7 @@ public class CustomGlobFileVisitorTest {
 		Path c = Paths.get("/A/D/dir");
 		List<Path> paths = Arrays.asList(a,b,c);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/");
 		for(Path p : paths){
 			if(p.toString().equals("/Users/Deepak/dir")){
@@ -50,7 +52,7 @@ public class CustomGlobFileVisitorTest {
 			}
 		}
 		for(Path p : paths){
-			Assert.assertTrue(map.containsKey(p.toString()));
+			Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), p, "/A/D/")));
 		}
 	}
 
@@ -68,7 +70,7 @@ public class CustomGlobFileVisitorTest {
 		Path c = Paths.get("/A/Deepak88/dir");
 		List<Path> paths = Arrays.asList(a,b,c);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/");
 		for(Path p : paths){
 			if(p.toString().equals("/Users/Deepak88/dir")){
@@ -79,7 +81,7 @@ public class CustomGlobFileVisitorTest {
 			}
 		}
 		for(Path p : paths){
-			Assert.assertTrue(!map.containsKey(p.toString()));
+			Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), p, "/A/")));
 		}
 	}
 	
@@ -94,13 +96,12 @@ public class CustomGlobFileVisitorTest {
 ;
 		Path a = Paths.get("/A/D/ABC.XYZ");
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/");
 
 		globPathFileVisitor.visitFile(a, null);
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertEquals(map.keySet().toArray()[0], "/A/D/ABC.XYZ");
-		Assert.assertEquals(map.get("/A/D/ABC.XYZ"), "test1|ABC.XYZ");
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/")));
+		Assert.assertEquals(map.keySet().toArray()[0], "test1|ABC.XYZ");
 	}
 
 	@Test
@@ -117,7 +118,7 @@ public class CustomGlobFileVisitorTest {
 		Path c  = Paths.get("/A/D/F/G");
 		List<Path> paths = Arrays.asList(a,b,c);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/A") || p.toString().equals("/A/D/F/G")){
@@ -127,9 +128,9 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/")));
 	}
 	
 	@Test
@@ -146,7 +147,7 @@ public class CustomGlobFileVisitorTest {
 		Path c  = Paths.get("/A/D/F/G");
 		List<Path> paths = Arrays.asList(a,b,c);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/A") || p.toString().equals("/A/D/F/G")){
@@ -156,9 +157,9 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(!map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/")));
 	}
 	
 	@Test
@@ -175,7 +176,7 @@ public class CustomGlobFileVisitorTest {
 		Path c  = Paths.get("/A/D/F/G");
 		List<Path> paths = Arrays.asList(a,b,c);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/A") || p.toString().equals("/A/D/F/G")){
@@ -185,9 +186,9 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/")));
 	}
 	
 	@Test
@@ -203,7 +204,7 @@ public class CustomGlobFileVisitorTest {
 		Path b = Paths.get("/A/D/C");
 		List<Path> paths = Arrays.asList(a,b);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/C/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C")){
@@ -213,8 +214,8 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(!map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/")));
 	}
 	
 	@Test
@@ -232,7 +233,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/C/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/D")){
@@ -242,10 +243,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(!map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(!map.containsKey(d.toString()));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/")));
 	}
 	
 	@Test
@@ -263,7 +264,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/C/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -273,10 +274,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/")));
 	}
 	
 	@Test
@@ -294,7 +295,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/C/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -304,10 +305,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
 	}
 	
 	@Test
@@ -325,7 +326,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/A/D/C/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -335,10 +336,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(!map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/")));
 	}
 	
 	@Test
@@ -356,7 +357,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -366,10 +367,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(!map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/F/")));
 	}
 	
 	@Test
@@ -387,7 +388,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -397,10 +398,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/F/")));
 	}
 	
 	@Test
@@ -418,20 +419,20 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/");
 		for(Path p : paths){
-			if(p.toString().equals("/A/D/C/F")){
+			if(p.toString().equals("/A/D/C/F/")){
 				globPathFileVisitor.preVisitDirectory(p, null);
 			}
 			else{
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(!map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/A/D/C/F/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/A/D/C/F/")));
 	}
 	
 	@Test
@@ -449,20 +450,20 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/");
 		for(Path p : paths){
-			if(p.toString().equals("/A/D/C/F")){
+			if(p.toString().equals("/A/D/C/F/")){
 				globPathFileVisitor.preVisitDirectory(p, null);
 			}
 			else{
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/")));
 	}
 	
 	@Test
@@ -480,7 +481,7 @@ public class CustomGlobFileVisitorTest {
 		Path d = Paths.get("/A/D/C/F");
 		List<Path> paths = Arrays.asList(a,b,c,d);
 		GlobPathMatcher matcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, f, conf);
-		Map<String,String> map = new HashMap<String, String>();
+		Map<String,FileMetric> map = new HashMap<String, FileMetric>();
 		globPathFileVisitor = new CustomGlobFileVisitor(f, matcher, map, "/");
 		for(Path p : paths){
 			if(p.toString().equals("/A/D/C/F")){
@@ -490,10 +491,10 @@ public class CustomGlobFileVisitorTest {
 				globPathFileVisitor.visitFile(p, null);
 			}
 		}
-		Assert.assertTrue(map.containsKey(a.toString()));
-		Assert.assertTrue(map.containsKey(b.toString()));
-		Assert.assertTrue(!map.containsKey(c.toString()));
-		Assert.assertTrue(map.containsKey(d.toString()));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), a, "/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), b, "/")));
+		Assert.assertTrue(!map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), c, "/")));
+		Assert.assertTrue(map.containsKey(DisplayNameHelper.getFormattedDisplayName(f.getDisplayName(), d, "/")));
 	}
 
 }

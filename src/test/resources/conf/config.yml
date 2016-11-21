@@ -2,7 +2,7 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "/Users/deepak.kalra/Documents/**"
+    path: "/Users/deepak.kalra/Documents/pp.png"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
   

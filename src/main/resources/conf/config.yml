@@ -2,10 +2,22 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "**/Users/deepak.kalra/Documents/**"
+    path: "/Users/deepak.kalra/Documents/appdynamics-docs/**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
 
+  - displayName: "test2"
+    path: "/Users/deepak.kalra/Documents/test/**"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true    
+
+
+  - displayName: "test3"
+    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true   
+    
+    
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
 
