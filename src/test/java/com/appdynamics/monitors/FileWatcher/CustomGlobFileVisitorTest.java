@@ -28,7 +28,7 @@ public class CustomGlobFileVisitorTest {
 	
 
 	@Test
-	public void test1AllFilesAndDirectoriesRecursivelySuccess() throws Exception{
+	public void whenAllFilesAndDirectoriesRecursivelySuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/**");
@@ -57,7 +57,7 @@ public class CustomGlobFileVisitorTest {
 	}
 
 	@Test
-	public void test2CheckVisitfilesAndDirectorySuccessNoMatch() throws Exception{
+	public void checkVisitfilesAndDirectorySuccessNoMatch() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/**");
@@ -86,7 +86,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test3CheckVisitfilesSingleFileNameSuccess() throws Exception{
+	public void checkVisitfilesSingleFileNameSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/ABC.XYZ");
@@ -105,7 +105,7 @@ public class CustomGlobFileVisitorTest {
 	}
 
 	@Test
-	public void test4AllFilesAndDirectoriesNonRecursivelySuccess() throws Exception{
+	public void whenAllFilesAndDirectoriesNonRecursivelySuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/*");
@@ -134,7 +134,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test5OnlyDirectoriesNoFilesSuccess() throws Exception{
+	public void checkOnlyDirectoriesNoFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/*");
@@ -163,7 +163,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test6OnlyFilesNoDirectoriesSuccess() throws Exception{
+	public void checkOnlyFilesNoDirectoriesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/*.*");
@@ -192,7 +192,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test7OnlyDirectorySingleSuccess() throws Exception{
+	public void checkOnlyDirectorySingleSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/C");
@@ -219,7 +219,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test8MiddleWildcardDoubleOnlyFilesSuccess() throws Exception{
+	public void whenMiddleWildcardDoubleOnlyFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/C/**/*.zip");
@@ -250,7 +250,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test9MiddleWildcardDoubleBothDirectoriesAndFilesSuccess() throws Exception{
+	public void whenMiddleWildcardDoubleBothDirectoriesAndFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/C/**");
@@ -281,7 +281,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test10MiddleWildcardDSingleBothDirectoriesAndFilesSuccess() throws Exception{
+	public void whenMiddleWildcardDSingleBothDirectoriesAndFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/C/*");
@@ -312,7 +312,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test11MiddleWildcardDSingleOnlyFilesSuccess() throws Exception{
+	public void whenMiddleWildcardDSingleOnlyFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("/A/D/C/*.zip");
@@ -343,7 +343,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test11StartingAndEndingWildcardDSingleOnlyFilesSuccess() throws Exception{
+	public void checkStartingAndEndingWildcardDSingleOnlyFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("*/A/D/C/*.zip");
@@ -374,7 +374,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test12StartingAndEndingWildcardDSingleOnlyDirecotriesSuccess() throws Exception{
+	public void checkStartingAndEndingWildcardDSingleOnlyDirecotriesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("*/A/D/C/*");
@@ -405,7 +405,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test13StartingAndEndingDoubleWildcardDSingleOnlyDirecotriesSuccess() throws Exception{
+	public void checkStartingAndEndingDoubleWildcardDSingleOnlyDirecotriesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("**/A/D/C/*");
@@ -436,7 +436,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test14StartingAndEndingDoubleWildcardDSingleBothDirecotriesAndFilesSuccess() throws Exception{
+	public void checkStartingAndEndingDoubleWildcardDSingleBothDirecotriesAndFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("**/A/D/C/**");
@@ -467,7 +467,7 @@ public class CustomGlobFileVisitorTest {
 	}
 	
 	@Test
-	public void test15StartingAndEndingAndMiddleSingleWildcardDSingleBothDirecotriesAndFilesSuccess() throws Exception{
+	public void checkStartingAndEndingAndMiddleSingleWildcardDSingleBothDirecotriesAndFilesSuccess() throws Exception{
 		FileToProcess f = new FileToProcess();
 		f.setDisplayName("test1");
 		f.setPath("**/A/*/C/**");
