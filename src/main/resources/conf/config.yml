@@ -39,7 +39,4 @@ isFileCountRequired: true
 # If true then all the hidden files will be ignored monitoring.
 ignoreHiddenFiles: true
 
-# Make sure the metric prefix ends with a |
-metricPrefix: "Custom Metrics|FileWatcher|"
-
 numberOfThreads: 5

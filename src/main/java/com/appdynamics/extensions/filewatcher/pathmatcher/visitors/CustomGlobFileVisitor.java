@@ -6,7 +6,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -57,8 +56,8 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			if(attrs!=null){
 				if(fileMetricsMap.containsKey(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir))){
 					metric = fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir));
-					if((long)Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp()) != 
-							attrs.lastModifiedTime().toMillis()){
+					if(!Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp())
+							.equals(attrs.lastModifiedTime().toMillis())){
 						metric.setChanged(true);
 						metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
 
@@ -102,8 +101,8 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			if(attrs!=null){
 				if(fileMetricsMap.containsKey(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir))){
 					metric = fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir));
-					if((long)Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp()) != 
-							attrs.lastModifiedTime().toMillis()){
+					if(!Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp())
+							.equals(attrs.lastModifiedTime().toMillis())){
 						metric.setChanged(true);
 						metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
 
@@ -142,7 +141,13 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 				}
 			}
 			metric.setNumberOfFiles(count);
-			metric.setOldestFileAge(oldestFile);
+	        long currentTimeInMillis = System.currentTimeMillis();
+	        long oldestFileAge = -1;
+	        if (oldestFile < currentTimeInMillis) {
+	            oldestFileAge = (currentTimeInMillis - oldestFile) / 1000;
+	        }
+			
+			metric.setOldestFileAge(oldestFileAge);
 			fileMetricsMap.put(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir),metric);
 		}
 		return FileVisitResult.CONTINUE;
