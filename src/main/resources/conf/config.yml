@@ -2,18 +2,18 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "F:\\\\bartender-master\\\\**"
+    path: "/Users/deepak.kalra/Documents/appdynamics-docs/**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
 
   - displayName: "test2"
-    path: "F:\\\\bkup-saic"
+    path: "/Users/deepak.kalra/Documents/test/**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true    
 
 
   - displayName: "test3"
-    path: "F:\\\\css\\\\LoginStyle.css"
+    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true   
     
@@ -38,5 +38,8 @@ isFileCountRequired: true
 
 # If true then all the hidden files will be ignored monitoring.
 ignoreHiddenFiles: true
+
+# Make sure the metric prefix ends with a |
+metricPrefix: "Custom Metrics|FileWatcher|"
 
 numberOfThreads: 5

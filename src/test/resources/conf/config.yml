@@ -2,21 +2,15 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "F:\\bartender-master\\**"
+    path: "/Users/deepak.kalra/Documents/pp.png"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
-
-  - displayName: "test2"
-    path: "F:\\bkup-saic"
-    ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true    
-
-
-  - displayName: "test3"
-    path: "F:\\css\\LoginStyle.css"
-    ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true   
   
+
+#For the shared directory on windows the path should be like
+# path: "\\\\1.2.3.4\\abc\\def\\ProductI
+
+
 # If false then all the files under the directory will be ignored and only the directory level metrics will be published
 # for the directories specified above.
 # For files given above it will have no effect
@@ -33,5 +27,8 @@ isFileCountRequired: true
 
 # If true then all the hidden files will be ignored monitoring.
 ignoreHiddenFiles: true
+
+# Make sure the metric prefix ends with a |
+metricPrefix: "Custom Metrics|FileWatcher|"
 
 numberOfThreads: 5
