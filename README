@@ -8,7 +8,6 @@ An AppDynamics extension to be used with a stand alone Java machine agent to pro
 
 The extension can be configured with various comibinations of patterns to include/exclude files and directories. 
 
-
 Prerequisites
 -------------
  
@@ -16,10 +15,10 @@ This extension requires a AppDynamics Java Machine Agent installed and running.
 
 Rebuilding the Project 
 ----------------------
+
 1. Clone the repo FileWatcher-extension from GitHub https://github.com/Appdynamics
 3. Run 'mvn clean install' from the cloned FileWatcher-extension directory.
 4. The FileWatcher-<version>.zip should get built and found in the 'target' directory.
-
 
 Installation
 ------------
@@ -30,30 +29,26 @@ Installation
 
 3. Restart the Machine Agent.
 
-Sample config.yaml
-------------------
- 
-The following is a sample config.yaml file that depicts two different file paths defined. The different fields are explained in the in-line comments. 
-
 Metrics Provided
 ----------------
 
-We provide following metric related to modification of a file.
+We provide following metric related to the state of a directory/file :
 
 - IsModified : 1 if file is modified in last minute and 0 if not.
 - Size : A positive integer indicating the current size of the file.
 - FileCount: Count of files in a directory.
 - OldestFileAge: Time in seconds from current time to the oldest modified file of the directory
 
-
-Configuration
--------------
+Sample config.yaml
+------------------
+ 
+The following is a sample config.yaml file that depicts three different file paths defined. The different fields are explained in the in-line comments.
 
 Note :
-
 Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator [here](http://yamllint.com/)
 
-1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/FileWatcher/`. Below is the format :
+1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/FileWatcher/`
+Below is the format :
 
 ```
 
@@ -119,8 +114,6 @@ Please make sure to not use tab (\t) while editing yaml files. You may want to v
 	# If true then all the hidden files will be ignored monitoring.
 	ignoreHiddenFiles: true
 
-
-
 ```
 
 2. Configure the path to the config.yaml file by editing the <task-arguments> in the monitor.xml file. Below is the sample
@@ -135,16 +128,16 @@ Please make sure to not use tab (\t) while editing yaml files. You may want to v
 FILEWATCHER METRIC BROWSER
 --------------------------
 
-![alt tag](screenshots/FW_IsModified.png)
+![alt tag](/screenshots/FW_IsModified.png)
 File Watcher Snapshot For File Modified
  
-![alt tag](screenshots/FW_Directory_Size_Change.png)
+![alt tag](/screenshots/FW_Directory_Size_Change.png)
 File Watcher Snapshot For Directory Size Change
  
-![alt tag](screenshots/FW_Count_Directory_Files.png)
+![alt tag](/screenshots/FW_Count_Directory_Files.png)
 File Watcher Snapshot For Directory File Count Change
  
-![alt tag](screenshots/FW_Oldest_File_Age.png)
+![alt tag](/screenshots/FW_Oldest_File_Age.png)
 File Watcher Snapshot For Directory Oldest File Age
 
 Troubleshooting
