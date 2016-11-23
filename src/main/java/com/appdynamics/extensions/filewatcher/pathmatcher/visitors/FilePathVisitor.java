@@ -24,7 +24,7 @@ public class FilePathVisitor {
 			return;
 		}
 		if(filePath.contains("*")){
-			String tempPath = filePath.substring(0, filePath.indexOf("*"));logger.debug("tempPath : " + tempPath);
+			String tempPath = filePath.substring(0, filePath.indexOf("*"));
 			baseDir = tempPath.substring(0, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
 		}
 		else{
