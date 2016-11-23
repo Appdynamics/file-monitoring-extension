@@ -2,9 +2,20 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "/Users/deepak.kalra/Documents/pp.png"
+    path: "F:\\bartender-master\\**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
+
+  - displayName: "test2"
+    path: "F:\\bkup-saic"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true    
+
+
+  - displayName: "test3"
+    path: "F:\\css\\LoginStyle.css"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true   
   
 # If false then all the files under the directory will be ignored and only the directory level metrics will be published
 # for the directories specified above.

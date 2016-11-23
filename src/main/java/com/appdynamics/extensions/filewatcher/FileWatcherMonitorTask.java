@@ -79,6 +79,7 @@ public class FileWatcherMonitorTask implements Runnable{
 	}
 
 	private void printCollectiveObservedCurrent(String metricPath, String metricValue) {
+		logger.debug("printing metric for : " + metricPath);
 		printMetric(metricPath, metricValue,
 				MetricWriter.METRIC_AGGREGATION_TYPE_AVERAGE,
 				MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,

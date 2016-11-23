@@ -2,18 +2,18 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "/Users/deepak.kalra/Documents/appdynamics-docs/**"
+    path: "F:\\\\bartender-master\\\\**"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true
 
   - displayName: "test2"
-    path: "/Users/deepak.kalra/Documents/test/**"
+    path: "F:\\\\bkup-saic"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true    
 
 
   - displayName: "test3"
-    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
+    path: "F:\\\\css\\\\LoginStyle.css"
     ignoreHiddenFiles: false
     isDirectoryDetailsRequired: true   
     
