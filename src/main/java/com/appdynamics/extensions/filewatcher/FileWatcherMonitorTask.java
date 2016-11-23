@@ -1,26 +1,29 @@
 package com.appdynamics.extensions.filewatcher;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
 import com.appdynamics.extensions.util.MetricWriteHelper;
+import com.appdynamics.extensions.util.PerMinValueCalculator;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
 
 public class FileWatcherMonitorTask implements Runnable{
 
 	public static final Logger logger = Logger.getLogger(FileWatcherMonitorTask.class);
 	private static final String METRIC_SEPARATOR = "|";
-
+	public static final String METRIC_PREFIX = "";
 	private FileToProcess fileToProcess;
 	private Configuration configuration;
-	private String metricPrefix;
-	private static Map<String,FileMetric> fileMetricsMap = new ConcurrentHashMap<String, FileMetric>();
+	private static final String metricPrefix = "Custom Metrics|FileWatcher|";
+	private Map<String,FileMetric> fileMetricsMap = new HashMap<String, FileMetric>();
 	private static String logPrefix;
+	private static PerMinValueCalculator perMinValueCalculator = new PerMinValueCalculator();
 
 	public FileWatcherMonitorTask(Configuration configuration, FileToProcess fileToProcess) {
 		this.configuration = configuration;
@@ -30,21 +33,9 @@ public class FileWatcherMonitorTask implements Runnable{
 	public void run() {
 		FileProcessor proc = new FileProcessor();
 		proc.processFilePath(configuration,fileToProcess,fileMetricsMap);
-		processMetricPrefix(this.configuration.getMetricPrefix());
 		processMetric(fileMetricsMap);
 	}
 
-	private void processMetricPrefix(String metricPrefix) {
-		logger.debug("Processing the metric prefix");
-		if (!metricPrefix.endsWith("|")) {
-			metricPrefix = metricPrefix + "|";
-		}
-		if (!metricPrefix.startsWith("Custom Metrics|")) {
-			metricPrefix = "Custom Metrics|" + metricPrefix;
-		}
-
-		this.metricPrefix = metricPrefix;
-	}
 
 	private void processMetric(Map<String, FileMetric> mapOfFiles) {
 		if (!mapOfFiles.isEmpty()) {
@@ -60,6 +51,12 @@ public class FileWatcherMonitorTask implements Runnable{
 				String metricName = "Size";
 				String metricValue = fileMetric.getFileSize();
 				printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
+
+				//perMinValue backing cache is thread safe
+				BigDecimal prevTs = perMinValueCalculator.getPerMinuteValue(metricPath.toString() + metricName, new BigDecimal(fileMetric.getTimeStamp()));
+				if(prevTs != null && (prevTs.compareTo(BigDecimal.ZERO) > 0)){
+					fileMetric.setChanged(true);
+				}
 
 				metricName = "IsModified";
 				metricValue = toNumeralString(fileMetric.isChanged());

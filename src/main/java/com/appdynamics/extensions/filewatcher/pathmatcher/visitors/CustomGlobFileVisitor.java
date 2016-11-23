@@ -54,19 +54,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			logger.debug("Found match for entered path " + path);
 			FileMetric metric = new FileMetric();
 			if(attrs!=null){
-				if(fileMetricsMap.containsKey(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir))){
-					metric = fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir));
-					if(!Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp())
-							.equals(attrs.lastModifiedTime().toMillis())){
-						metric.setChanged(true);
-						metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
-
-					}
-				}else{
-					metric.setChanged(false);
-					metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
-				}
-
+				metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
 				metric.setFileSize(String.valueOf(attrs.size()));
 			}
 			else{
@@ -99,19 +87,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 
 			FileMetric metric = new FileMetric();
 			if(attrs!=null){
-				if(fileMetricsMap.containsKey(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir))){
-					metric = fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir));
-					if(!Long.valueOf(fileMetricsMap.get(DisplayNameHelper.getFormattedDisplayName(file.getDisplayName(), path, baseDir)).getTimeStamp())
-							.equals(attrs.lastModifiedTime().toMillis())){
-						metric.setChanged(true);
-						metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
-
-					}
-				}else{
-					metric.setChanged(false);
-					metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
-				}
-
+				metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
 				metric.setFileSize(String.valueOf(attrs.size()));
 			}
 			else{
