@@ -2,14 +2,21 @@
 fileToProcess:
 
   - displayName: "test1"
-    path: "F:\\\\bartender-master\\\\**"
+    path: "/Users/deepak.kalra/Documents/appdynamics-docs/**"
     ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true 
-    
+    isDirectoryDetailsRequired: true
+
   - displayName: "test2"
-    path: "**\\\\*.zip"
+    path: "/Users/deepak.kalra/Documents/test/**"
     ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true     
+    isDirectoryDetailsRequired: true    
+
+
+  - displayName: "test3"
+    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true   
+    
     
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
@@ -31,5 +38,8 @@ isFileCountRequired: true
 
 # If true then all the hidden files will be ignored monitoring.
 ignoreHiddenFiles: true
+
+# Make sure the metric prefix ends with a |
+metricPrefix: "Custom Metrics|FileWatcher|"
 
 numberOfThreads: 5
