@@ -18,13 +18,13 @@ public class FilePathVisitor {
 
 	public static void  walkFilesByGlobMatcher(final FileToProcess file,final GlobPathMatcher matcher,Map<String,FileMetric> fileMetricsMap) throws IOException{
 		String baseDir = null;
-		String filePath = file.getPath();
+		String filePath = file.getPath().replace("\\\\", "\\"); //For Windows regexes
 		if(filePath.isEmpty()){
 			logger.error("File path is empty, returning");
 			return;
 		}
 		if(filePath.contains("*")){
-			String tempPath = filePath.substring(0, filePath.indexOf("*"));
+			String tempPath = filePath.substring(0, filePath.indexOf("*"));logger.debug("tempPath : " + tempPath);
 			baseDir = tempPath.substring(0, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
 		}
 		else{

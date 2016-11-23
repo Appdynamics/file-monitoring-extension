@@ -4,19 +4,12 @@ fileToProcess:
   - displayName: "test1"
     path: "F:\\\\bartender-master\\\\**"
     ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true
-
-  - displayName: "test2"
-    path: "F:\\\\bkup-saic"
-    ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true    
-
-
-  - displayName: "test3"
-    path: "F:\\\\css\\\\LoginStyle.css"
-    ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true   
+    isDirectoryDetailsRequired: true 
     
+  - displayName: "test2"
+    path: "**\\\\*.zip"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true     
     
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI

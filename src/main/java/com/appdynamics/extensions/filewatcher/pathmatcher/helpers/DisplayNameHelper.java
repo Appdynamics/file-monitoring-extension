@@ -3,8 +3,9 @@ package com.appdynamics.extensions.filewatcher.pathmatcher.helpers;
 import java.io.File;
 import java.nio.file.Path;
 
-public class DisplayNameHelper {
+import org.apache.log4j.Logger;
 
+public class DisplayNameHelper {
 	public static String getFormattedDisplayName(String fileDisplayName,Path path,String baseDir){
 		StringBuilder builder = new StringBuilder();
 		builder.append(fileDisplayName);
@@ -17,7 +18,6 @@ public class DisplayNameHelper {
 		else{
 			builder.append(suffix);
 		}
-
 		return builder.toString();
 	}
 
