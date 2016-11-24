@@ -94,6 +94,14 @@ Below is the format :
 		    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
 		    ignoreHiddenFiles: false
 		    isDirectoryDetailsRequired: true   
+		    
+		    #For windows based searching regexes the paths should be like : 
+		    
+		  - displayName: "test4"
+		    path: "F:\\\\Users\\\\deepak.kalra\\\\Documents\\\\test\\\\**"
+		    ignoreHiddenFiles: false
+		    isDirectoryDetailsRequired: true   
+		    
 
     # This is the global isDirectoryDetailsRequired flag. When an individual fileToProcess path has this flag missing, this global one will be used.    
 	# If false then all the files under the directory will be ignored and only the directory level metrics will be published
