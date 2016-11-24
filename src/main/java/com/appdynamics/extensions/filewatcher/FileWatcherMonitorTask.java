@@ -17,10 +17,8 @@ public class FileWatcherMonitorTask implements Runnable{
 
 	public static final Logger logger = Logger.getLogger(FileWatcherMonitorTask.class);
 	private static final String METRIC_SEPARATOR = "|";
-	public static final String METRIC_PREFIX = "";
 	private FileToProcess fileToProcess;
 	private Configuration configuration;
-	private static final String metricPrefix = "Custom Metrics|FileWatcher|";
 	private Map<String,FileMetric> fileMetricsMap = new HashMap<String, FileMetric>();
 	private static String logPrefix;
 	private static PerMinValueCalculator perMinValueCalculator = new PerMinValueCalculator();
@@ -44,7 +42,7 @@ public class FileWatcherMonitorTask implements Runnable{
 
 			for (String key : keys) {
 				StringBuffer metricPath = new StringBuffer();
-				metricPath.append(metricPrefix).append(key).append(METRIC_SEPARATOR);
+				metricPath.append(this.configuration.getMetricPrefix()).append(key).append(METRIC_SEPARATOR);
 
 				FileMetric fileMetric = mapOfFiles.get(key);
 
