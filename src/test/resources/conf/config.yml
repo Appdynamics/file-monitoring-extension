@@ -1,14 +1,11 @@
 # List of files
 fileToProcess:
 
-  - displayName: "test3"
-    path: "/Users/abhi.pandey/Documents/testFolder/test3.txt"
-
   - displayName: "test1"
-    path: "/Users/abhi.pandey/Documents/testFolder/"
-
-  - displayName: "test2"
-    path: "/Users/abhi.pandey/Documents/testFolder/testFolder2/"
+    path: "/Users/deepak.kalra/Documents/pp.png"
+    ignoreHiddenFiles: false
+    isDirectoryDetailsRequired: true
+  
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
@@ -17,7 +14,7 @@ fileToProcess:
 # If false then all the files under the directory will be ignored and only the directory level metrics will be published
 # for the directories specified above.
 # For files given above it will have no effect
-isDirectoryDetailsRequired: false
+isDirectoryDetailsRequired: true
 
 # If true then an extra metric will be shown that will give age of the oldest file (in seconds when the file was last
 # modified and compared to current time) in the directory specified above.
@@ -34,3 +31,4 @@ ignoreHiddenFiles: true
 # Make sure the metric prefix ends with a |
 metricPrefix: "Custom Metrics|FileWatcher|"
 
+numberOfThreads: 5

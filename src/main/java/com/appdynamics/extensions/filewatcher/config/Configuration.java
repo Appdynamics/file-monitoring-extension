@@ -2,12 +2,20 @@ package com.appdynamics.extensions.filewatcher.config;
 
 import java.util.List;
 
+import com.appdynamics.extensions.conf.MonitorConfiguration;
+import com.appdynamics.extensions.util.MetricWriteHelper;
+
 /**
  * Created by abhi.pandey on 8/26/14.
  */
-public class Configuration {
+public class Configuration extends MonitorConfiguration{
 
-    private List<FileToProcess> fileToProcess;
+    public Configuration(String defaultMetricPrefix, Runnable taskRunner, MetricWriteHelper metricWriter) {
+		super(defaultMetricPrefix, taskRunner, metricWriter);
+
+	}
+
+	private List<FileToProcess> fileToProcess;
     private Boolean isDirectoryDetailsRequired;
     private Boolean isFileCountRequired;
     private Boolean ignoreHiddenFiles;
