@@ -29,7 +29,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 
 
 	public FileWatcherMonitor() {
-		logger.info(String.format("Using NGinXMonitor Version [%s]", getImplementationVersion()));
+		logger.info(String.format("Using FileWatcherMonitor Version [%s]", getImplementationVersion()));
 	}
 
 	private static String getImplementationVersion() {

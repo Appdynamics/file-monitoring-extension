@@ -20,7 +20,6 @@ public class FileWatcherMonitorTask implements Runnable{
 	private FileToProcess fileToProcess;
 	private Configuration configuration;
 	private Map<String,FileMetric> fileMetricsMap = new HashMap<String, FileMetric>();
-	private static String logPrefix;
 	private static PerMinValueCalculator perMinValueCalculator = new PerMinValueCalculator();
 
 	public FileWatcherMonitorTask(Configuration configuration, FileToProcess fileToProcess) {
@@ -98,7 +97,7 @@ public class FileWatcherMonitorTask implements Runnable{
 		MetricWriteHelper metricWriter = configuration.getMetricWriter();
 
 		if (logger.isDebugEnabled()) {
-			logger.debug(getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
+			logger.debug("Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
 					+ "] metric = " + metricPath + " = " + metricValue);
 		}
 
@@ -118,13 +117,4 @@ public class FileWatcherMonitorTask implements Runnable{
 			return input.booleanValue() ? "1" : "0";
 		}
 	}
-
-	public String getLogPrefix() {
-		return logPrefix;
-	}
-
-	public void setLogPrefix(String logPrefix) {
-		this.logPrefix = (logPrefix != null) ? logPrefix : "";
-	}
-
 }
