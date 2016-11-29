@@ -169,7 +169,7 @@ Support
 --------
 
 For any questions or feature request, please contact [AppDynamics Center of Excellence][].
-
+**Version:** 1.3 : Added support for wildcards
 **Version:** 1.2
 **Controller Compatibility:** 3.7 or later
 
