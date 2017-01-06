@@ -16,14 +16,14 @@ This extension requires a AppDynamics Java Machine Agent installed and running.
 Rebuilding the Project 
 ----------------------
 
-1. Clone the repo FileWatcher-extension from GitHub https://github.com/Appdynamics
-3. Run 'mvn clean install' from the cloned FileWatcher-extension directory.
-4. The FileWatcher-<version>.zip should get built and found in the 'target' directory.
+1. Clone the repo AppDynamics-File-Watcher-Extension from GitHub https://github.com/Appdynamics
+3. Run 'mvn clean install' from the cloned AppDynamics-File-Watcher-Extension directory.
+4. The AppDynamics-File-Watcher-Extension-<version>.zip should get built and found in the 'target' directory.
 
 Installation
 ------------
 
-1. Unzip contents of FileWatcher-<version>.zip file and copy to <code><machine-agent-dir>/monitors</code> directory.
+1. Unzip contents of AppDynamics-File-Watcher-Extension-<version>.zip file and copy to <code><machine-agent-dir>/monitors</code> directory.
 
 2. Edit the config.yaml file.  An example config.yaml file follows these installation instructions.
 
@@ -47,7 +47,7 @@ The following is a sample config.yaml file that depicts three different file pat
 Note :
 Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator [here](http://yamllint.com/)
 
-1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/FileWatcher/`
+1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/AppDynamics-File-Watcher-Extension/`
 Below is the format :
 
 ```
@@ -128,7 +128,7 @@ Below is the format :
 
      <task-arguments>
          <!-- config file-->
-             <argument name="config-file" is-required="true" default-value="monitors/FileWatcher/config.yml" />
+             <argument name="config-file" is-required="true" default-value="monitors/AppDynamics-File-Watcher-Extension/config.yml" />
           ....
      </task-arguments>
 
@@ -169,10 +169,10 @@ Support
 --------
 
 For any questions or feature request, please contact [AppDynamics Center of Excellence][].
-
+**Version:** 1.3 : Added support for wildcards
 **Version:** 1.2
 **Controller Compatibility:** 3.7 or later
 
-[GitHub]: https://github.com/Appdynamics/FileWatcher-extension
+[GitHub]: https://github.com/Appdynamics/AppDynamics-File-Watcher-Extension
 [Community]: http://community.appdynamics.com/
 [AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com
