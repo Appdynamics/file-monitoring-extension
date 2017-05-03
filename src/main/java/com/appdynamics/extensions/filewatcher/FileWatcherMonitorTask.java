@@ -103,9 +103,10 @@ public class FileWatcherMonitorTask implements Runnable{
 
 		/*System.out.println((getLogPrefix() + "Sending [" + aggType + METRIC_SEPARATOR + timeRollupType + METRIC_SEPARATOR + clusterRollupType
                 + "] metric = " + metricPath + " = " + metricValue));*/
-		if(metricPath.contains(":")){
+		//This is causing issues with metricPrefix having a ":" (case of reporting to a particular tier). Not sure why this was added but commented for now.
+		/*if(metricPath.contains(":")){
 			metricPath = metricPath.replace(":", "");
-		}
+		}*/
 		metricWriter.printMetric(metricPath, metricValue, aggType, timeRollupType, clusterRollupType);
 	}
 

@@ -29,7 +29,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 
 
 	public FileWatcherMonitor() {
-		logger.info(String.format("Using FileWatcherMonitor Version [%s]", getImplementationVersion()));
+		System.out.println(String.format("Using FileWatcherMonitor Version [%s]", getImplementationVersion()));
 	}
 
 	private static String getImplementationVersion() {
@@ -88,6 +88,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 
 
 	public TaskOutput execute(Map<String, String> map, TaskExecutionContext arg1) throws TaskExecutionException {
+		logger.info(String.format("Using FileWatcherMonitor Version [%s]", getImplementationVersion()));
 		logger.debug("The raw arguments are {}", map);
 		try {
 			initialize(map);
