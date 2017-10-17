@@ -7,7 +7,7 @@ public class FileToProcess {
 
     private String displayName;
     private String path;
-    private Boolean isDirectoryDetailsRequired;
+    private Boolean includeDirectoryContents;
     private Boolean ignoreHiddenFiles;
 
     public String getDisplayName() {
@@ -26,12 +26,12 @@ public class FileToProcess {
         this.path = path;
     }
 
-	public Boolean getIsDirectoryDetailsRequired() {
-		return isDirectoryDetailsRequired;
+	public Boolean getIncludeDirectoryContents() {
+		return includeDirectoryContents;
 	}
 
-	public void setIsDirectoryDetailsRequired(Boolean isDirectoryDetailsRequired) {
-		this.isDirectoryDetailsRequired = isDirectoryDetailsRequired;
+	public void setIncludeDirectoryContents(Boolean includeDirectoryContents) {
+		this.includeDirectoryContents = includeDirectoryContents;
 	}
 
 	public Boolean getIgnoreHiddenFiles() {
@@ -40,8 +40,6 @@ public class FileToProcess {
 
 	public void setIgnoreHiddenFiles(Boolean ignoreHiddenFiles) {
 		this.ignoreHiddenFiles = ignoreHiddenFiles;
+
 	}
-
-
-
 }

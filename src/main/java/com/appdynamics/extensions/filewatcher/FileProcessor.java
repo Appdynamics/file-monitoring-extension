@@ -1,7 +1,11 @@
 package com.appdynamics.extensions.filewatcher;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
+import com.appdynamics.extensions.filewatcher.pathmatcher.visitors.CustomGlobFileVisitor;
 import org.apache.log4j.Logger;
 
 import com.appdynamics.extensions.filewatcher.config.Configuration;
@@ -22,12 +26,13 @@ public class FileProcessor {
 
 		GlobPathMatcher globPathMatcher = (GlobPathMatcher) PathMatcherFactory.getPathMatcher(PathMatcherTypes.GLOB, file, conf);
 		try {
-			 FilePathVisitor.walkFilesByGlobMatcher(file, globPathMatcher,fileMetricsMap);
+            List<String> baseDirectories = FilePathVisitor.getBaseDirectories(file);
+            for(String baseDir : baseDirectories) {
+                logger.debug("Currently processing base directory : " +baseDir);
+                Files.walkFileTree(Paths.get(baseDir), new CustomGlobFileVisitor(file, globPathMatcher, fileMetricsMap, baseDir));
+            }
 		} catch (Exception e) {
 			logger.error("Error in walking file to process path " + e);
-		}	
-	
+		}
 	}
-
-
 }

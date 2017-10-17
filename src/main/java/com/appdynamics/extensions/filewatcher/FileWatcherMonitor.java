@@ -1,6 +1,7 @@
 package com.appdynamics.extensions.filewatcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,6 @@ public class FileWatcherMonitor extends AManagedMonitor{
 	private Configuration configuration;
 	private String metricPrefix;
 	private boolean isFileCountRequired;
-	private boolean isDirectoryDetailsRequired;
 	private boolean ignoreHiddenFiles;
 	private boolean isOldestFileAgeMetricRequired;
 
@@ -51,7 +51,6 @@ public class FileWatcherMonitor extends AManagedMonitor{
 
 	private void initialiseConfigProperties(Configuration conf, Map<String, ?> configYml) {
 		conf.setIgnoreHiddenFiles((Boolean)configYml.get("ignoreHiddenFiles"));
-		conf.setIsDirectoryDetailsRequired((Boolean)configYml.get("isDirectoryDetailsRequired"));
 		conf.setIsOldestFileAgeMetricRequired((Boolean)configYml.get("isOldestFileAgeMetricRequired"));
 		conf.setIsFileCountRequired((Boolean)configYml.get("isFileCountRequired"));
 		conf.setMetricPrefix((String) configYml.get("metricPrefix"));
@@ -62,7 +61,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 				FileToProcess f = new FileToProcess();
 				f.setDisplayName((String) m.get("displayName"));
 				f.setIgnoreHiddenFiles((Boolean) m.get("ignoreHiddenFiles"));
-				f.setIsDirectoryDetailsRequired((Boolean) m.get("isDirectoryDetailsRequired"));
+				f.setIncludeDirectoryContents((Boolean) m.get("includeDirectoryContents"));
 				f.setPath((String) m.get("path"));
 				files.add(f);
 			}
@@ -83,9 +82,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 				configuration.getExecutorService().execute(task);
 			}
 		}
-
 	}
-
 
 	public TaskOutput execute(Map<String, String> map, TaskExecutionContext arg1) throws TaskExecutionException {
 		logger.info(String.format("Using FileWatcherMonitor Version [%s]", getImplementationVersion()));
@@ -99,16 +96,14 @@ public class FileWatcherMonitor extends AManagedMonitor{
 			}
 
 			isFileCountRequired = this.configuration.getIsFileCountRequired();
-			isDirectoryDetailsRequired = this.configuration.getIsDirectoryDetailsRequired();
 			ignoreHiddenFiles = this.configuration.getIgnoreHiddenFiles();
 			isOldestFileAgeMetricRequired = this.configuration.getIsOldestFileAgeMetricRequired();
 			logger.debug("Dumping the configurations: ");
 			logger.debug("Total files to process = " + this.configuration.getFileToProcess().size());
-			logger.debug("Options set in config file: isFileCountRequired = " + isFileCountRequired + " ,isDirectoryDetailsRequired = " + isDirectoryDetailsRequired +
+			logger.debug("Options set in config file: isFileCountRequired = " + isFileCountRequired  +
 					" ,ignoreHiddenFiles = " + ignoreHiddenFiles + " ,isOldestFileAgeMetricRequired = " + isOldestFileAgeMetricRequired);
 			logger.debug("Metric prefix = " + metricPrefix);
 			configuration.executeTask();
-
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -119,4 +114,10 @@ public class FileWatcherMonitor extends AManagedMonitor{
 		return null;
 	}
 
+	public static void main(String[] args) throws TaskExecutionException {
+		FileWatcherMonitor fileWatcherMonitor = new FileWatcherMonitor();
+		Map<String, String> argsMap = new HashMap<String, String>();
+		argsMap.put("config-file", "/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/config.yml");
+		fileWatcherMonitor.execute(argsMap, null);
+	}
 }

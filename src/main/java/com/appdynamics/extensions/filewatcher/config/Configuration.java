@@ -16,7 +16,6 @@ public class Configuration extends MonitorConfiguration{
 	}
 
 	private List<FileToProcess> fileToProcess;
-    private Boolean isDirectoryDetailsRequired;
     private Boolean isFileCountRequired;
     private Boolean ignoreHiddenFiles;
     private Boolean isOldestFileAgeMetricRequired;
@@ -28,14 +27,6 @@ public class Configuration extends MonitorConfiguration{
 
     public void setFileToProcess(List<FileToProcess> fileToProcess) {
         this.fileToProcess = fileToProcess;
-    }
-
-    public Boolean getIsDirectoryDetailsRequired() {
-        return isDirectoryDetailsRequired;
-    }
-
-    public void setIsDirectoryDetailsRequired(Boolean isDirectoryDetailsRequired) {
-        this.isDirectoryDetailsRequired = isDirectoryDetailsRequired;
     }
 
     public Boolean getIsFileCountRequired() {

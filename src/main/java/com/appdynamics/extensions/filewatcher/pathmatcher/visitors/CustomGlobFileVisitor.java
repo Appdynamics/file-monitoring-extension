@@ -45,8 +45,8 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			return FileVisitResult.CONTINUE;
 		}
 
-		if(!file.getIsDirectoryDetailsRequired()){
-			logger.debug("Skipping files as is_direcory_details_required set as false " + path.getFileName());
+		if(!file.getIncludeDirectoryContents()){
+			logger.debug("Skipping files as the 'include files in directory' flag is set as false " + path.getFileName());
 			return FileVisitResult.CONTINUE;
 		}
 

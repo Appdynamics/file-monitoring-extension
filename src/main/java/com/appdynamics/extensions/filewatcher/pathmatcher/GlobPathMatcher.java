@@ -14,8 +14,8 @@ public class GlobPathMatcher extends AppPathMatcher{
 		if(this.file.getIgnoreHiddenFiles()==null){
 			this.file.setIgnoreHiddenFiles(conf.getIgnoreHiddenFiles());
 		}
-		if(this.file.getIsDirectoryDetailsRequired()==null){
-			this.file.setIsDirectoryDetailsRequired(conf.getIsDirectoryDetailsRequired());
+		if(this.file.getIncludeDirectoryContents()==null){
+			this.file.setIncludeDirectoryContents(true);
 		}
 		this.matcher=FileSystems.getDefault().getPathMatcher("glob:"+this.file.getPath());
 	}
