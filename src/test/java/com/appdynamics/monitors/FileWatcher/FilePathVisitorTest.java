@@ -1,4 +1,11 @@
 
+/*
+ * Copyright 2014. AppDynamics LLC and its affiliates.
+ *  * All Rights Reserved.
+ *  * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *  * The copyright notice above does not evidence any actual or intended publication of such source code.
+ */
+
 package com.appdynamics.monitors.FileWatcher;
 
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
@@ -12,6 +19,7 @@ import java.util.List;
  * Created by aditya.jagtiani on 10/16/17.
  */
 
+@Ignore
 public class FilePathVisitorTest {
     @Test
     public void whenDirectoryHasAWildCardTest() throws IOException {
