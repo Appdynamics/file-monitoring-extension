@@ -1,3 +1,11 @@
+/*
+ * Copyright 2018. AppDynamics LLC and its affiliates.
+ * All Rights Reserved.
+ * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *
+ */
+
 package com.appdynamics.extensions.filewatcher.pathmatcher.visitors;
 
 import java.io.File;
@@ -119,7 +127,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			metric.setNumberOfFiles(count);
 	        long currentTimeInMillis = System.currentTimeMillis();
 	        long oldestFileAge = -1;
-	        if (oldestFile < currentTimeInMillis) {
+	        if (oldestFile > 0 && oldestFile < currentTimeInMillis) {
 	            oldestFileAge = (currentTimeInMillis - oldestFile) / 1000;
 	        }
 			
