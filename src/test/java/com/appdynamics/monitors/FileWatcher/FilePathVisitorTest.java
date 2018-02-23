@@ -13,6 +13,7 @@ import com.appdynamics.extensions.filewatcher.config.FileToProcess;
 import com.appdynamics.extensions.filewatcher.pathmatcher.visitors.FilePathVisitor;
 import org.junit.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,9 +30,11 @@ public class FilePathVisitorTest {
         fileToProcess.setIgnoreHiddenFiles(true);
         fileToProcess.setPath("src/test/resources/TestFiles/new*/*.*");
         List<String> baseDirs = FilePathVisitor.getBaseDirectories(fileToProcess);
-        Assert.assertTrue(baseDirs.contains("/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new1"));
-        Assert.assertTrue(baseDirs.contains("/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new2"));
-        Assert.assertTrue(!baseDirs.contains("/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/newFile.txt"));
+        File file = new File(".");
+        String parent = file.getAbsoluteFile().getParent();
+        Assert.assertTrue(baseDirs.contains(parent+"/src/test/resources/TestFiles/new1"));
+        Assert.assertTrue(baseDirs.contains(parent+"/src/test/resources/TestFiles/new2"));
+        Assert.assertTrue(!baseDirs.contains(parent+"/src/test/resources/TestFiles/newFile.txt"));
     }
 }
 
