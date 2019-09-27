@@ -8,18 +8,6 @@
 
 package com.appdynamics.extensions.filewatcher;
 
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.appdynamics.extensions.conf.MonitorConfiguration;
 import com.appdynamics.extensions.filewatcher.config.Configuration;
 import com.appdynamics.extensions.filewatcher.config.FileToProcess;
@@ -29,6 +17,18 @@ import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileWatcherMonitor extends AManagedMonitor{
 
@@ -118,7 +118,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 			configuration.executeTask();
 		}
 		catch(Exception e){
-			e.printStackTrace();
+			logger.error("Error in FileWatcher Extension ", e);
 			if(configuration != null && configuration.getMetricWriter() != null) {
 				configuration.getMetricWriter().registerError(e.getMessage(), e);
 			}
@@ -126,7 +126,7 @@ public class FileWatcherMonitor extends AManagedMonitor{
 		return null;
 	}
 
-	public static void main(String[] args) throws TaskExecutionException {
+	public static void main(String[] args) throws TaskExecutionException, IOException {
 		ConsoleAppender ca = new ConsoleAppender();
 		ca.setWriter(new OutputStreamWriter(System.out));
 		ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
@@ -138,5 +138,6 @@ public class FileWatcherMonitor extends AManagedMonitor{
 		argsMap.put("config-file", "/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/config.yml");
 
 		fileWatcherMonitor.execute(argsMap, null);
+
 	}
 }
