@@ -125,18 +125,4 @@ public class FileWatcherMonitor extends AManagedMonitor{
 		}
 		return null;
 	}
-
-	public static void main(String[] args) throws TaskExecutionException {
-		ConsoleAppender ca = new ConsoleAppender();
-		ca.setWriter(new OutputStreamWriter(System.out));
-		ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
-		ca.setThreshold(Level.DEBUG);
-		org.apache.log4j.Logger.getRootLogger().addAppender(ca);
-
-		FileWatcherMonitor fileWatcherMonitor = new FileWatcherMonitor();
-		Map<String, String> argsMap = new HashMap<String, String>();
-		argsMap.put("config-file", "/Users/aditya.jagtiani/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/config.yml");
-
-		fileWatcherMonitor.execute(argsMap, null);
-	}
 }
