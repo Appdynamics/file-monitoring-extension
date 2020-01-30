@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>AppDynamics-File-Watcher-Extension</groupId>
-    <artifactId>AppDynamics-File-Watcher-Extension</artifactId>
-    <version>2.2</version>
+    <groupId>File-Watcher-Extension</groupId>
+    <artifactId>File-Watcher-Extension</artifactId>
+    <version>3.0</version>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <target.dir>${project.build.directory}/AppDynamics-File-Watcher-Extension</target.dir>
+        <target.dir>${project.build.directory}/File-Watcher-Extension</target.dir>
     </properties>
 
     <dependencies>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
-            <version>1.6.1</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -83,8 +83,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -115,8 +115,8 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Implementation-Title>AppDynamics-File-Watcher-Extension v${project.version} Build Date ${maven.build.timestamp}</Implementation-Title>
-                                    </manifestEntries>
+                                        <Main-Class>com.appdynamics.extensions.workbench.WorkbenchServerLauncher</Main-Class>
+                                        <Implementation-Title>v${project.version} Build Date ${maven.build.timestamp}</Implementation-Title>                                    </manifestEntries>
                                 </transformer>
                             </transformers>
                         </configuration>

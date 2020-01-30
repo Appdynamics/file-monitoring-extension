@@ -1,45 +1,53 @@
 /*
- * Copyright 2018. AppDynamics LLC and its affiliates.
- * All Rights Reserved.
- * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *  Copyright 2020. AppDynamics LLC and its affiliates.
+ *  All Rights Reserved.
+ *  This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *  The copyright notice above does not evidence any actual or intended publication of such source code.
  *
  */
 
-package com.appdynamics.extensions.filewatcher.pathmatcher.visitors;
+package com.appdynamics.extensions.filewatcher.processors;
+/*
+ * @author Aditya Jagtiani
+ */
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.appdynamics.extensions.filewatcher.config.PathToProcess;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
-import com.appdynamics.extensions.filewatcher.FileMetric;
-import com.appdynamics.extensions.filewatcher.config.FileToProcess;
-import com.appdynamics.extensions.filewatcher.pathmatcher.GlobPathMatcher;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.List;
 
-public class FilePathVisitor {
-	protected static final Logger logger = Logger.getLogger(FilePathVisitor.class.getName());
-    public static List<String> getBaseDirectories(final FileToProcess file) throws IOException{
-        List<String> baseDirectories = Lists.newArrayList();
+public class FilePathProcessor {
+    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FilePathProcessor.class);
+    private List<String> baseDirectories = Lists.newArrayList();
+
+    public List<String> getBaseDirectories(PathToProcess pathToProcess) {
+        try {
+            return processFilePath(pathToProcess);
+        }
+        catch (Exception ex) {
+            LOGGER.error("Error encountered while evaluating base directories for path {}", pathToProcess.getDisplayName(), ex);
+        }
+        return Lists.newArrayList();
+    }
+
+    private List<String> processFilePath(final PathToProcess file) {
         String filePath = file.getPath().replace("\\\\", "\\"); //For Windows regexes
         if(filePath.isEmpty()){
-            logger.error("File path is empty, returning");
+            LOGGER.error("File path is empty for {}, returning", file.getDisplayName());
             return baseDirectories;
         }
         if(filePath.contains("*")){
             String tempPath = filePath.substring(0, filePath.indexOf("*"));
             String currentBaseDir = tempPath.substring(0, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
-            if(filePath.substring(filePath.indexOf("*"), filePath.length()).contains("\\")
-                    || filePath.substring(filePath.indexOf("*"), filePath.length()).contains("/")) {
+            if(filePath.substring(filePath.indexOf("*")).contains("\\")
+                    || filePath.substring(filePath.indexOf("*")).contains("/")) {
                 String dirPattern = obtainDirWildCard(filePath, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
                 baseDirectories.addAll(getRequiredDirectories(currentBaseDir, dirPattern));
             }
@@ -53,10 +61,9 @@ public class FilePathVisitor {
         return baseDirectories;
     }
 
-	private static List<String> getRequiredDirectories(String baseDir, String wildcard) {
+    private static List<String> getRequiredDirectories(String baseDir, String wildcard) {
         List<String> baseDirectories = Lists.newArrayList();
         File directory = new File(baseDir);
-
         if (directory.isDirectory()) {
             FileFilter fileFilter = new WildcardFileFilter(wildcard);
             File[] files = directory.listFiles(fileFilter);
@@ -72,6 +79,6 @@ public class FilePathVisitor {
     }
 
     private static String obtainDirWildCard(String filePath, int start) {
-	    return filePath.substring(start, filePath.indexOf("/", start));
+        return filePath.substring(start, filePath.indexOf("/", start));
     }
 }

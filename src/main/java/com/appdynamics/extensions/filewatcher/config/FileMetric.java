@@ -1,23 +1,33 @@
 /*
- * Copyright 2018. AppDynamics LLC and its affiliates.
- * All Rights Reserved.
- * This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- * The copyright notice above does not evidence any actual or intended publication of such source code.
+ *  Copyright 2020. AppDynamics LLC and its affiliates.
+ *  All Rights Reserved.
+ *  This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
+ *  The copyright notice above does not evidence any actual or intended publication of such source code.
  *
  */
 
-package com.appdynamics.extensions.filewatcher;
-
-/**
- * Created by abhi.pandey on 9/4/14.
+package com.appdynamics.extensions.filewatcher.config;
+/*
+ * @author Aditya Jagtiani
  */
-public class FileMetric {
 
+
+public class FileMetric {
     private boolean isChanged;
     private String fileSize;
     private String timeStamp;
     private int numberOfFiles;
     private long oldestFileAge;
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    private boolean isAvailable;
 
     public boolean isChanged() {
         return isChanged;
