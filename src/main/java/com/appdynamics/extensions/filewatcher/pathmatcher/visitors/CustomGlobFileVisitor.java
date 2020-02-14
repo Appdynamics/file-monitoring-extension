@@ -63,6 +63,7 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 			FileMetric metric = new FileMetric();
 			if(attrs!=null){
 				metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
+				metric.setFileAge((System.currentTimeMillis() - attrs.lastModifiedTime().toMillis())/1000);
 				metric.setFileSize(String.valueOf(attrs.size()));
 			}
 			else{
@@ -92,10 +93,12 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 		}
 		if (matcher.getMatcher().matches(path)) {
 			logger.debug("Found match for entered path " + path);
-
+			long currentTimeInMillis = System.currentTimeMillis();
+			
 			FileMetric metric = new FileMetric();
 			if(attrs!=null){
 				metric.setTimeStamp(String.valueOf(attrs.lastModifiedTime().toMillis()));
+				metric.setFileAge((currentTimeInMillis - attrs.lastModifiedTime().toMillis())/1000);
 				metric.setFileSize(String.valueOf(attrs.size()));
 			}
 			else{
@@ -125,7 +128,6 @@ public class CustomGlobFileVisitor extends SimpleFileVisitor<Path>{
 				}
 			}
 			metric.setNumberOfFiles(count);
-	        long currentTimeInMillis = System.currentTimeMillis();
 	        long oldestFileAge = -1;
 	        if (oldestFile > 0 && oldestFile < currentTimeInMillis) {
 	            oldestFileAge = (currentTimeInMillis - oldestFile) / 1000;

@@ -18,6 +18,7 @@ public class FileMetric {
     private String timeStamp;
     private int numberOfFiles;
     private long oldestFileAge;
+    private long fileAge;
 
     public boolean isChanged() {
         return isChanged;
@@ -57,5 +58,13 @@ public class FileMetric {
 
     public void setOldestFileAge(long oldestFileAge) {
         this.oldestFileAge = oldestFileAge;
+    }
+
+    public long getFileAge() {
+        return fileAge;
+    }
+
+    public void setFileAge(long seconds) {
+        this.fileAge = seconds;
     }
 }
