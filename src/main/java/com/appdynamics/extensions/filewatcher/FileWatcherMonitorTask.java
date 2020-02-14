@@ -57,6 +57,10 @@ public class FileWatcherMonitorTask implements Runnable{
 				String metricValue = fileMetric.getFileSize();
 				printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
 
+				metricName = "Age";
+				metricValue = String.valueOf(fileMetric.getFileAge());
+				printCollectiveObservedCurrent(metricPath.toString() + metricName, metricValue);
+
 				//perMinValue backing cache is thread safe
 				BigDecimal prevTs = perMinValueCalculator.getPerMinuteValue(metricPath.toString() + metricName, new BigDecimal(fileMetric.getTimeStamp()));
 				if(prevTs != null && (prevTs.compareTo(BigDecimal.ZERO) > 0)){
