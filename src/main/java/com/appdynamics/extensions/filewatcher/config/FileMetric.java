@@ -7,32 +7,37 @@
  */
 
 package com.appdynamics.extensions.filewatcher.config;
+
 /*
  * @author Aditya Jagtiani
  */
 
-
 public class FileMetric {
     private boolean isChanged;
     private String fileSize;
-    private String timeStamp;
     private int numberOfFiles;
     private long oldestFileAge;
+    private int numberOfLines;
+    private long lastModifiedTime;
+    private boolean isAvailable;
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public int getNumberOfLines() {
+        return numberOfLines;
+    }
+    public void setNumberOfLines(int numberOfLines) {
+        this.numberOfLines = numberOfLines;
     }
 
+    public boolean getAvailable() {
+        return isAvailable;
+    }
     public void setAvailable(boolean available) {
         isAvailable = available;
     }
 
-    private boolean isAvailable;
-
-    public boolean isChanged() {
+    public boolean getChanged() {
         return isChanged;
     }
-
     public void setChanged(boolean isChanged) {
         this.isChanged = isChanged;
     }
@@ -40,23 +45,20 @@ public class FileMetric {
     public String getFileSize() {
         return fileSize;
     }
-
     public void setFileSize(String fileSize) {
         this.fileSize = fileSize;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
+    public long getLastModifiedTime() {
+        return lastModifiedTime;
     }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setLastModifiedTime(long lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
     }
 
     public int getNumberOfFiles() {
         return numberOfFiles;
     }
-
     public void setNumberOfFiles(int numberOfFiles) {
         this.numberOfFiles = numberOfFiles;
     }
@@ -64,7 +66,6 @@ public class FileMetric {
     public long getOldestFileAge() {
         return oldestFileAge;
     }
-
     public void setOldestFileAge(long oldestFileAge) {
         this.oldestFileAge = oldestFileAge;
     }

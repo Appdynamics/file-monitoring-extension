@@ -11,7 +11,6 @@ package com.appdynamics.extensions.filewatcher.helpers;
  * @author Aditya Jagtiani
  */
 
-
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 
 import java.nio.file.FileSystems;
@@ -20,6 +19,7 @@ public class GlobPathMatcher extends AppPathMatcher{
 
     @Override
     public void setMatcher(PathToProcess fileToProcess) {
-        this.matcher= FileSystems.getDefault().getPathMatcher("glob:"+ fileToProcess);
+        this.file = fileToProcess;
+        this.matcher= FileSystems.getDefault().getPathMatcher("glob:"+ this.file.getPath());
     }
 }

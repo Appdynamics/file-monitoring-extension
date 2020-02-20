@@ -11,84 +11,93 @@ package com.appdynamics.extensions.filewatcher;
 import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
+import com.appdynamics.extensions.executorservice.MonitorExecutorService;
+import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
-import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
-import com.appdynamics.extensions.filewatcher.processors.CustomFileVisitor;
+import com.appdynamics.extensions.filewatcher.processors.FileMetricsProcessor;
 import com.appdynamics.extensions.filewatcher.processors.FilePathProcessor;
-import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
+import com.appdynamics.extensions.filewatcher.processors.FileWalker;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static java.nio.file.StandardWatchEventKinds.*;
 
 public class FileWatcherTask implements AMonitorTaskRunnable {
 
-	private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherTask.class);
-	private MonitorContextConfiguration monitorContextConfiguration;
-	private MetricWriteHelper metricWriteHelper;
-	private PathToProcess pathToProcess;
+    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherTask.class);
+    private MonitorContextConfiguration monitorContextConfiguration;
+    private MetricWriteHelper metricWriteHelper;
+    private PathToProcess pathToProcess;
     private Map<WatchKey, Path> keys;
     private WatchService watchService;
+    private Map<String, FileMetric> fileMetrics;
+    private String baseDirectory;
+    private WatchKey watchKey;
+    private FileMetricsProcessor fileMetricsProcessor;
+    private MonitorExecutorService executorService;
 
-	FileWatcherTask(MonitorContextConfiguration monitorContextConfiguration,
-                           MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
+    FileWatcherTask(MonitorContextConfiguration monitorContextConfiguration,
+                    MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
         this.monitorContextConfiguration = monitorContextConfiguration;
         this.metricWriteHelper = metricWriteHelper;
         this.pathToProcess = pathToProcess;
         this.keys = new HashMap<>();
+        this.fileMetrics = new HashMap<>();
+        this.fileMetricsProcessor = new FileMetricsProcessor(monitorContextConfiguration.getMetricPrefix(), (Map) monitorContextConfiguration.getConfigYml().get("metrics"));
+        this.executorService = monitorContextConfiguration.getContext().getExecutorService();
     }
 
-	@Override
-	public void run() {
-        String baseDirectory = new FilePathProcessor().getBaseDirectories(pathToProcess).get(0);
+    @Override
+    public void run() {
+        baseDirectory = new FilePathProcessor().getBaseDirectories(pathToProcess).get(0);
         try {
-            executeTask(baseDirectory);
-        }
-        catch (Exception ex) {
+            processDirectory(baseDirectory);
+        } catch (Exception ex) {
             LOGGER.error("Task failed for directory {}", baseDirectory, ex);
         }
-	}
+    }
 
-	private void executeTask(String baseDirectory) throws IOException {
-	    try(WatchService watchService = FileSystems.getDefault().newWatchService()) {
-	        watch(watchService, Paths.get(baseDirectory));
+    private void processDirectory(String baseDirectory) {
+        Path start = Paths.get(baseDirectory);
+        LOGGER.info("Now processing directory: {}", start.getFileName());
+        try {
+            watchService = FileSystems.getDefault().newWatchService();
+            executorService.execute("Initial File Walker", new FileWalker(start, watchService, baseDirectory,
+                    pathToProcess, keys, metricWriteHelper, fileMetricsProcessor));
+            watchDirectoryForEvents();
+        } catch (Exception e) {
+            LOGGER.error("Error encountered while registering directory: {}", start, e);
         }
     }
 
-	private void watch(WatchService watchService, Path start) {
-	    LOGGER.info("Now watching directory: {}", start.getFileName());
-	    try {
-            registerTree(watchService, start);
-            watchTree();
 
-        }
-        catch (Exception e) {
-	        LOGGER.error("Error encountered while registering directory: {}", start, e);
-        }
-    }
-
-    private void watchTree() throws InterruptedException, IOException {
-	    while(true) {
-	        WatchKey watchKey = watchService.take();
+    private void watchDirectoryForEvents() throws InterruptedException {
+        while (true) {
+            watchKey = watchService.take();
             for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
                 WatchEvent.Kind<?> kind = watchEvent.kind();
-                Path eventPath = (Path) watchEvent.context();
+                if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
+                        kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
 
-                Path directory = keys.get(watchKey);
-                // Path directory = (Path) key.watchable(); //problems with renames
-                Path child = directory.resolve(eventPath);
+                    Path eventPath = (Path) watchEvent.context();
 
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE && Files.isDirectory(child)) {
-                    registerTree(watchService, child);
+                    Path directory = keys.get(watchKey);
+                    // Path directory = (Path) key.watchable(); //problems with renames
+                    String childPath = directory.resolve(eventPath).toFile().getAbsolutePath();
+                    LOGGER.info("Event {} detected for path {}", kind, childPath);
+
+                    Path startingDirectoryForWatchEvent = Paths.get(childPath.substring(0,
+                            FilenameUtils.indexOfLastSeparator(childPath) + 1));
+
+                    executorService.execute("WatchService File Walker", new FileWalker(startingDirectoryForWatchEvent,
+                            watchService, baseDirectory, pathToProcess, keys, metricWriteHelper, fileMetricsProcessor));
                 }
-
-                System.out.printf("%s:%s\n", child, kind);
             }
+            //  System.out.printf("%s:%s\n", child, kind);
 
             boolean valid = watchKey.reset();
             if (!valid) {
@@ -98,16 +107,17 @@ public class FileWatcherTask implements AMonitorTaskRunnable {
                 }
             }
         }
+        // todo remove trailing slash
+        //todo file metrics is getting re-written - wtf?
+        // todo metric printing logic to stop the watch service
+        //todo - execute walk + metric collection in parallel for events or execute a listener on a list that stores all the events to prevent any overflow in case of longer walking times
     }
 
-    private void registerTree(WatchService watchService, Path start) throws IOException {
-	    LOGGER.info("Attempting to register directory {}", start.getFileName());
-        GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-	    Files.walkFileTree(start, new CustomFileVisitor(watchService, keys, globPathMatcher, pathToProcess));
+    @Override
+    public void onTaskComplete() {
+        if (watchKey != null) {
+            watchKey.reset();
+        }
+        LOGGER.info("Finished collecting metrics for {}", pathToProcess.getDisplayName());
     }
-
-	@Override
-	public void onTaskComplete() {
-		LOGGER.info("Finished collecting metrics for {}", pathToProcess.getDisplayName());
-	}
 }

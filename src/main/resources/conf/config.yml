@@ -1,11 +1,43 @@
 # List of files
 pathsToProcess:
-- displayName: "TestPath"
-  path: "/Users/aj89/repos/appdynamics/file-monitoring-extension/src/test/resources/TestFiles/"
+- displayName: "TestPath1"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new2/**"
   ignoreHiddenFiles: true
-  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  excludeSubdirectoryCount: true #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+metrics:
+   fileSize:
+      alias: "File Size (Bytes)"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   oldestFileAge:
+      alias: "Oldest File Age"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   fileCount:
+      alias: "File Count"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   numberOfLines:
+      alias: "Number of Lines"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+
+
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
@@ -15,4 +47,4 @@ pathsToProcess:
 # To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
 metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|FileWatcher|"
 
-numberOfThreads: 5
+numberOfThreads: 20

@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
-import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +28,10 @@ import java.util.Map;
 import static com.appdynamics.extensions.filewatcher.util.Constants.*;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getPathsToProcess;
 import static com.appdynamics.extensions.util.AssertUtils.assertNotNull;
+
+/*
+ * @author Aditya Jagtiani
+ */
 
 public class FileWatcher extends ABaseMonitor {
 
@@ -63,25 +66,13 @@ public class FileWatcher extends ABaseMonitor {
 	}
 
 	@Override
-	protected void initializeMoreStuff(Map<String, String> args) {
-		initMonitor();
-	}
-
-	@Override
 	protected void onConfigReload(File file) {
 		initMonitor();
 	}
 
-	/**
-	 * Initialize and validate the CatEndpoints once after a machine agent restart or config reload and reuse for
-	 * every run
-	 */
 	private void initMonitor() {
 	    try {
-            pathsToProcess = getPathsToProcess((List<Map<String, ?>>) getContextConfiguration().getConfigYml().get(CONFIGURED_PATHS));
-            if(watcher == null) {
-                watcher = FileSystems.getDefault().newWatchService();
-            }
+            pathsToProcess = getPathsToProcess(getServers());
         }
         catch (Exception ex) {
 	        LOGGER.error("Error encountered while registering directories with the WatchService", ex);
@@ -97,7 +88,8 @@ public class FileWatcher extends ABaseMonitor {
 
 		FileWatcher fileWatcher = new FileWatcher();
 		Map<String, String> argsMap = new HashMap<String, String>();
-		argsMap.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/config.yml");
+		argsMap.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/" +
+                "src/main/resources/conf/config.yml");
 
 		fileWatcher.execute(argsMap, null);
 	}

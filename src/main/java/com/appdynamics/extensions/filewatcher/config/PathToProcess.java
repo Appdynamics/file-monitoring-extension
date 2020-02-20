@@ -7,12 +7,18 @@
  */
 
 package com.appdynamics.extensions.filewatcher.config;
+
 /*
  * @author Aditya Jagtiani
  */
 
-
 public class PathToProcess {
+    private String displayName;
+    private String path;
+    private boolean ignoreHiddenFiles;
+    private boolean enableRecursiveFileSizes;
+    private boolean enableRecursiveFileCounts;
+
     public String getDisplayName() {
         return displayName;
     }
@@ -29,7 +35,7 @@ public class PathToProcess {
         this.path = path;
     }
 
-    public boolean isIgnoreHiddenFiles() {
+    public boolean getIgnoreHiddenFiles() {
         return ignoreHiddenFiles;
     }
 
@@ -37,7 +43,7 @@ public class PathToProcess {
         this.ignoreHiddenFiles = ignoreHiddenFiles;
     }
 
-    public boolean isEnableRecursiveFileSizes() {
+    public boolean getEnableRecursiveFileSizes() {
         return enableRecursiveFileSizes;
     }
 
@@ -45,7 +51,7 @@ public class PathToProcess {
         this.enableRecursiveFileSizes = enableRecursiveFileSizes;
     }
 
-    public boolean isEnableRecursiveFileCounts() {
+    public boolean getEnableRecursiveFileCounts() {
         return enableRecursiveFileCounts;
     }
 
@@ -53,13 +59,7 @@ public class PathToProcess {
         this.enableRecursiveFileCounts = enableRecursiveFileCounts;
     }
 
-    private String displayName;
-    private String path;
-    private boolean ignoreHiddenFiles;
-    private boolean enableRecursiveFileSizes;
-    private boolean enableRecursiveFileCounts;
-
-    public boolean isExcludeSubdirectoryCount() {
+    public boolean getExcludeSubdirectoryCount() {
         return excludeSubdirectoryCount;
     }
 

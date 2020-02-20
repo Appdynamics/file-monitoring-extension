@@ -7,25 +7,22 @@
   -->
 
 <monitor>
-    <name>AppDynamics-File-Watcher-Extension</name>
+    <name>FileWatcher</name>
     <type>managed</type>
-    <description>AppDynamics-File-Watcher-Extension</description>
-    <monitor-configuration></monitor-configuration>
+    <description>File Watcher Extension</description>
     <monitor-run-task>
-        <execution-style>periodic</execution-style>
+        <execution-style>continuous</execution-style>
         <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
-        <name>AppDynamics-File-Watcher-Extension Run Task</name>
-        <display-name>AppDynamics-File-Watcher-Extension Task</display-name>
-        <description>AppDynamics-File-Watcher-Extension Task</description>
+        <name>File Watcher Extension Run Task</name>
+        <display-name>File Watcher Extension Task</display-name>
+        <description>File Watcher Extension Task</description>
         <type>java</type>
         <execution-timeout-in-secs>60</execution-timeout-in-secs>
         <task-arguments>
-            <!-- config file-->
-            <argument name="config-file" is-required="true" default-value="monitors/AppDynamics-File-Watcher-Extension/config.yml" />
-            <argument name="log-prefix" is-required="false" default-value="[FileWatcherAppDExt] " />
+            <argument name="config-file" is-required="true" default-value="monitors/FileWatcher/config.yml" />
         </task-arguments>
         <java-task>
-            <classpath>AppDynamics-File-Watcher-Extension.jar</classpath>
+            <classpath>file-watcher-extension.jar</classpath>
             <impl-class>com.appdynamics.extensions.filewatcher.FileWatcher</impl-class>
         </java-task>
     </monitor-run-task>

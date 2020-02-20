@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>File-Watcher-Extension</groupId>
-    <artifactId>File-Watcher-Extension</artifactId>
+    <groupId>file-watcher-extension</groupId>
+    <artifactId>file-watcher-extension</artifactId>
     <version>3.0</version>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <target.dir>${project.build.directory}/File-Watcher-Extension</target.dir>
+        <target.dir>${project.build.directory}/FileWatcher</target.dir>
     </properties>
 
     <dependencies>
@@ -144,7 +144,7 @@
                                     <fileset dir="${build.directory}" includes="${project.artifactId}.${project.packaging}"/>
                                 </copy>
                                 <zip destfile="${target.dir}-${project.version}.zip">
-                                    <zipfileset dir="${target.dir}" filemode="755" prefix="AppDynamics-File-Watcher-Extension/"/>
+                                    <zipfileset dir="${target.dir}" filemode="755" prefix="FileWatcher/"/>
                                 </zip>
                                 <delete dir="${target.dir}"/>
                             </target>
