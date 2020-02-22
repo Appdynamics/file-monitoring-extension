@@ -1,34 +1,55 @@
 # List of files
-fileToProcess:
+pathsToProcess:
+- displayName: "TestPath1"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new*/*.*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoryCount: true #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
-  - displayName: "test1"
-    path: "/Users/deepak.kalra/Documents/pp.png"
-    ignoreHiddenFiles: false
-    isDirectoryDetailsRequired: true
-  
+metrics:
+    fileSize:
+        alias: "File Size (Bytes)"
+        multiplier:
+        delta:
+        aggregationType:
+        timeRollupType:
+        clusterRollupType:
+    oldestFileAge:
+        alias: "Oldest File Age"
+        multiplier:
+        delta:
+        aggregationType:
+        timeRollupType:
+        clusterRollupType:
+    fileCount:
+        alias: "File Count"
+        multiplier:
+        delta:
+        aggregationType:
+        timeRollupType:
+        clusterRollupType:
+    numberOfLines:
+        alias: "Number of Lines"
+        multiplier:
+        delta:
+        aggregationType:
+        timeRollupType:
+        clusterRollupType:
+    lastModifiedTime:
+        alias: "Last Modified Time"
+        multiplier:
+        delta:
+        aggregationType:
+        timeRollupType:
+        clusterRollupType:
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
 
-
-# If false then all the files under the directory will be ignored and only the directory level metrics will be published
-# for the directories specified above.
-# For files given above it will have no effect
-isDirectoryDetailsRequired: true
-
-# If true then an extra metric will be shown that will give age of the oldest file (in seconds when the file was last
-# modified and compared to current time) in the directory specified above.
-# For files given above it will not display this metric
-isOldestFileAgeMetricRequired: true
-
-# If true then an extra metric will be shown that will give number of files in the directories specified above.
-# For files given above it will not display this metric
-isFileCountRequired: true
-
-# If true then all the hidden files will be ignored monitoring.
-ignoreHiddenFiles: true
-
 # Make sure the metric prefix ends with a |
-metricPrefix: "Custom Metrics|FileWatcher|"
+# This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
+# To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
+metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|FileWatcher|"
 
-numberOfThreads: 5
+numberOfThreads: 20

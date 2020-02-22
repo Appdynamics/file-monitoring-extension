@@ -24,4 +24,10 @@ public class Constants {
     public static final String AVAILABLE = "available";
     public static final String CHANGED = "changed";
     public static final String METRIC_SEPARATOR = "|";
+    public static final String LAST_MODIFIED_TIME = "lastModifiedTime";
 }
+
+
+
+
+

@@ -1,0 +1,17 @@
+If your organization still relies on Windows 7, you likely know a major deadline recently passed: Windows 7 end-of-support.
+
+You’re probably making plans to move to Windows 10. If so, then you realize a large part of the cost of deploying a new operating system (and possibly new hardware) is the migration of user profiles, settings, data – and perhaps applications as well.
+
+But you might not know that Microsoft and Intel both recommend PCmover from Laplink for migrating users to new PCs. The fact is, PCmover Enterprise from Laplink will save you time and money on your PC refresh project.
+
+Whether user-driven, light touch, or no touch, PCmover allows all desired data, settings and even applications to be quickly and easily transferred from an old PC to a new one - saving the typical organization more than $300 per PC deployed.  It also fully supports upgrading existing hardware to Windows 10.
+
+That's why PCmover is the fastest growing data migration solution. And that's why you need to learn more today.
+
+For 35 years, Laplink has been the leader in data migration and works closely with all major PC manufacturers, IT service providers, and system integrators. Many of the best known and largest companies in the world rely on Laplink.
+
+Why not you?
+
+PCmover is the only complete migration tool capable of transferring user profiles, settings, data and even applications from an old PC to a new PC – or handling the “same PC” migration process when upgrading existing PCs to Windows 10.
+
+Stop wasting time and money. Start using PCmover. You owe it to yourself - and to your company - to get a free evaluation of PCmover Enterprise today. We'll even help you with a free pilot so you can see how easy our software is to use and how much time and money we can save you.

@@ -1,9 +1,37 @@
 # List of files
 pathsToProcess:
-- displayName: "TestPath1"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new2/**"
+- displayName: "TestPath1 - Regular"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles"
   ignoreHiddenFiles: true
-  excludeSubdirectoryCount: true #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+- displayName: "TestPath1 - Single level *"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+- displayName: "TestPath1 - Fully recursive"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/**"
+  ignoreHiddenFiles: true
+  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+- displayName: "TestPath1 - File extensions"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/*.txt"
+  ignoreHiddenFiles: true
+  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+- displayName: "TestPath1 - Weird regexes"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/Test*/*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
@@ -36,8 +64,13 @@ metrics:
       aggregationType:
       timeRollupType:
       clusterRollupType:
-
-
+   lastModifiedTime:
+      alias: "Last Modified Time"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
@@ -45,6 +78,6 @@ metrics:
 # Make sure the metric prefix ends with a |
 # This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
 # To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
-metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|FileWatcher|"
+metricPrefix: "Custom Metrics|FileWatcher|"
 
 numberOfThreads: 20

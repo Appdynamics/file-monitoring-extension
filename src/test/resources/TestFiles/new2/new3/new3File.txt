@@ -18,14 +18,14 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
-import com.appdynamics.extensions.metrics.Metric;
 import com.google.common.collect.Maps;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.Map;
 
 public class FileWalker implements Runnable {
@@ -41,7 +41,7 @@ public class FileWalker implements Runnable {
 
 
     public FileWalker(Path start, WatchService watchService, String baseDirectory, PathToProcess pathToProcess,
-                      Map<WatchKey, Path> keys, MetricWriteHelper metricWriteHelper, FileMetricsProcessor fileMetricsProcessor) {
+               Map<WatchKey, Path> keys, MetricWriteHelper metricWriteHelper, FileMetricsProcessor fileMetricsProcessor) {
         this.start = start;
         this.watchService = watchService;
         this.baseDirectory = baseDirectory;
@@ -58,10 +58,9 @@ public class FileWalker implements Runnable {
             GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
             Files.walkFileTree(start, new CustomFileVisitor(baseDirectory,
                     watchService, keys, globPathMatcher, pathToProcess, fileMetrics));
-            List<Metric> metrics = fileMetricsProcessor.getMetricList(fileMetrics);
-            metricWriteHelper.transformAndPrintMetrics(metrics);
-            metrics.clear();
-        } catch (IOException ex) {
+            metricWriteHelper.transformAndPrintMetrics(fileMetricsProcessor.getMetricList(fileMetrics));
+        }
+        catch (IOException ex) {
             LOGGER.error("Error encountered while walking File {}", baseDirectory, ex);
         }
     }

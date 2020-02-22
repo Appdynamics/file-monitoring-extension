@@ -32,7 +32,7 @@ public class FileMetricsProcessor {
     public FileMetricsProcessor(String metricPrefix, Map<String, Map<String, ?>> metricsFromConfig) {
         this.metricPrefix = metricPrefix.trim();
         this.metricsFromConfig = metricsFromConfig;
-        metrics = Lists.newArrayList();
+        metrics = Lists.newCopyOnWriteArrayList();
     }
 
     List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
@@ -54,6 +54,9 @@ public class FileMetricsProcessor {
             }
             if(metricsFromConfig.containsKey(CHANGED)) {
                 addToMetricList(CHANGED, entry.getValue().getChanged(), entry.getKey());
+            }
+            if(metricsFromConfig.containsKey(LAST_MODIFIED_TIME)) {
+                addToMetricList(LAST_MODIFIED_TIME, entry.getValue().getLastModifiedTime(), entry.getKey());
             }
         }
         return metrics;

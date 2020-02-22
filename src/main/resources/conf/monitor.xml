@@ -23,7 +23,7 @@
         </task-arguments>
         <java-task>
             <classpath>file-watcher-extension.jar</classpath>
-            <impl-class>com.appdynamics.extensions.filewatcher.FileWatcher</impl-class>
+            <impl-class>com.appdynamics.extensions.filewatcher.FileMonitor</impl-class>
         </java-task>
     </monitor-run-task>
 </monitor>

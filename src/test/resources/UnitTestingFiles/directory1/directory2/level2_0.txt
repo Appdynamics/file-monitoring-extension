@@ -1,0 +1,7 @@
+[3.0 3f22851] Added concurrency, better logging, refacting. Implementation pass 1
+ 16 files changed, 526 insertions(+), 205 deletions(-)
+ rewrite src/main/java/com/appdynamics/extensions/filewatcher/FileWatcherTask.java (60%)
+ create mode 100644 src/main/java/com/appdynamics/extensions/filewatcher/processors/FileWalker.java
+ rename src/test/resources/TestFiles/{new2/newFile2.txt => Hello.txt} (100%)
+ rename src/test/resources/TestFiles/{testFile3434.txt => Hello2.txt} (100%)
+ create mode 100644 src/test/resources/TestFiles/Hello4.txt
