@@ -1,63 +1,19 @@
-w# List of files
+# List of files
 pathsToProcess:
- - displayName: "TestPath1 - Regular"
-   path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles"
-   ignoreHiddenFiles: true
-   excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
-   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
-
- - displayName: "TestPath1 - Single level *"
-   path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/*"
-   ignoreHiddenFiles: true
-   excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
-   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
-
- - displayName: "TestPath1 - Fully recursive"
-   path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/**"
-   ignoreHiddenFiles: true
-   excludeSubdirectoryCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
-   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
-
+- displayName: "TestPath1 - Regular"
+  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/**"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
 metrics:
-   fileSize:
-      alias: "File Size (Bytes)"
+   available:
+      alias: "Available"
       multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
-   oldestFileAge:
-      alias: "Oldest File Age"
-      multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
-   fileCount:
-      alias: "File Count"
-      multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
-   numberOfLines:
-      alias: "Number of Lines"
-      multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
-   lastModifiedTime:
-      alias: "Last Modified Time"
-      multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
+      convert:
+         "true": 1
+         "false": 0
 
 #For the shared directory on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI

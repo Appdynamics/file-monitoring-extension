@@ -20,6 +20,10 @@ public class FileMetric {
     private int numberOfLines;
     private long lastModifiedTime;
     private boolean isAvailable;
+    private long recursiveNumberOfFiles;
+
+    public long getRecursiveNumberOfFiles() { return recursiveNumberOfFiles; }
+    public void setRecursiveNumberOfFiles(long recursiveNumberOfFiles) { this.recursiveNumberOfFiles = recursiveNumberOfFiles; }
 
     public int getNumberOfLines() {
         return numberOfLines;

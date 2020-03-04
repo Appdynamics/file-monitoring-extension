@@ -32,7 +32,7 @@ public class FileMetricsProcessor {
     public FileMetricsProcessor(String metricPrefix, Map<String, Map<String, ?>> metricsFromConfig) {
         this.metricPrefix = metricPrefix.trim();
         this.metricsFromConfig = metricsFromConfig;
-        metrics = Lists.newCopyOnWriteArrayList();
+        metrics = Lists.newArrayList();
     }
 
     List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {

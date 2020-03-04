@@ -21,11 +21,15 @@ import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class FileWatcherUtil {
     //TODO check if the map needs to be cleared at the end of each job/task
@@ -40,13 +44,21 @@ public class FileWatcherUtil {
                 setIgnoreHiddenFiles(Boolean.valueOf(path.get("ignoreHiddenFiles").toString()));
                 setEnableRecursiveFileCounts(Boolean.valueOf(path.get("recursiveFileCounts").toString()));
                 setEnableRecursiveFileSizes(Boolean.valueOf(path.get("recursiveFileSizes").toString()));
-                setExcludeSubdirectoryCount(Boolean.valueOf(path.get("excludeSubdirectoryCount").toString()));
+                setExcludeSubdirectoryCount(Boolean.valueOf(path.get("excludeSubdirectoriesFromFileCount").toString()));
             }});
         }
         return pathsToProcess;
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir){
+        if(!baseDir.endsWith("/") || !baseDir.endsWith("\\")) {
+            if(baseDir.contains("/")) {
+                baseDir += "/";
+            }
+            else {
+                baseDir += "\\";
+            }
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(fileDisplayName);
         String suffix = path.toString().replace(baseDir.substring(0, baseDir.length()-1), "")
@@ -60,6 +72,41 @@ public class FileWatcherUtil {
         }
         return builder.toString();
     }
+
+    public static int getNumberOfLinesFromFile(Path file) throws IOException {
+        try (Stream<String> fileStream = Files.lines(file)) {
+            return (int) fileStream.count();
+        }
+    }
+
+/*    public static int calculateRecursiveFileCount(File path, boolean ignoreHiddenFiles) {
+        int count = 0;
+            for (File file : path.listFiles()) {
+                if (file.isFile()) {
+                    count++;
+                }
+                if (file.isDirectory()) {
+                    count += calculateRecursiveFileCount(file, ignoreHiddenFiles);
+                }
+            }
+
+        return count;
+    }*/
+
+/*    public static long calculateRecursiveFileCount(Path path, boolean ignoreHiddenFiles) throws Exception {
+        Predicate<Path> isValidFile;
+        Predicate<Path> isValidDirectory;
+
+        if(ignoreHiddenFiles) {
+
+        }
+
+
+        return Files.walk(path)
+                .parallel()
+                .filter(p -> p.toFile().isFile())
+                .count();
+    }*/
 
     private static String evaluatePath(String pathFromConfig) {
         if(pathFromConfig.endsWith("/") || pathFromConfig.endsWith("'\'")) {

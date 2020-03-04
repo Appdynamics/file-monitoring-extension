@@ -38,7 +38,6 @@ public class FileMonitor extends ABaseMonitor {
 
 	private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileMonitor.class);
     private List<PathToProcess> pathsToProcess;
-    private WatchService watcher;
 
 	@Override
 	public String getMonitorName() {
@@ -90,8 +89,10 @@ public class FileMonitor extends ABaseMonitor {
 		FileMonitor fileWatcher = new FileMonitor();
 		Map<String, String> argsMap = new HashMap<String, String>();
 		argsMap.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/" +
-                "src/main/resources/conf/config.yml");
+                "src/main/resources/conf/configTesting.yml");
 
 		fileWatcher.execute(argsMap, null);
 	}
 }
+
+// TODO recursive file counts.

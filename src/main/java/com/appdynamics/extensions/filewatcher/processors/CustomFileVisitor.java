@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFormattedDisplayName;
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getNumberOfLinesFromFile;
 
 public class CustomFileVisitor extends SimpleFileVisitor<Path> {
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(CustomFileVisitor.class);
@@ -55,7 +56,7 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
         }
         if (globPathMatcher.getMatcher().matches(path)) {
             LOGGER.info("Match found for entered path {}", path);
-            if(!keys.containsValue(path)) {
+            if (!keys.containsValue(path)) {
                 LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
                 registerPath(path);
             }
@@ -85,14 +86,13 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
             for (File f : filesInDir) {
                 if (pathToProcess.getIgnoreHiddenFiles()) {
                     if (!f.isHidden()) {
-                        if(f.isFile() || !pathToProcess.getExcludeSubdirectoryCount()) {
+                        if (f.isFile() || !pathToProcess.getExcludeSubdirectoryCount()) {
                             fileCount++;
                         }
                         if (f.lastModified() < oldestFile) {
                             oldestFile = f.lastModified();
                         }
-                    }
-                    else {
+                    } else {
                         LOGGER.info("Skipping directory {} as it is hidden", f);
                     }
                 } else {
@@ -112,6 +112,10 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
         fileMetric.setAvailable(path.toFile().exists());
         fileMetric.setOldestFileAge(oldestFileAge);
 
+/*        if (pathToProcess.getEnableRecursiveFileCounts()) { //TODO
+            fileMetric.setRecursiveNumberOfFiles(calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles()));
+        }*/
+
         LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} ms", path.getFileName(),
                 fileMetric.getFileSize(), fileMetric.getNumberOfFiles(), fileMetric.getOldestFileAge());
         return fileMetric;
@@ -128,8 +132,9 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
             LOGGER.debug("Found match for entered path" + path);
             FileMetric fileMetric = new FileMetric();
             setBasicFileAttributesForFile(path, basicFileAttributes, fileMetric);
-            fileMetric.setNumberOfFiles(-1); fileMetric.setOldestFileAge(-1);
-            fileMetric.setAvailable(path.toFile().exists());
+            fileMetric.setNumberOfFiles(-1);
+            fileMetric.setOldestFileAge(-1);
+            fileMetric.setAvailable(Files.exists(path));
             fileMetric.setNumberOfLines(getNumberOfLinesFromFile(path));
             LOGGER.info("For file {}, Availability = {}, File Size = {} & Last Modified Time = {} ms, Number of Lines " +
                             "= {}", path.getFileName(), fileMetric.getAvailable(), fileMetric.getFileSize(),
@@ -145,12 +150,6 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {
             LOGGER.debug("Couldn't find basic file attributes for {}", path.toString());
-        }
-    }
-
-    private int getNumberOfLinesFromFile(Path file) throws IOException {
-        try (Stream<String> fileStream = Files.lines(file)) {
-            return (int) fileStream.count();
         }
     }
 }
