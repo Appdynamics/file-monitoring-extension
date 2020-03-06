@@ -19,29 +19,26 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFormattedDisplayName;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getNumberOfLinesFromFile;
 
 public class CustomFileVisitor extends SimpleFileVisitor<Path> {
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(CustomFileVisitor.class);
-    private WatchService watchService;
-    private Map<WatchKey, Path> keys;
     private GlobPathMatcher globPathMatcher;
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
     private String baseDirectory;
 
-    public CustomFileVisitor(String baseDirectory, WatchService watchService, Map<WatchKey, Path> keys,
-                             GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
+    public CustomFileVisitor(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
                              Map<String, FileMetric> fileMetrics) {
         this.baseDirectory = baseDirectory;
-        this.watchService = watchService;
-        this.keys = keys;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;
         this.fileMetrics = fileMetrics;
@@ -56,21 +53,10 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
         }
         if (globPathMatcher.getMatcher().matches(path)) {
             LOGGER.info("Match found for entered path {}", path);
-            if (!keys.containsValue(path)) {
-                LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-                registerPath(path);
-            }
-
             fileMetrics.put(getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory),
                     generateDirectoryMetrics(path, basicFileAttributes));
         }
         return FileVisitResult.CONTINUE;
-    }
-
-    private void registerPath(Path path) throws IOException {
-        WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-        keys.put(key, path);
     }
 
     private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes) {
@@ -112,10 +98,10 @@ public class CustomFileVisitor extends SimpleFileVisitor<Path> {
         fileMetric.setAvailable(path.toFile().exists());
         fileMetric.setOldestFileAge(oldestFileAge);
 
-/*        if (pathToProcess.getEnableRecursiveFileCounts()) { //TODO
-            fileMetric.setRecursiveNumberOfFiles(calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles()));
-        }*/
-
+        if (pathToProcess.getEnableRecursiveFileCounts()) {
+            fileMetric.setRecursiveNumberOfFiles(calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles(),
+                    pathToProcess.getExcludeSubdirectoryCount()));
+        }
         LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} ms", path.getFileName(),
                 fileMetric.getFileSize(), fileMetric.getNumberOfFiles(), fileMetric.getOldestFileAge());
         return fileMetric;

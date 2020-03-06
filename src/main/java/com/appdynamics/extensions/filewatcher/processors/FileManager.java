@@ -22,11 +22,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class FileManager implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileManager.class);
@@ -55,6 +57,7 @@ public class FileManager implements Runnable {
         LOGGER.info("Attempting to walk directory {}", baseDirectory);
         try {
             walk(baseDirectory);
+            printMetrics();
             watch();
         } catch (InterruptedException | IOException ex) {
             LOGGER.error("Error encountered while walking File {}", baseDirectory, ex);
@@ -63,50 +66,45 @@ public class FileManager implements Runnable {
 
     private void walk(String baseDirectory) throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileVisitor(baseDirectory,
-                watchService, watchKeys, globPathMatcher, pathToProcess, fileMetrics));
-        printMetrics();
+        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileVisitor(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
     }
 
     private void printMetrics() {
         List<Metric> metrics = fileMetricsProcessor.getMetricList(fileMetrics);
         metricWriteHelper.transformAndPrintMetrics(metrics);
-        metrics.clear();
     }
 
     private void watch() throws InterruptedException, IOException {
-        WatchKey watchKey;
         LOGGER.info("Watching directory {} for events", baseDirectory);
+        registerPath(Paths.get(baseDirectory));
+        WatchKey watchKey;
         while (true) {
-            watchKey = watchService.take();
-            for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
-                WatchEvent.Kind<?> kind = watchEvent.kind();
-                if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
-                        kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
+            watchKey = watchService.poll(600, TimeUnit.SECONDS);
+            if (watchKey != null) {
+                for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
+                    WatchEvent.Kind<?> kind = watchEvent.kind();
+                    if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
+                            kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
+                        Path eventPath = (Path) watchEvent.context();
+                        Path directory = watchKeys.get(watchKey);
+                        File child = directory.resolve(eventPath).toFile();
+                        LOGGER.info("Event {} detected for path {}", kind, child);
+                        if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                            handleFileDeletion(child);
+                        }
+                        walk(baseDirectory);
+                    }
+                }
 
-                    Path eventPath = (Path) watchEvent.context();
-                    Path directory = watchKeys.get(watchKey);
-                    String childPath = directory.resolve(eventPath).toFile().getAbsolutePath();
-                    LOGGER.info("Event {} detected for path {}", kind, childPath);
-
-                        /*Path startingDirectoryForWatchEvent = Paths.get(childPath.substring(0,
-                                FilenameUtils.indexOfLastSeparator(childPath) + 1));*/
-                    String startingDirectoryForWatchEvent = childPath.substring(0,
-                            FilenameUtils.indexOfLastSeparator(childPath) + 1);
-                    resetCurrentFileMetrics(fileMetrics);
-                    walk(baseDirectory);
-                    printMetrics();
+                boolean valid = watchKey.reset();
+                if (!valid) {
+                    watchKeys.remove(watchKey);
+                    if (watchKeys.isEmpty()) {
+                        break;
+                    }
                 }
             }
-            //  System.out.printf("%s:%s\n", child, kind);
-
-            boolean valid = watchKey.reset();
-            if (!valid) {
-                watchKeys.remove(watchKey);
-                if (watchKeys.isEmpty()) {
-                    break;
-                }
-            }
+            printMetrics();
         }
     }
 
@@ -114,6 +112,31 @@ public class FileManager implements Runnable {
         fileMetrics.replaceAll((key, value) -> new FileMetric());
     }
 
-}
-// todo for reference, create a new thread per base directory. walk, print and watch in this thread. use the same watchservice and watchkeys for each TASK (path to process). Gn tc
+    private void registerPath(Path path) throws IOException {
+        if (!watchKeys.containsValue(path)) {
+            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
+            WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+            watchKeys.put(key, path);
+        }
+    }
 
+    // This is done here because the globpatternmatcher can never process a file that does not exist anymore.
+    private void handleFileDeletion(File childPath) {
+        for (Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
+            if (entry.getKey().contains(childPath.getName())) {
+                FileMetric fileMetric = entry.getValue();
+                fileMetric.setAvailable(false);
+                fileMetric.setFileSize("0");
+                fileMetric.setChanged(true);
+                if (childPath.isFile()) {
+                    fileMetric.setNumberOfLines(0);
+                } else if (childPath.isDirectory()) {
+                    fileMetric.setNumberOfFiles(0);
+                    fileMetric.setRecursiveNumberOfFiles(0);
+                }
+                fileMetrics.put(entry.getKey(), fileMetric);
+            }
+        }
+    }
+}
