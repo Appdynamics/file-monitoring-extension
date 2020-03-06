@@ -90,7 +90,7 @@ public class FileWatcherUtil {
                         .filter(p -> (p.toFile().isFile()
                                 || p.toFile().isDirectory())
                                 && !p.toFile().isHidden())
-                        .count();
+                        .count() - 1;
             }
             return Files.walk(path)
                     .parallel()
@@ -104,7 +104,7 @@ public class FileWatcherUtil {
                         .parallel()
                         .filter(p -> (p.toFile().isFile()
                                 || p.toFile().isDirectory()))
-                        .count();
+                        .count() - 1;
             }
             return Files.walk(path)
                     .parallel()

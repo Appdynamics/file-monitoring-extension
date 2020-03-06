@@ -64,7 +64,6 @@ public class CustomFileVisitorTest {
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/")));
     }
 
-
     @Test
     public void visitDirectoryAndContentsNonRecursively() throws Exception {
         PathToProcess pathToProcess = new PathToProcess();
@@ -92,7 +91,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C")));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C")));
@@ -126,7 +124,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(3, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
@@ -160,7 +157,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(1, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
@@ -194,7 +190,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
@@ -230,7 +225,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/")));
@@ -266,7 +260,6 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/")));
@@ -302,12 +295,10 @@ public class CustomFileVisitorTest {
                 classUnderTest.visitFile(p, null);
             }
         }
-
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/")));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/")));
     }
-
 }
