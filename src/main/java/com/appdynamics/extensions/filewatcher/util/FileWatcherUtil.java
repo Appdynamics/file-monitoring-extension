@@ -32,7 +32,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FileWatcherUtil {
-    //TODO check if the map needs to be cleared at the end of each job/task
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherUtil.class);
 
     public static List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
@@ -74,39 +73,45 @@ public class FileWatcherUtil {
     }
 
     public static int getNumberOfLinesFromFile(Path file) throws IOException {
-        try (Stream<String> fileStream = Files.lines(file)) {
-            return (int) fileStream.count();
+        if(file.toFile().exists()) {
+            try (Stream<String> fileStream = Files.lines(file)) {
+                return (int) fileStream.count();
+            }
         }
+        return 0;
     }
 
-/*    public static int calculateRecursiveFileCount(File path, boolean ignoreHiddenFiles) {
-        int count = 0;
-            for (File file : path.listFiles()) {
-                if (file.isFile()) {
-                    count++;
-                }
-                if (file.isDirectory()) {
-                    count += calculateRecursiveFileCount(file, ignoreHiddenFiles);
-                }
-            }
-
-        return count;
-    }*/
-
-/*    public static long calculateRecursiveFileCount(Path path, boolean ignoreHiddenFiles) throws Exception {
-        Predicate<Path> isValidFile;
-        Predicate<Path> isValidDirectory;
-
+    public static long calculateRecursiveFileCount(Path path, boolean ignoreHiddenFiles,
+                                                   boolean excludeSubdirectoriesFromFileCounts ) throws IOException {
         if(ignoreHiddenFiles) {
-
+            if(!excludeSubdirectoriesFromFileCounts) {
+                return Files.walk(path)
+                        .parallel()
+                        .filter(p -> (p.toFile().isFile()
+                                || p.toFile().isDirectory())
+                                && !p.toFile().isHidden())
+                        .count();
+            }
+            return Files.walk(path)
+                    .parallel()
+                    .filter(p -> !p.toFile().isDirectory()
+                            && !p.toFile().isHidden())
+                    .count();
         }
-
-
-        return Files.walk(path)
-                .parallel()
-                .filter(p -> p.toFile().isFile())
-                .count();
-    }*/
+        else {
+            if(!excludeSubdirectoriesFromFileCounts) {
+                return Files.walk(path)
+                        .parallel()
+                        .filter(p -> (p.toFile().isFile()
+                                || p.toFile().isDirectory()))
+                        .count();
+            }
+            return Files.walk(path)
+                    .parallel()
+                    .filter(p -> !p.toFile().isDirectory())
+                    .count();
+        }
+    }
 
     private static String evaluatePath(String pathFromConfig) {
         if(pathFromConfig.endsWith("/") || pathFromConfig.endsWith("'\'")) {

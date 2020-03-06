@@ -38,8 +38,8 @@ public class FilePathProcessorTest {
         pathToProcess.setPath("src/test/resources/Test*/**");
         FilePathProcessor filePathProcessor = new FilePathProcessor();
         List<String> baseDirectories = filePathProcessor.getBaseDirectories(pathToProcess);
-
         Assert.assertEquals(1, baseDirectories.size());
+
         // todo eval paths
     }
 
@@ -49,7 +49,6 @@ public class FilePathProcessorTest {
         pathToProcess.setPath("src/test/resources/TestFiles/new*/*.*");
         FilePathProcessor filePathProcessor = new FilePathProcessor();
         List<String> baseDirectories = filePathProcessor.getBaseDirectories(pathToProcess);
-
         Assert.assertEquals(2, baseDirectories.size());
     }
 }

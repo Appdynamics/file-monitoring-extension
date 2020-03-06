@@ -1,0 +1,7 @@
+dafdafdafadf
+
+
+                        /*Path startingDirectoryForWatchEvent = Paths.get(childPath.substring(0,
+                                FilenameUtils.indexOfLastSeparator(childPath) + 1));*/
+                        String startingDirectoryForWatchEvent = childPath.substring(0,
+                                FilenameUtils.indexOfLastSeparator(childPath) + 1);

@@ -79,7 +79,7 @@ public class FileManager implements Runnable {
         registerPath(Paths.get(baseDirectory));
         WatchKey watchKey;
         while (true) {
-            watchKey = watchService.poll(600, TimeUnit.SECONDS);
+            watchKey = watchService.poll(60, TimeUnit.SECONDS);
             if (watchKey != null) {
                 for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
                     WatchEvent.Kind<?> kind = watchEvent.kind();
