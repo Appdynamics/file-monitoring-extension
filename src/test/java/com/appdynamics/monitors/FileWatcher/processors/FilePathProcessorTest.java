@@ -39,8 +39,6 @@ public class FilePathProcessorTest {
         FilePathProcessor filePathProcessor = new FilePathProcessor();
         List<String> baseDirectories = filePathProcessor.getBaseDirectories(pathToProcess);
         Assert.assertEquals(1, baseDirectories.size());
-
-        // todo eval paths
     }
 
     @Test

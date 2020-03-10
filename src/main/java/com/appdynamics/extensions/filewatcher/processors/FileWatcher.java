@@ -83,9 +83,10 @@ public class FileWatcher {
                 fileMetric.setAvailable(false);
                 fileMetric.setFileSize("0");
                 fileMetric.setChanged(true);
-                if (childPath.isFile()) {
+                if(fileMetric.getNumberOfLines() != -1) {
                     fileMetric.setNumberOfLines(0);
-                } else if (childPath.isDirectory()) {
+                }
+                else {
                     fileMetric.setNumberOfFiles(0);
                     fileMetric.setRecursiveNumberOfFiles(0);
                 }

@@ -40,7 +40,9 @@ public class FileMetricsProcessor {
     }
 
     public void printMetrics(Map<String, FileMetric> fileMetrics) {
-        metricWriteHelper.transformAndPrintMetrics(getMetricList(fileMetrics));
+        List<Metric> metrics = getMetricList(fileMetrics);
+        metricWriteHelper.transformAndPrintMetrics(metrics);
+        metrics.clear();
     }
 
     private List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
