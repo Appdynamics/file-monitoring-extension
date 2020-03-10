@@ -44,26 +44,26 @@ public class FileMetricsProcessor {
     }
 
     private List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
-        for(Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
-            if(metricsFromConfig.containsKey(FILE_COUNT)) {
+        for (Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
+            if (metricsFromConfig.containsKey(FILE_COUNT)) {
                 addToMetricList(FILE_COUNT, entry.getValue().getNumberOfFiles(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(FILE_SIZE)) {
+            if (metricsFromConfig.containsKey(FILE_SIZE)) {
                 addToMetricList(FILE_SIZE, entry.getValue().getFileSize(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(OLDEST_FILE_AGE)) {
+            if (metricsFromConfig.containsKey(OLDEST_FILE_AGE)) {
                 addToMetricList(OLDEST_FILE_AGE, entry.getValue().getOldestFileAge(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(NUMBER_OF_LINES)) {
+            if (metricsFromConfig.containsKey(NUMBER_OF_LINES)) {
                 addToMetricList(NUMBER_OF_LINES, entry.getValue().getNumberOfLines(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(AVAILABLE)) {
+            if (metricsFromConfig.containsKey(AVAILABLE)) {
                 addToMetricList(AVAILABLE, entry.getValue().getAvailable(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(CHANGED)) {
+            if (metricsFromConfig.containsKey(CHANGED)) {
                 addToMetricList(CHANGED, entry.getValue().getChanged(), entry.getKey());
             }
-            if(metricsFromConfig.containsKey(LAST_MODIFIED_TIME)) {
+            if (metricsFromConfig.containsKey(LAST_MODIFIED_TIME)) {
                 addToMetricList(LAST_MODIFIED_TIME, entry.getValue().getLastModifiedTime(), entry.getKey());
             }
         }

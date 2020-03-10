@@ -11,7 +11,6 @@ package com.appdynamics.monitors.FileWatcher.processors;
  * @author Aditya Jagtiani
  */
 
-
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.processors.FileMetricsProcessor;

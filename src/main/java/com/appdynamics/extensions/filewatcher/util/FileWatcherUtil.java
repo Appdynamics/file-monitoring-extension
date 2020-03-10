@@ -11,7 +11,6 @@ package com.appdynamics.extensions.filewatcher.util;
  * @author Aditya Jagtiani
  */
 
-
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
@@ -32,7 +31,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FileWatcherUtil {
-    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherUtil.class);
 
     public static List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
         List<PathToProcess> pathsToProcess = Lists.newArrayList();
@@ -113,40 +111,32 @@ public class FileWatcherUtil {
         }
     }
 
-    private static String evaluatePath(String pathFromConfig) {
-        if(pathFromConfig.endsWith("/") || pathFromConfig.endsWith("'\'")) {
-            LOGGER.info("Removing trailing slash so as to treat the given path as a subdirectory");
-            return pathFromConfig.substring(0, pathFromConfig.length() - 1);
-        }
-        return pathFromConfig;
-    }
-
     public static AppPathMatcher getPathMatcher(PathToProcess fileToProcess) {
         AppPathMatcher matcher = new GlobPathMatcher();
         matcher.setMatcher(fileToProcess);
         return matcher;
     }
 
-    // Along the lines of org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS
     private static boolean isWindows() {
         String os = System.getProperty("os.name").toLowerCase();
         return os.startsWith("Windows");
     }
 
-    public boolean isWindowsNetworkDrive(File file) {
+    public static boolean isWindowsNetworkPath(String path) {
         if (!isWindows()) {
             return false;
         }
 
-        // Make sure the file is absolute
-        file = file.getAbsoluteFile();
-        String path = file.getPath();
-//        System.out.println("Checking [" + path + "]");
+        File file = new File(path);
 
-        // UNC paths are dangerous
+        if(!file.exists()) {
+            return false;
+        }
+
+        path = file.getAbsolutePath();
+
         if (path.startsWith("//")
                 || path.startsWith("\\\\")) {
-            // We might want to check for \\localhost or \\127.0.0.1 which would be OK, too
             return true;
         }
 
@@ -155,42 +145,25 @@ public class FileWatcherUtil {
         if (!":".equals(colon)) {
             throw new IllegalArgumentException("Expected 'X:': " + path);
         }
-
-        return isNetworkDrive(driveLetter);
+        return isNetworkPath(driveLetter);
     }
 
-    /** Use the command <code>net</code> to determine what this drive is.
-     * <code>net use</code> will return an error for anything which isn't a share.
-     *
-     *  <p>Another option would be <code>fsinfo</code> but my gut feeling is that
-     *  <code>net</code> should be available and on the path on every installation
-     *  of Windows.
-     */
-    private boolean isNetworkDrive(String driveLetter) {
+    private static boolean isNetworkPath(String driveLetter) {
         List<String> cmd = Arrays.asList("cmd", "/c", "net", "use", driveLetter + ":");
-
         try {
             Process p = new ProcessBuilder(cmd)
                     .redirectErrorStream(true)
                     .start();
-
             p.getOutputStream().close();
-
-            StringBuilder consoleOutput = new StringBuilder();
-
-            String line;
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-                while ((line = in.readLine()) != null) {
-                    consoleOutput.append(line).append("\r\n");
-                }
-            }
-
             int rc = p.waitFor();
-//            System.out.println(consoleOutput);
-//            System.out.println("rc=" + rc);
             return rc == 0;
         } catch(Exception e) {
             throw new IllegalStateException("Unable to run 'net use' on " + driveLetter, e);
         }
+    }
+
+    public static boolean isNetworkPathAccessible(String path) {
+        File file = new File(path);
+        return file.exists() && file.isDirectory() && file.canRead() && file.canWrite();
     }
 }

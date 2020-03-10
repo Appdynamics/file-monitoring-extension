@@ -6,9 +6,10 @@
  *
  */
 
-
 package com.appdynamics.extensions.filewatcher.processors;
-
+/*
+ * @author Aditya Jagtiani
+ */
 
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
@@ -72,7 +73,7 @@ public class FileWatcher {
 
     private void walk(String baseDirectory) throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileVisitor(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
+        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
     }
 
     private void handleFileDeletion(File childPath) {
@@ -92,6 +93,4 @@ public class FileWatcher {
             }
         }
     }
-
 }
-

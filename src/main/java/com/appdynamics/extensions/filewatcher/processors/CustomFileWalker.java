@@ -28,15 +28,15 @@ import java.util.Map;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.*;
 
-public class CustomFileVisitor extends SimpleFileVisitor<Path> {
-    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(CustomFileVisitor.class);
+public class CustomFileWalker extends SimpleFileVisitor<Path> {
+    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(CustomFileWalker.class);
     private GlobPathMatcher globPathMatcher;
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
     private String baseDirectory;
 
-    public CustomFileVisitor(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
-                             Map<String, FileMetric> fileMetrics) {
+    public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
+                            Map<String, FileMetric> fileMetrics) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;

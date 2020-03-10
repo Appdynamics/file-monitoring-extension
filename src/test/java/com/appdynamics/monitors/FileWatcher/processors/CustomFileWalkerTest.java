@@ -14,7 +14,7 @@ package com.appdynamics.monitors.FileWatcher.processors;
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
-import com.appdynamics.extensions.filewatcher.processors.CustomFileVisitor;
+import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
@@ -28,9 +28,9 @@ import java.util.Map;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFormattedDisplayName;
 
-public class CustomFileVisitorTest {
+public class CustomFileWalkerTest {
 
-    private CustomFileVisitor classUnderTest;
+    private CustomFileWalker classUnderTest;
 
     @Test
     public void visitDirectoryNonRecursively() throws Exception {
@@ -48,7 +48,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C")){
@@ -81,7 +81,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -114,7 +114,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -147,7 +147,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -180,7 +180,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -215,7 +215,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/A/B/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){
@@ -250,7 +250,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -285,7 +285,7 @@ public class CustomFileVisitorTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileVisitor("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){

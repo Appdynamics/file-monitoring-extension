@@ -16,7 +16,6 @@ public class Constants {
     public static final String MONITOR_NAME = "File Watcher";
     public static final String DEFAULT_METRIC_PREFIX = "Custom Metrics|File Watcher";
     public static final String CONFIGURED_PATHS = "pathsToProcess";
-    public static final String DISPLAY_NAME = "displayName";
     public static final String FILE_COUNT = "fileCount";
     public static final String FILE_SIZE = "fileSize";
     public static final String OLDEST_FILE_AGE = "oldestFileAge";

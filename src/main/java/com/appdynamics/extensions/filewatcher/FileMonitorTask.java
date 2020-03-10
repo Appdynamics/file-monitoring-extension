@@ -12,17 +12,23 @@ import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.executorservice.MonitorExecutorService;
-import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
-import com.appdynamics.extensions.filewatcher.processors.*;
+import com.appdynamics.extensions.filewatcher.processors.FileManager;
+import com.appdynamics.extensions.filewatcher.processors.FileMetricsProcessor;
+import com.appdynamics.extensions.filewatcher.processors.FilePathProcessor;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isNetworkPathAccessible;
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isWindowsNetworkPath;
 
 public class FileMonitorTask implements AMonitorTaskRunnable {
 
@@ -48,19 +54,26 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         try {
             WatchService watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
-            for(String baseDirectory : baseDirectories) {
-                executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
-                        pathToProcess, metricWriteHelper, fileMetricsProcessor));
+            for (String baseDirectory : baseDirectories) {
+                if (isWindowsNetworkPath(baseDirectory)) {
+                    if (isNetworkPathAccessible(baseDirectory)) {
+                        LOGGER.info("Network Path {} accessible, starting File Manager");
+                        executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
+                                pathToProcess, fileMetricsProcessor));
+                    } else {
+                        LOGGER.error("Windows Network Path {} inaccessible. Please check the file path and user permissions. " +
+                                "Skipping", baseDirectory);
+                    }
+                } else {
+                    executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
+                            pathToProcess, fileMetricsProcessor));
+                }
             }
         } catch (Exception ex) {
             LOGGER.error("Task failed for path {}", pathToProcess.getPath(), ex);
         }
     }
 
-    //todo - execute walk + metric collection in parallel for events or execute a listener on a list that stores all the events to prevent any overflow in case of longer walking times- DONE
-
     @Override
-    public void onTaskComplete() {
-        LOGGER.info("Finished collecting metrics for {}", pathToProcess.getDisplayName());
-    }
+    public void onTaskComplete() {}
 }

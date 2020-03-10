@@ -11,7 +11,6 @@ package com.appdynamics.extensions.filewatcher.processors;
  * @author Aditya Jagtiani
  */
 
-
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.google.common.collect.Lists;
@@ -30,8 +29,7 @@ public class FilePathProcessor {
     public List<String> getBaseDirectories(PathToProcess pathToProcess) {
         try {
             return processFilePath(pathToProcess);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             LOGGER.error("Error encountered while evaluating base directories for path {}", pathToProcess.getDisplayName(), ex);
         }
         return Lists.newArrayList();
@@ -39,23 +37,21 @@ public class FilePathProcessor {
 
     private List<String> processFilePath(final PathToProcess file) {
         String filePath = file.getPath().replace("\\\\", "\\"); //For Windows regexes
-        if(filePath.isEmpty()){
+        if (filePath.isEmpty()) {
             LOGGER.error("File path is empty for {}, returning", file.getDisplayName());
             return baseDirectories;
         }
-        if(filePath.contains("*")){
+        if (filePath.contains("*")) {
             String tempPath = filePath.substring(0, filePath.indexOf("*"));
             String currentBaseDir = tempPath.substring(0, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
-            if(filePath.substring(filePath.indexOf("*")).contains("\\")
+            if (filePath.substring(filePath.indexOf("*")).contains("\\")
                     || filePath.substring(filePath.indexOf("*")).contains("/")) {
                 String dirPattern = obtainDirWildCard(filePath, FilenameUtils.indexOfLastSeparator(tempPath) + 1);
                 baseDirectories.addAll(getRequiredDirectories(currentBaseDir, dirPattern));
-            }
-            else {
+            } else {
                 baseDirectories.add(tempPath.substring(0, FilenameUtils.indexOfLastSeparator(tempPath) + 1));
             }
-        }
-        else{
+        } else {
             baseDirectories.add(filePath.substring(0, FilenameUtils.indexOfLastSeparator(filePath) + 1));
         }
         return baseDirectories;
