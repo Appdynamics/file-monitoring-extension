@@ -4,4 +4,11 @@ dafdafdafadf
                         /*Path startingDirectoryForWatchEvent = Paths.get(childPath.substring(0,
                                 FilenameUtils.indexOfLastSeparator(childPath) + 1));*/
                         String startingDirectoryForWatchEvent = childPath.substring(0,
-                                FilenameUtils.indexOfLastSeparator(childPath) + 1);
+                                FilenameUtilfdfds.indexOfLastSeparator(childPath) + 1);
+                                dafdafdafadf
+
+
+                                                        /*Path startingDirectoryForWatchEvent = Paths.get(childPath.substring(0,
+                                                                FilenameUtils.indexOfLastSeparator(childPath) + 1));*/
+                                                        String startingDirectoryForWatchEvent = childPath.substring(0,
+                                                                FilenameUtilfdfds.indexOfLastSeparator(childPath) + 1);

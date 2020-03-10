@@ -18,7 +18,6 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.appdynamics.extensions.metrics.Metric;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,6 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class FileManager implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileManager.class);
@@ -57,7 +55,7 @@ public class FileManager implements Runnable {
         LOGGER.info("Attempting to walk directory {}", baseDirectory);
         try {
             walk(baseDirectory);
-            printMetrics();
+            fileMetricsProcessor.printMetrics(fileMetrics);
             watch();
         } catch (InterruptedException | IOException ex) {
             LOGGER.error("Error encountered while walking File {}", baseDirectory, ex);
@@ -69,47 +67,61 @@ public class FileManager implements Runnable {
         Files.walkFileTree(Paths.get(baseDirectory), new CustomFileVisitor(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
     }
 
-    private void printMetrics() {
-        List<Metric> metrics = fileMetricsProcessor.getMetricList(fileMetrics);
-        metricWriteHelper.transformAndPrintMetrics(metrics);
-    }
-
-    private void watch() throws InterruptedException, IOException {
+/*    private void watch() throws InterruptedException, IOException {
         LOGGER.info("Watching directory {} for events", baseDirectory);
         registerPath(Paths.get(baseDirectory));
         WatchKey watchKey;
         while (true) {
             watchKey = watchService.poll(60, TimeUnit.SECONDS);
             if (watchKey != null) {
-                for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
-                    WatchEvent.Kind<?> kind = watchEvent.kind();
-                    if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
-                            kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
-                        Path eventPath = (Path) watchEvent.context();
-                        Path directory = watchKeys.get(watchKey);
-                        File child = directory.resolve(eventPath).toFile();
-                        LOGGER.info("Event {} detected for path {}", kind, child);
-                        if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            handleFileDeletion(child);
-                        }
-                        walk(baseDirectory);
-                    }
-                }
+                processWatchEvents(watchKey);
 
-                boolean valid = watchKey.reset();
-                if (!valid) {
+                if(!isWatchKeyValid(watchKey)) {
                     watchKeys.remove(watchKey);
-                    if (watchKeys.isEmpty()) {
+                    if(watchKeys.isEmpty()) {
                         break;
                     }
                 }
             }
             printMetrics();
         }
+    }*/
+
+    private void watch() throws IOException, InterruptedException {
+        LOGGER.info("Watching path {} for events", baseDirectory);
+        registerPath(Paths.get(baseDirectory));
+        FileWatcher fileWatcher = new FileWatcher(watchService, watchKeys, baseDirectory,
+                fileMetrics, pathToProcess, fileMetricsProcessor);
+        while(true) {
+            if(!watchKeys.isEmpty()) {
+                fileWatcher.processWatchEvents();
+            }
+            else {
+                break;
+            }
+        }
+
     }
 
-    private void resetCurrentFileMetrics(Map<String, FileMetric> fileMetrics) {
-        fileMetrics.replaceAll((key, value) -> new FileMetric());
+    private boolean isWatchKeyValid(WatchKey watchKey) {
+        return watchKey.reset();
+    }
+
+    private void processWatchEvents(WatchKey watchKey) throws IOException {
+        for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
+            WatchEvent.Kind<?> kind = watchEvent.kind();
+            if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
+                    kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
+                Path eventPath = (Path) watchEvent.context();
+                Path directory = watchKeys.get(watchKey);
+                File child = directory.resolve(eventPath).toFile();
+                LOGGER.info("Event {} detected for path {}", kind, child);
+                if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                    handleFileDeletion(child);
+                }
+                walk(baseDirectory);
+            }
+        }
     }
 
     private void registerPath(Path path) throws IOException {

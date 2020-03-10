@@ -39,7 +39,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         this.pathToProcess = pathToProcess;
         this.keys = new HashMap<>();
         this.fileMetricsProcessor = new FileMetricsProcessor(monitorContextConfiguration.getMetricPrefix(),
-                (Map) monitorContextConfiguration.getConfigYml().get("metrics"));
+                (Map) monitorContextConfiguration.getConfigYml().get("metrics"), metricWriteHelper);
         this.executorService = monitorContextConfiguration.getContext().getExecutorService();
     }
 

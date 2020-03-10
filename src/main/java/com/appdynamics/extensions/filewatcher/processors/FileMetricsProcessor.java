@@ -12,6 +12,7 @@ package com.appdynamics.extensions.filewatcher.processors;
  * @author Aditya Jagtiani
  */
 
+import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.metrics.Metric;
@@ -28,14 +29,21 @@ public class FileMetricsProcessor {
     private String metricPrefix;
     private Map<String, Map<String, ?>> metricsFromConfig;
     private List<Metric> metrics;
+    private MetricWriteHelper metricWriteHelper;
 
-    public FileMetricsProcessor(String metricPrefix, Map<String, Map<String, ?>> metricsFromConfig) {
+    public FileMetricsProcessor(String metricPrefix, Map<String, Map<String, ?>> metricsFromConfig,
+                                MetricWriteHelper metricWriteHelper) {
         this.metricPrefix = metricPrefix.trim();
         this.metricsFromConfig = metricsFromConfig;
+        this.metricWriteHelper = metricWriteHelper;
         metrics = Lists.newArrayList();
     }
 
-    List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
+    public void printMetrics(Map<String, FileMetric> fileMetrics) {
+        metricWriteHelper.transformAndPrintMetrics(getMetricList(fileMetrics));
+    }
+
+    private List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
         for(Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
             if(metricsFromConfig.containsKey(FILE_COUNT)) {
                 addToMetricList(FILE_COUNT, entry.getValue().getNumberOfFiles(), entry.getKey());
