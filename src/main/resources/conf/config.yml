@@ -11,32 +11,51 @@ metricPrefix: "Custom Metrics|File Watcher|"
 
 # List of files
 pathsToProcess:
+  # Matching all files and directories within TestFiles, recursively
 - displayName: "TestPath1 - Regular"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/**"
+  path: "src/test/resources/TestFiles/**"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
+  #Matching all files and directories within TestFiles, non-recursively
 - displayName: "TestPath1 - Single level *"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/*"
+  path: "src/test/resources/TestFiles/*"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
-- displayName: "TestPath1 - Fully recursive"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/**"
+  #Matching only the configured directory
+- displayName: "TestPath1 - Specific Directory"
+  path: "src/test/resources/TestFiles"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
-- displayName: "TestPath1 - File extensions"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/*.txt"
+  #Matching a specific file
+- displayName: "TestPath1 - Specific File"
+  path: "src/test/resources/TestFiles/TF1.txt"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
 
-- displayName: "TestPath1 - Weird regexes"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/Test*/*"
+  #Matching a specific file or files that match a file extension regex
+- displayName: "TestPath1 - File regex"
+  path: "src/test/resources/TestFiles/*.txt"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+  #Matching all file extensions within a directory
+- displayName: "TestPath1 - All file extensions"
+  path: "src/test/resources/TestFiles/*.*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+
+  #Matching a file with a regex in conjunction with a directory with a regex (any of the above can be used with this)
+- displayName: "TestPath1 - File and Dir regexes"
+  path: "src/test/resources/Test*/*.*"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
@@ -87,11 +106,14 @@ metrics:
       convert:
         "true": 1
         "false": 0
+
+  # A metric to view the count of files in a directory and all its subdirectories.
+  #Set recursiveFileCounts to true for any configured paths to see this metric. Will only work for directories.
    recursiveFileCount:
-      alias: "Recursive File Count" # A metric to view the count of files in a directory and all its subdirectories. Set recursiveFileCounts to true for any configured paths to see this metric. Will only work for directories.
+      alias: "Recursive File Count"
       multiplier:
       delta:
       timeRollupType:
       clusterRollupType:
 
-numberOfThreads: 20
+numberOfThreads: 20 #One thread per base directory + 1
