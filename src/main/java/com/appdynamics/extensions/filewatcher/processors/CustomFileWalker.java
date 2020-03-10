@@ -64,6 +64,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         setBasicFileAttributesForFile(path, basicFileAttributes, fileMetric);
         setFileCountAndOldestFileAge(path, fileMetric);
         fileMetric.setAvailable(true);
+        fileMetric.setNumberOfLines(-1);
         if (pathToProcess.getEnableRecursiveFileCounts()) {
             try {
                 fileMetric.setRecursiveNumberOfFiles(calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles(),

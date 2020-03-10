@@ -9,10 +9,9 @@ metricPrefix: "Custom Metrics|File Watcher|"
 # To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/LATEST/Build+a+Monitoring+Extension+Using+Java
 #metricPrefix: "Server|Component:<Component_ID OR Component_Name>|Custom Metrics|File Watcher|"
 
-# List of files
 pathsToProcess:
   # Matching all files and directories within TestFiles, recursively
-- displayName: "TestPath1 - Regular"
+- displayName: "TestPath1 - Fully Recursive"
   path: "src/test/resources/TestFiles/**"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
@@ -64,11 +63,11 @@ pathsToProcess:
 metrics:
    fileSize:
       alias: "File Size (Bytes)"
-      multiplier:
-      delta:
-      aggregationType:
-      timeRollupType:
-      clusterRollupType:
+      multiplier: 1
+      delta: false
+      aggregationType: "Average"
+      timeRollupType: "Average"
+      clusterRollupType: "Individual"
    oldestFileAge:
       alias: "Oldest File Age"
       multiplier:
