@@ -30,13 +30,13 @@ public class FileWatcherUtilTest {
 
     @Test
     public void calculateRecursiveFileCountWithoutHiddenFilesIncludeSubDirectories() throws Exception {
-        Assert.assertEquals(4, FileWatcherUtil.calculateRecursiveFileCount(path,
+        Assert.assertEquals(5, FileWatcherUtil.calculateRecursiveFileCount(path,
                 true, false));
     }
 
     @Test
     public void calculateRecursiveFileCountWithoutHiddenFilesExcludeSubdirectories() throws Exception {
-        Assert.assertEquals(3, FileWatcherUtil.calculateRecursiveFileCount(path, true,
+        Assert.assertEquals(4, FileWatcherUtil.calculateRecursiveFileCount(path, true,
                 true));
     }
 

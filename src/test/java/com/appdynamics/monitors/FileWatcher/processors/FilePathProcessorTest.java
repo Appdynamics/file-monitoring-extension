@@ -46,7 +46,7 @@ public class FilePathProcessorTest {
     @Test
     public void getMultipleBaseDirectoriesWithWildcards() {
         PathToProcess pathToProcess = new PathToProcess();
-        pathToProcess.setPath("src/test/resources/TestFiles/new*/*.*");
+        pathToProcess.setPath("src/test/resources/TestFiles/dir*/*.*");
         FilePathProcessor filePathProcessor = new FilePathProcessor();
         List<String> baseDirectories = filePathProcessor.getBaseDirectories(pathToProcess);
         Assert.assertEquals(2, baseDirectories.size());
