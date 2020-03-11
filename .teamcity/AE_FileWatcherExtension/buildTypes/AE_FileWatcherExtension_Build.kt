@@ -1,15 +1,15 @@
-package AE_LogMonitoringExtension.buildTypes
+package AE_FileWatcherExtension.buildTypes
 
-import AE_LogMonitoringExtension.publishCommitStatus
-import AE_LogMonitoringExtension.vcsRoots.AE_LogMonitoringExtension
-import AE_LogMonitoringExtension.withDefaults
+import AE_FileWatcherExtension.publishCommitStatus
+import AE_FileWatcherExtension.vcsRoots.AE_FileWatcherExtension
+import AE_FileWatcherExtension.withDefaults
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
 
-object AE_LogMonitoringExtension_Build : BuildType({
-    uuid = "f236de2f-f85c-43b6-904a-233dc6c28f43"
-    name = "Log Monitoring Extension Build"
+object AE_FileWatcherExtension_Build : BuildType({
+    uuid = "0d57ff72-2662-4184-9564-b5009a9fd7af"
+    name = "File Watcher Extension Build"
 
     withDefaults()
 
@@ -28,7 +28,7 @@ object AE_LogMonitoringExtension_Build : BuildType({
     }
 
     artifactRules = """
-    +:target/LogMonitor-*.zip => target/
+    +:target/FileWatcher-*.zip => target/
 """.trimIndent()
 
     publishCommitStatus()

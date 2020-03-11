@@ -1,4 +1,4 @@
-package AE_LogMonitoringExtension
+package AE_FileWatcherExtension
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.project
 import jetbrains.buildServer.configs.kotlin.v2018_2.version
@@ -24,4 +24,4 @@ calling the subProjects() method in this project.
 */
 
 version = "2018.2"
-project(AE_LogMonitoringExtension.Project)
+project(AE_FileWatcherExtension.Project)

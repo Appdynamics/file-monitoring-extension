@@ -1,8 +1,8 @@
-package AE_LogMonitoringExtension.buildTypes
+package AE_FileWatcherExtension.buildTypes
 
-import AE_LogMonitoringExtension.publishCommitStatus
-import AE_LogMonitoringExtension.vcsRoots.AE_LogMonitoringExtension
-import AE_LogMonitoringExtension.withDefaults
+import AE_FileWatcherExtension.publishCommitStatus
+import AE_FileWatcherExtension.vcsRoots.AE_FileWatcherExtension
+import AE_FileWatcherExtension.withDefaults
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.FailureAction
@@ -10,8 +10,8 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.exec
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
 
-object AE_LogMonitoringExtension_IntegrationTests : BuildType({
-    uuid = "292f528a-c76d-4653-a09a-e2bf161098dc"
+object AE_FileWatcherExtension_IntegrationTests : BuildType({
+    uuid = "e4b24818-a413-437b-b152-c740d3d00943"
     name = "Run Integration Tests"
 
     withDefaults()
@@ -43,13 +43,13 @@ object AE_LogMonitoringExtension_IntegrationTests : BuildType({
     }
 
     dependencies {
-        dependency(AE_LogMonitoringExtension_Build) {
+        dependency(AE_FileWatcherExtension_Build) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
             }
             artifacts {
                 artifactRules = """
-                +:target/LogMonitor-*.zip => target/
+                +:target/FileWatcher-*.zip => target/
             """.trimIndent()
             }
         }
