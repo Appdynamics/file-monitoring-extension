@@ -36,6 +36,7 @@ public class FileWatcherUtil {
                 setIgnoreHiddenFiles(Boolean.valueOf(path.get("ignoreHiddenFiles").toString()));
                 setEnableRecursiveFileCounts(Boolean.valueOf(path.get("recursiveFileCounts").toString()));
                 setExcludeSubdirectoryCount(Boolean.valueOf(path.get("excludeSubdirectoriesFromFileCount").toString()));
+                setEnableRecursiveFileSizes(Boolean.valueOf(path.get("recursiveFileSizes").toString()));
             }});
         }
         return pathsToProcess;

@@ -15,6 +15,7 @@ package com.appdynamics.extensions.filewatcher.config;
 public class FileMetric {
     private boolean isModified;
     private String fileSize;
+    private String recursiveFileSize;
     private int numberOfFiles;
     private long oldestFileAge;
     private int numberOfLines;
@@ -73,4 +74,7 @@ public class FileMetric {
     public void setOldestFileAge(long oldestFileAge) {
         this.oldestFileAge = oldestFileAge;
     }
+
+    public String getRecursiveFileSize() { return recursiveFileSize; }
+    public void setRecursiveFileSize(String recursiveFileSize) { this.recursiveFileSize = recursiveFileSize; }
 }

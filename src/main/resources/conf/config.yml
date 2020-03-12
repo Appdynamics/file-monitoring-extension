@@ -12,51 +12,57 @@ pathsToProcess:
 - displayName: "TestPath1 - Fully Recursive"
   path: "src/test/resources/TestFiles/**"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false #Counts only the 'files' under the base directory and exclude subdirectories
+  recursiveFileCounts: false # Provides the total count (recursively) of files within the base directory and each subdirectory
+  recursiveFileSizes: true # Calculates a directory's size on disk
 
   #Matching all files and directories within TestFiles, non-recursively
 - displayName: "TestPath1 - Single level *"
   path: "src/test/resources/TestFiles/*"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
   #Matching only the configured directory
 - displayName: "TestPath1 - Specific Directory"
   path: "src/test/resources/TestFiles"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
   #Matching a specific file
 - displayName: "TestPath1 - Specific File"
   path: "src/test/resources/TestFiles/TF1.txt"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
   #Matching a specific file or files that match a file extension regex
 - displayName: "TestPath1 - File regex"
   path: "src/test/resources/TestFiles/*.txt"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
   #Matching all file extensions within a directory
 - displayName: "TestPath1 - All file extensions"
   path: "src/test/resources/TestFiles/*.*"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
   #Matching a file with a regex in conjunction with a directory with a regex (any of the above can be used with this)
 - displayName: "TestPath1 - File and Dir regexes"
   path: "src/test/resources/Test*/*.*"
   ignoreHiddenFiles: true
-  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
-  recursiveFileCounts: false # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
-
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
 metrics:
    fileSize:
@@ -121,5 +127,11 @@ metrics:
      convert:
        "true": 1
        "false": 0
+   recursiveFileSize: #Calculates the size of a directory on disk
+     alias: "Size on Disk (Bytes)"
+     multiplier:
+     delta:
+     timeRollupType:
+     clusterRollupType:
 
 numberOfThreads: 20 #One thread per base directory + 1

@@ -72,6 +72,9 @@ public class FileMetricsProcessor {
             if (metricsFromConfig.containsKey(RECURSIVE_FILE_COUNT)) {
                 addToMetricList(RECURSIVE_FILE_COUNT, entry.getValue().getRecursiveNumberOfFiles(), entry.getKey());
             }
+            if (metricsFromConfig.containsKey(RECURSIVE_FILE_SIZE)) {
+                addToMetricList(RECURSIVE_FILE_SIZE, entry.getValue().getRecursiveFileSize(), entry.getKey());
+            }
         }
         return metrics;
     }

@@ -25,6 +25,7 @@ public class Constants {
     public static final String METRIC_SEPARATOR = "|";
     public static final String LAST_MODIFIED_TIME = "lastModifiedTime";
     public static final String RECURSIVE_FILE_COUNT = "recursiveFileCount";
+    public static final String RECURSIVE_FILE_SIZE = "recursiveFileSize";
 }
 
 

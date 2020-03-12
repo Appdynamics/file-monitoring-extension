@@ -16,13 +16,13 @@ public class PathToProcess {
     private String displayName;
     private String path;
     private boolean ignoreHiddenFiles;
-    private boolean enableRecursiveFileSizes;
     private boolean enableRecursiveFileCounts;
+    private boolean enableRecursiveFileSizes;
+    private boolean excludeSubdirectoryCount;
 
     public String getDisplayName() {
         return displayName;
     }
-
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -30,7 +30,6 @@ public class PathToProcess {
     public String getPath() {
         return path;
     }
-
     public void setPath(String path) {
         this.path = path;
     }
@@ -38,9 +37,22 @@ public class PathToProcess {
     public boolean getIgnoreHiddenFiles() {
         return ignoreHiddenFiles;
     }
-
     public void setIgnoreHiddenFiles(boolean ignoreHiddenFiles) {
         this.ignoreHiddenFiles = ignoreHiddenFiles;
+    }
+
+    public boolean getEnableRecursiveFileCounts() {
+        return enableRecursiveFileCounts;
+    }
+    public void setEnableRecursiveFileCounts(boolean enableRecursiveFileCounts) {
+        this.enableRecursiveFileCounts = enableRecursiveFileCounts;
+    }
+
+    public boolean getExcludeSubdirectoryCount() {
+        return excludeSubdirectoryCount;
+    }
+    public void setExcludeSubdirectoryCount(boolean excludeSubdirectoryCount) {
+        this.excludeSubdirectoryCount = excludeSubdirectoryCount;
     }
 
     public boolean getEnableRecursiveFileSizes() {
@@ -50,22 +62,4 @@ public class PathToProcess {
     public void setEnableRecursiveFileSizes(boolean enableRecursiveFileSizes) {
         this.enableRecursiveFileSizes = enableRecursiveFileSizes;
     }
-
-    public boolean getEnableRecursiveFileCounts() {
-        return enableRecursiveFileCounts;
-    }
-
-    public void setEnableRecursiveFileCounts(boolean enableRecursiveFileCounts) {
-        this.enableRecursiveFileCounts = enableRecursiveFileCounts;
-    }
-
-    public boolean getExcludeSubdirectoryCount() {
-        return excludeSubdirectoryCount;
-    }
-
-    public void setExcludeSubdirectoryCount(boolean excludeSubdirectoryCount) {
-        this.excludeSubdirectoryCount = excludeSubdirectoryCount;
-    }
-
-    private boolean excludeSubdirectoryCount;
 }

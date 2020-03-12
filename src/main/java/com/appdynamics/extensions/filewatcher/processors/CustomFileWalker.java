@@ -15,6 +15,7 @@ import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -164,6 +165,8 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         fileMetric.setNumberOfLines(-1);
         fileMetric.setRecursiveNumberOfFiles(pathToProcess.getEnableRecursiveFileCounts() ?
                 evaluateRecursiveFileCounts(path) : -1);
+        fileMetric.setRecursiveFileSize(pathToProcess.getEnableRecursiveFileSizes() ?
+                String.valueOf(FileUtils.sizeOfDirectoryAsBigInteger(path.toFile())) : "-1");
     }
 
     private long evaluateRecursiveFileCounts(Path path) {
