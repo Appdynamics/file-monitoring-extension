@@ -18,15 +18,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.appdynamics.extensions.filewatcher.IntegrationTestUtils.initializeMetricAPIService;
-
 public class MetricCheckIT {
 
     private MetricAPIService metricAPIService;
 
     @Before
     public void setup() {
-        metricAPIService = initializeMetricAPIService();
+        metricAPIService = ITUtils.initializeMetricAPIService();
     }
 
     @Test

@@ -1,16 +1,4 @@
-/*
- *  Copyright 2020. AppDynamics LLC and its affiliates.
- *  All Rights Reserved.
- *  This is unpublished proprietary source code of AppDynamics LLC and its affiliates.
- *  The copyright notice above does not evidence any actual or intended publication of such source code.
- *
- */
-
 package com.appdynamics.extensions.filewatcher;
-
-/*
- * @author Aditya Jagtiani
- */
 
 import com.appdynamics.extensions.conf.processor.ConfigProcessor;
 import com.appdynamics.extensions.controller.*;
@@ -27,13 +15,13 @@ import java.util.Map;
 
 import static com.appdynamics.extensions.Constants.ENCRYPTION_KEY;
 
-class IntegrationTestUtils {
+public class ITUtils {
 
-    private static final Logger logger = ExtensionsLoggerFactory.getLogger(IntegrationTestUtils.class);
+    private static final Logger logger = ExtensionsLoggerFactory.getLogger(ITUtils.class);
     private static File installDir = new File("src/integration-test/resources/conf/");
     private static File configFile = new File("src/integration-test/resources/conf/config.yml");
 
-    static MetricAPIService initializeMetricAPIService() {
+    public static MetricAPIService initializeMetricAPIService() {
         ControllerAPIService controllerAPIService = initializeControllerAPIService();
         if (controllerAPIService != null) {
             logger.info("Attempting to setup Metric API Service");
