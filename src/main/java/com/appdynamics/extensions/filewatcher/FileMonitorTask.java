@@ -26,6 +26,7 @@ import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isNetworkPathAccessible;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isWindowsNetworkPath;
@@ -43,7 +44,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
                     MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
         this.metricWriteHelper = metricWriteHelper;
         this.pathToProcess = pathToProcess;
-        this.keys = new HashMap<>();
+        this.keys = new ConcurrentHashMap<>();
         this.fileMetricsProcessor = new FileMetricsProcessor(monitorContextConfiguration.getMetricPrefix(),
                 (Map) monitorContextConfiguration.getConfigYml().get("metrics"), metricWriteHelper);
         this.executorService = monitorContextConfiguration.getContext().getExecutorService();
@@ -57,7 +58,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
             for (String baseDirectory : baseDirectories) {
                 if (isWindowsNetworkPath(baseDirectory)) {
                     if (isNetworkPathAccessible(baseDirectory)) {
-                        LOGGER.info("Network Path {} accessible, starting File Manager");
+                        LOGGER.info("Windows Network Path {} accessible, starting File Manager");
                         executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
                                 pathToProcess, fileMetricsProcessor));
                     } else {

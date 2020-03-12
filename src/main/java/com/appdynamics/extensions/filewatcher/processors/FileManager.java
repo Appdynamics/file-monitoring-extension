@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FileManager implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileManager.class);

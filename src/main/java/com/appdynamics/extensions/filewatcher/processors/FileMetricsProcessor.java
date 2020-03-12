@@ -39,7 +39,7 @@ public class FileMetricsProcessor {
         metrics = Lists.newArrayList();
     }
 
-    public void printMetrics(Map<String, FileMetric> fileMetrics) {
+    public synchronized void printMetrics(Map<String, FileMetric> fileMetrics) {
         List<Metric> metrics = getMetricList(fileMetrics);
         metricWriteHelper.transformAndPrintMetrics(metrics);
         metrics.clear();

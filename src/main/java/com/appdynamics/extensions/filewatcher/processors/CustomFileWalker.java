@@ -107,6 +107,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         fileMetric.setNumberOfFiles(-1);
         fileMetric.setOldestFileAge(-1);
         fileMetric.setRecursiveNumberOfFiles(-1);
+        fileMetric.setRecursiveFileSize("-1");
         fileMetric.setAvailable(true);
         fileMetric.setNumberOfLines(getNumberOfLinesFromFile(path));
         LOGGER.info("For file {}, File Size = {} & Last Modified Time = {} ms, Number of Lines " +

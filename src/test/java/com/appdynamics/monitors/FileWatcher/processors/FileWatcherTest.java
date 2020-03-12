@@ -80,6 +80,7 @@ public class FileWatcherTest {
         createNewFileInWatchedDirectory();
         Thread.sleep(30000);
         Assert.assertTrue(fileMetrics.containsKey("Testing|TF2.txt"));
+        t1.interrupt();
     }
 
     @Test

@@ -257,4 +257,3 @@ public class WindowsCustomFileWalkerTest {
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "\\")));
     }
 }
-
