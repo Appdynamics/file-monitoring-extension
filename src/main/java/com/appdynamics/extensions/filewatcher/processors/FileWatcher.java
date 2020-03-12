@@ -46,6 +46,7 @@ public class FileWatcher {
     }
 
     public void processWatchEvents() throws InterruptedException, IOException {
+        LOGGER.info("Polling the Watch Service for Events..");
         WatchKey watchKey = watchService.poll(60, TimeUnit.SECONDS);
         if (watchKey != null) {
             for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
@@ -55,7 +56,7 @@ public class FileWatcher {
                     Path eventPath = (Path) watchEvent.context();
                     Path directory = watchKeys.get(watchKey);
                     File child = directory.resolve(eventPath).toFile();
-                    LOGGER.info("Event {} detected for path {}", kind, child);
+                    LOGGER.info("Event {} detected for path {}. Processing", kind, child);
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         handleFileDeletion(child);
                     }
@@ -82,7 +83,7 @@ public class FileWatcher {
                 FileMetric fileMetric = entry.getValue();
                 fileMetric.setAvailable(false);
                 fileMetric.setFileSize("0");
-                fileMetric.setChanged(true);
+                fileMetric.setModified(true);
                 if(fileMetric.getNumberOfLines() != -1) {
                     fileMetric.setNumberOfLines(0);
                 }
@@ -90,7 +91,6 @@ public class FileWatcher {
                     fileMetric.setNumberOfFiles(0);
                     fileMetric.setRecursiveNumberOfFiles(0);
                 }
-                fileMetrics.put(entry.getKey(), fileMetric);
             }
         }
     }

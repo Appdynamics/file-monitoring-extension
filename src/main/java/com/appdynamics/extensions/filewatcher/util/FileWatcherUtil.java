@@ -29,7 +29,7 @@ public class FileWatcherUtil {
 
     public static List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
         List<PathToProcess> pathsToProcess = Lists.newArrayList();
-        for(Map<String, ?> path: configuredPaths) {
+        for (Map<String, ?> path : configuredPaths) {
             pathsToProcess.add(new PathToProcess() {{
                 setDisplayName((String) path.get("displayName"));
                 setPath((String) path.get("path"));
@@ -41,31 +41,29 @@ public class FileWatcherUtil {
         return pathsToProcess;
     }
 
-    public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir){
-        if(!baseDir.endsWith("/") || !baseDir.endsWith("\\")) {
-            if(baseDir.contains("/")) {
+    public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
+        if (!baseDir.endsWith("/") || !baseDir.endsWith("\\")) {
+            if (baseDir.contains("/")) {
                 baseDir += "/";
-            }
-            else {
+            } else {
                 baseDir += "\\";
             }
         }
         StringBuilder builder = new StringBuilder();
         builder.append(fileDisplayName);
-        String suffix = path.toString().replace(baseDir.substring(0, baseDir.length()-1), "")
+        String suffix = path.toString().replace(baseDir.substring(0, baseDir.length() - 1), "")
                 .replace(File.separator, "|");
-        if(!suffix.startsWith("|")){
+        if (!suffix.startsWith("|")) {
             builder.append('|');
             builder.append(suffix);
-        }
-        else{
+        } else {
             builder.append(suffix);
         }
         return builder.toString();
     }
 
     public static int getNumberOfLinesFromFile(Path file) throws IOException {
-        if(file.toFile().exists()) {
+        if (file.toFile().exists()) {
             try (Stream<String> fileStream = Files.lines(file)) {
                 return (int) fileStream.count();
             }
@@ -74,9 +72,9 @@ public class FileWatcherUtil {
     }
 
     public static long calculateRecursiveFileCount(Path path, boolean ignoreHiddenFiles,
-                                                   boolean excludeSubdirectoriesFromFileCounts ) throws IOException {
-        if(ignoreHiddenFiles) {
-            if(!excludeSubdirectoriesFromFileCounts) {
+                                                   boolean excludeSubdirectoriesFromFileCounts) throws IOException {
+        if (ignoreHiddenFiles) {
+            if (!excludeSubdirectoriesFromFileCounts) {
                 return Files.walk(path)
                         .parallel()
                         .filter(p -> (p.toFile().isFile()
@@ -89,9 +87,8 @@ public class FileWatcherUtil {
                     .filter(p -> !p.toFile().isDirectory()
                             && !p.toFile().isHidden())
                     .count();
-        }
-        else {
-            if(!excludeSubdirectoriesFromFileCounts) {
+        } else {
+            if (!excludeSubdirectoriesFromFileCounts) {
                 return Files.walk(path)
                         .parallel()
                         .filter(p -> (p.toFile().isFile()
@@ -123,7 +120,7 @@ public class FileWatcherUtil {
 
         File file = new File(path);
 
-        if(!file.exists()) {
+        if (!file.exists()) {
             return false;
         }
 
@@ -151,7 +148,7 @@ public class FileWatcherUtil {
             p.getOutputStream().close();
             int rc = p.waitFor();
             return rc == 0;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Unable to run 'net use' on " + driveLetter, e);
         }
     }

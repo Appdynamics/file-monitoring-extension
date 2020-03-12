@@ -87,6 +87,21 @@ public class FileMonitor extends ABaseMonitor {
         }
 	}
 
+    public static void main(String[] args) throws TaskExecutionException {
+        ConsoleAppender ca = new ConsoleAppender();
+        ca.setWriter(new OutputStreamWriter(System.out));
+        ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
+        ca.setThreshold(Level.DEBUG);
+        org.apache.log4j.Logger.getRootLogger().addAppender(ca);
+
+        FileMonitor fileWatcher = new FileMonitor();
+        Map<String, String> argsMap = new HashMap<String, String>();
+        argsMap.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/" +
+                "src/main/resources/conf/configTesting.yml");
+
+        fileWatcher.execute(argsMap, null);
+    }
+
 	@Override
     public void onComplete() {
 	    LOGGER.info("File Monitoring Jobs Completed");

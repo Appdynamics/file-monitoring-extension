@@ -1,8 +1,6 @@
 #For shared directories on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
 
-# Make sure the metric prefix ends with a |
-
 #Use this metric prefix when SIM is enabled.
 metricPrefix: "Custom Metrics|File Watcher|"
 
@@ -114,5 +112,14 @@ metrics:
       delta:
       timeRollupType:
       clusterRollupType:
+   modified:
+     alias: "Modified"
+     multiplier:
+     delta:
+     timeRollupType:
+     clusterRollupType:
+     convert:
+       "true": 1
+       "false": 0
 
 numberOfThreads: 20 #One thread per base directory + 1

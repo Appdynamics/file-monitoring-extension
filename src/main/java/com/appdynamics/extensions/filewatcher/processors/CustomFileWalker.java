@@ -30,6 +30,7 @@ import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.*;
 
 public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(CustomFileWalker.class);
+
     private GlobPathMatcher globPathMatcher;
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
@@ -51,29 +52,25 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             return FileVisitResult.CONTINUE;
         }
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.info("Match found for entered path {}", path);
-            fileMetrics.put(getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory),
-                    generateDirectoryMetrics(path, basicFileAttributes));
+            LOGGER.info("Match found for entered path {}. Visiting Directory", path.getFileName());
+            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+            fileMetrics.put(metricSuffix,
+                    generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
         }
         return FileVisitResult.CONTINUE;
     }
 
-    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes) {
+    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes, String metricSuffix) {
         LOGGER.info("Generating directory metrics for {}", path);
-        FileMetric fileMetric = new FileMetric();
-        setBasicFileAttributesForFile(path, basicFileAttributes, fileMetric);
-        setFileCountAndOldestFileAge(path, fileMetric);
-        fileMetric.setAvailable(true);
-        fileMetric.setNumberOfLines(-1);
-        if (pathToProcess.getEnableRecursiveFileCounts()) {
-            try {
-                fileMetric.setRecursiveNumberOfFiles(calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles(),
-                        pathToProcess.getExcludeSubdirectoryCount()));
-            }
-            catch (IOException ex) {
-                LOGGER.error("Error encountered while calculating recursive file count for directory {}", path, ex);
-            }
+        FileMetric fileMetric;
+        if (fileMetrics.containsKey(metricSuffix)) {
+            fileMetric = fileMetrics.get(metricSuffix);
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
+        } else {
+            fileMetric = new FileMetric();
         }
+        setBasicAttributes(path, basicFileAttributes, fileMetric);
+        setOtherDirectoryAttributes(path, fileMetric);
         LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} ms", path.getFileName(),
                 fileMetric.getFileSize(), fileMetric.getNumberOfFiles(), fileMetric.getOldestFileAge());
         return fileMetric;
@@ -87,31 +84,48 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         }
 
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.debug("Found match for entered path" + path);
-            FileMetric fileMetric = new FileMetric();
-            setBasicFileAttributesForFile(path, basicFileAttributes, fileMetric);
-            fileMetric.setNumberOfFiles(-1);
-            fileMetric.setOldestFileAge(-1);
-            fileMetric.setAvailable(true);
-            fileMetric.setNumberOfLines(getNumberOfLinesFromFile(path));
-            LOGGER.info("For file {}, Availability = {}, File Size = {} & Last Modified Time = {} ms, Number of Lines " +
-                            "= {}", path.getFileName(), fileMetric.getAvailable(), fileMetric.getFileSize(),
-                    fileMetric.getNumberOfFiles(), fileMetric.getNumberOfLines());
-            fileMetrics.put(getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory), fileMetric);
+            LOGGER.debug("Found match for entered path {}. Visiting File", path.getFileName());
+            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+            fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
         }
         return FileVisitResult.CONTINUE;
     }
 
-    private void setBasicFileAttributesForFile(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
+    @NotNull
+    private FileMetric generateFileMetrics(Path path, BasicFileAttributes basicFileAttributes, String metricSuffix)
+            throws IOException {
+        LOGGER.debug("Generating File Metrics for {}", path.getFileName());
+        FileMetric fileMetric;
+        if (fileMetrics.containsKey(metricSuffix)) {
+            fileMetric = fileMetrics.get(metricSuffix);
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
+        } else {
+            fileMetric = new FileMetric();
+        }
+        setBasicAttributes(path, basicFileAttributes, fileMetric);
+        fileMetric.setNumberOfFiles(-1);
+        fileMetric.setOldestFileAge(-1);
+        fileMetric.setRecursiveNumberOfFiles(-1);
+        fileMetric.setAvailable(true);
+        fileMetric.setNumberOfLines(getNumberOfLinesFromFile(path));
+        LOGGER.info("For file {}, File Size = {} & Last Modified Time = {} ms, Number of Lines " +
+                        "= {}", path.getFileName(), fileMetric.getFileSize(), fileMetric.getLastModifiedTime(),
+                fileMetric.getNumberOfLines());
+        return fileMetric;
+    }
+
+    private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
+            LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
             fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis());
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {
-            LOGGER.debug("Couldn't find basic file attributes for {}", path.toString());
+            LOGGER.debug("Couldn't find basic file attributes for {}", path.getFileName());
         }
     }
 
-    private void setFileCountAndOldestFileAge(@NotNull Path path, FileMetric fileMetric) {
+    private void setOtherDirectoryAttributes(@NotNull Path path, FileMetric fileMetric) {
+        LOGGER.debug("Setting other directory attributes for {}", path.getFileName());
         int fileCount = 0;
         long oldestFile = 0L;
 
@@ -146,5 +160,21 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             oldestFileAge = (currentTimeInMillis - oldestFile) / 1000;
         }
         fileMetric.setOldestFileAge(oldestFileAge);
+        fileMetric.setAvailable(true);
+        fileMetric.setNumberOfLines(-1);
+        fileMetric.setRecursiveNumberOfFiles(pathToProcess.getEnableRecursiveFileCounts() ?
+                evaluateRecursiveFileCounts(path) : -1);
+    }
+
+    private long evaluateRecursiveFileCounts(Path path) {
+        try {
+            LOGGER.debug("Calculating recursive file count for {}", path);
+            return calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles(),
+                    pathToProcess.getExcludeSubdirectoryCount());
+        } catch (IOException ex) {
+            LOGGER.error("Error encountered while calculating recursive file count for directory {}",
+                    path.getFileName(), ex);
+        }
+        return -1;
     }
 }

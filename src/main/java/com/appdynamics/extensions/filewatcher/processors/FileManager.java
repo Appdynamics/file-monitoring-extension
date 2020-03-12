@@ -51,13 +51,14 @@ public class FileManager implements Runnable {
             fileMetricsProcessor.printMetrics(fileMetrics);
             watch();
         } catch (InterruptedException | IOException ex) {
-            LOGGER.error("Error encountered while walking File {}", baseDirectory, ex);
+            LOGGER.error("Error encountered while walking {}", baseDirectory, ex);
         }
     }
 
     private void walk(String baseDirectory) throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
+        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+                fileMetrics));
     }
 
     private void watch() throws IOException, InterruptedException {

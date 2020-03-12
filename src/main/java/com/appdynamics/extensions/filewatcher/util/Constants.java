@@ -21,9 +21,10 @@ public class Constants {
     public static final String OLDEST_FILE_AGE = "oldestFileAge";
     public static final String NUMBER_OF_LINES = "numberOfLines";
     public static final String AVAILABLE = "available";
-    public static final String CHANGED = "changed";
+    public static final String MODIFIED = "modified";
     public static final String METRIC_SEPARATOR = "|";
     public static final String LAST_MODIFIED_TIME = "lastModifiedTime";
+    public static final String RECURSIVE_FILE_COUNT = "recursiveFileCount";
 }
 
 

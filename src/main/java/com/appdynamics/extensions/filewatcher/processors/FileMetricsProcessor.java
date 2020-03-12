@@ -43,6 +43,7 @@ public class FileMetricsProcessor {
         List<Metric> metrics = getMetricList(fileMetrics);
         metricWriteHelper.transformAndPrintMetrics(metrics);
         metrics.clear();
+        resetFileModifiedFlag(fileMetrics);
     }
 
     private List<Metric> getMetricList(Map<String, FileMetric> fileMetrics) {
@@ -62,11 +63,14 @@ public class FileMetricsProcessor {
             if (metricsFromConfig.containsKey(AVAILABLE)) {
                 addToMetricList(AVAILABLE, entry.getValue().getAvailable(), entry.getKey());
             }
-            if (metricsFromConfig.containsKey(CHANGED)) {
-                addToMetricList(CHANGED, entry.getValue().getChanged(), entry.getKey());
+            if (metricsFromConfig.containsKey(MODIFIED)) {
+                addToMetricList(MODIFIED, entry.getValue().getModified(), entry.getKey());
             }
             if (metricsFromConfig.containsKey(LAST_MODIFIED_TIME)) {
                 addToMetricList(LAST_MODIFIED_TIME, entry.getValue().getLastModifiedTime(), entry.getKey());
+            }
+            if (metricsFromConfig.containsKey(RECURSIVE_FILE_COUNT)) {
+                addToMetricList(RECURSIVE_FILE_COUNT, entry.getValue().getRecursiveNumberOfFiles(), entry.getKey());
             }
         }
         return metrics;
@@ -79,6 +83,12 @@ public class FileMetricsProcessor {
                     path + METRIC_SEPARATOR + metricProps.get("alias"), metricProps);
             metrics.add(metric);
             LOGGER.info("Added metric {} to the queue for publishing", metric.getMetricPath());
+        }
+    }
+
+    private void resetFileModifiedFlag(Map<String, FileMetric> fileMetrics) {
+        for(Map.Entry<String, FileMetric> entry: fileMetrics.entrySet()) {
+            entry.getValue().setModified(false);
         }
     }
 }

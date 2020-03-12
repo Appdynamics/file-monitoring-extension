@@ -13,7 +13,7 @@ package com.appdynamics.extensions.filewatcher.config;
  */
 
 public class FileMetric {
-    private boolean isChanged;
+    private boolean isModified;
     private String fileSize;
     private int numberOfFiles;
     private long oldestFileAge;
@@ -39,11 +39,11 @@ public class FileMetric {
         isAvailable = available;
     }
 
-    public boolean getChanged() {
-        return isChanged;
+    public boolean getModified() {
+        return isModified;
     }
-    public void setChanged(boolean isChanged) {
-        this.isChanged = isChanged;
+    public void setModified(boolean isChanged) {
+        this.isModified = isChanged;
     }
 
     public String getFileSize() {
