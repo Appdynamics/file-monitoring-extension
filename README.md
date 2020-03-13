@@ -7,7 +7,7 @@ The AppDynamics File Watcher Extension can be used to provide metrics from confi
 In order to use this extension, you need a [Standalone JAVA Machine Agent](https://docs.appdynamics.com/display/PRO44/Java+Agent) or a [SIM Agent](https://docs.appdynamics.com/display/PRO44/Server+Visibility).
 For more details on downloading these products, please visit https://download.appdynamics.com/.
 
-The extension can be deployed on the same box as the one with the files to be monitored, or remotely if monitoring shared network paths.
+The extension can be deployed on the same box as the one with the files to be monitored, or remotely if monitoring shared network paths. For Windows network paths, it is recommended to map the paths locally prior to monitoring.
 
 ## Installation
 1. To build from source, clone this repository and run 'mvn clean install'. This will produce a FileWatcher-VERSION.zip in the target directory
@@ -35,11 +35,11 @@ If SIM is enabled, please use the default metric prefix.
 The paths to be monitored must be configured under ```pathsToProcess```. The following fields are present in each:
 
 ####2.1 displayName
-A mandatory field that represents the current path in the ```metricPrefix```
+A mandatory field that acts as an alias for a configured path in the Metric Browser. 
 
 #### 2.2 path
 The actual path to the directories or files to be monitored. Consider our directory to be ```/src/test/resources/TestFiles```. 
-There are multiple scenarios that can be configured in the ```pathsToProcess``` section. The use cases supported here as as follows: 
+There are multiple scenarios that can be configured in the ```pathsToProcess``` section. The use cases supported are as follows: 
 
 ##### 2.2.1 Monitoring a specific directory
 ```path: "src/test/resources/TestFiles"```
@@ -57,7 +57,7 @@ This will generate file metrics for only ```txt``` files withing TestFiles.
 ```path: "src/test/resources/TestFiles/*.*"```
 This will generate file metrics for files of all extensions within TestFiles.
 
-##### 2.2.5. Directory and File wildcards
+##### 2.2.5. Directory and File Glob Patterns
 ```path: "src/test/resources/TestFiles/2020*/*.log"```
 This will generate file metrics for all log files within subdirectories of TestFiles that begin with '2020'. 
 
@@ -65,144 +65,82 @@ This will generate file metrics for all log files within subdirectories of TestF
 ```path: "src/test/resources/TestFiles/*"```
 This will generate file and directory metrics for all files and subdirectories within TestFiles only at the first level. 
 
-##### 2.2.7 Fully recursive
+##### 2.2.7 Fully Recursive
 ```path: "src/test/resources/TestFiles/**"```
 This will recursively generate file and directory metrics for all files and subdirectories within TestFiles at all levels. 
 
+##### 2.2.8 Fully Recursive + File Extensions
+```path: "src/test/resources/TestFiles/**/*.*"```
+This will recursively generate file metrics for all files that match the glob pattern within TestFiles at all levels. 
 
 
-### 3. Metric Character Replacers
+#### 2.3 ignoreHiddenFiles
+A flag to include or exclude any hidden files or directories encountered. 
 
-This section can be used to replace any characters in a match with the specified characters. They come into effect only a match is found for the 
-original pattern. We have pre-configured three metric character replacers for characters considered invalid by the AppDynamics Metric Browser. 
+#### 2.4 excludeSubdirectoriesFromFileCount
+Every directory has a metric that counts the number of files within that directory. When this flag is set to true, the 
+extension will simply exclude any subdirectories from this count. 
 
-```
-#Replaces characters in metric name with the specified characters.
-# "replace" takes any regular expression
-# "replaceWith" takes the string to replace the matched characters
-metricCharacterReplacer:
-    - replace: ":"
-      replaceWith: ";"
-    - replace: "\\|"
-      replaceWith: "#"
-    - replace: "\\,"
-      replaceWith: "#"
-```
+#### 2.5 recursiveFileCounts
+The count mentioned in 2.4 only includes the files within a directory at the immediate next level. When this flag is set 
+to true, the extension will publish a new metric that recursively counts the number of files within the configured directory 
+and within all subdirectories. This can be used in conjunction with 2.3 & 2.4.  
 
-### 4. Number of Threads 
-The extension uses one thread per configured log, and one thread per log file within. Let's consider our initial example: 
-
-```
-logs:
-     - displayName: "Test Log"
-       logDirectory: "/Users/XYZ/MyApplication/logs"
-       logName: "myLog.log*"
-       searchStrings:
-           #displayName Should be unique across the various patterns.
-          - displayName: "Errors"
-            pattern: "ERROR"
-            matchExactString: true
-            caseSensitive: true
-            printMatchedString: true
-```
-
-Assuming that your logger settings make ```myLog.log``` rollover to a max of five files (myLog.log.1 to myLog.log.5), the number of threads needed in this case would be 7. 
-(One for the log directory, and six for the files within). 
-
-This can be configured using the ```numberOfThreads``` field in the config.yml. 
+#### 2.6 recursiveFileSizes
+The File Size metric for each directory only shows the size of the directory's contents (in bytes) at the first level. 
+When this flag is set to true, the extension publishes a new metric that shows the size of the directory on the disk. Please note that 
+this metric is only available for directories. 
 
 
-### 5. Configuring the monitor.xml
+## Metrics
+The extension provides the following metrics: 
 
-Configure the path to the config.yml by editing the ```<task-arguments>``` in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/LogMonitor/` directory: 
+### 1. File Size (Bytes)
+Available for both, files and directories. 
+
+### 2. Oldest File Age
+Available only for directories.
+
+### 3. File Count
+Available only for directories. 
+
+### 4. Number of Lines
+Available only for files. 
+
+### 5. Last Modified Time
+Available for both, files and directories. 
+
+### 6. Available
+Available for both, files and directories. Will have a value of 0 when a previously 'available' file gets deleted.
+
+### 7. Recursive File Count
+Available only for directories. Refer to 2.5 for detailed information. 
+
+### 8. Size on Disk (Bytes)
+Available only for directories. Refer to 2.6 for detailed information. 
+
+### 9. Modified
+Available for both, files and directories. Will have a value of 1 if a file/directory being monitored was modified in the last 
+60 seconds. 
+
+
+### Number of Threads 
+Always include one thread per base directory + 1. 
+
+
+### Configuring the monitor.xml
+
+Configure the path to the config.yml by editing the ```<task-arguments>``` in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/FileWatcher/` directory: 
 
 ```
 <task-arguments>
      <!-- config file-->
-     <argument name="config-file" is-required="true" default-value="monitors/LogMonitor/config.yml" />
+     <argument name="config-file" is-required="true" default-value="monitors/FileWatcher/config.yml" />
       ....
 </task-arguments>
 ```
 
-Restart the machine agent once this is done. 
-
-### 6. Events Service
-
-Before proceeding with this step, please ensure that all the prerequisites and steps to install the AppDynamics Events Service have been met. Refer to the sub-pages under 
-https://docs.appdynamics.com/display/PRO45/Events+Service+Deployment for detailed information. 
-
-The extension can now publish log matches to the Events Service. Use the following section in the config.yml for this feature: 
-
-```
-sendDataToEventsService: true
-
-logMatchOffset: 5
-
-# This field contains the various parameters required to initiate a connection and send data to the AppDynamics Events Service.
-eventsServiceParameters:
-  host: 
-  port: 
-  globalAccountName:
-  eventsApiKey: 
-  useSSL: 
-```
-
-The logMatchOffset section appends the specified number of lines with the line containing the actual log match and all 
-of this makes the body of an event. This can be particularly useful while trying to search for exceptions and also retrieving the stack trace that follows. 
-
-Note that enabling this feature will not impact the regular delivery of metrics to the metric browser. 
-
-
-## Metrics
-
-The extension publishes the following metrics: 
-
-**1. File size in bytes** 
-
-For the next two metrics, let's use the following configuration as an example: 
-
-myLog.log 
-(This is a static log. It does not rollover and no further content is added to this file)
-```
-[Thread-1] 29 Apr 2014 12:31:18,647  INFO DynamicServiceManager - Scheduling DynamicServiceManager at interval of 30 seconds
-[Thread-1] 29 Apr 2014 12:31:18,647  INFO LifeCycleManager - Started service [DynamicServiceManager]
-```
-
-config.yml 
-```
-metricPrefix: "Server|Component:<TIER_ID>|Custom Metrics|Log Monitor"
-
-logs:
-     - displayName: "Test Log"
-       logDirectory: "/Users/XYZ/MyApplication/logs"
-       logName: "myLog.log"
-       searchStrings:
-           #displayName Should be unique across the various patterns.
-          - displayName: "Info Statements"
-            pattern: "INFO"
-            matchExactString: true
-            caseSensitive: true
-            printMatchedString: true
-```
-
-**2. Occurrences of each configured pattern**
-When the extension starts, a base occurrence metric for the pattern ```INFO``` is initialized with a value of 0. This value will represent the unique occurrences of ```INFO``` 
-observed every minute. It will reset to 0 if no occurrences of ```INFO``` are found in any given minute. This metric is always reported, regardless of the state of 
-the ```printMatchedString``` flag and can be used to set up alerts and health rules. 
-
-In this case, the metric will be reported as: 
-
-```Application Infrastructure Performance|<TIER>|Custom Metrics|Log Monitor|Test Log|Info Statements|Occurrences``` with a value of 2 for when the log is read for the first time. The metric then resets to 
-0 in the next minute, until the log is repopulated with more ```INFO``` statements. 
-
-
-**3. Occurrences of matched strings**
-This metric is reported only when the ```printMatchedString``` flag is set to true for a searchString. In this case, the following metrics will be reported when the log is read for the first time: 
-
-```Application Infrastructure Performance|<TIER>|Custom Metrics|Log Monitor|Test Log|Info Statements|Occurrences``` with a value of 2 
-```Application Infrastructure Performance|<TIER>|Custom Metrics|Log Monitor|Test Log|Info Statements|Matches|INFO``` with a value of 2
-
-Both metrics reset to a value of 0 in the next minute, until the log is repopulated with more ```INFO``` statements. 
+Restart the machine agent once this is done. Note that this is a continuous extension, as it actively watches each configured path for changes. 
 
 ## Extensions Workbench
 Workbench is an inbuilt feature provided with each extension in order to assist you to fine tune the extension setup before you actually deploy it on the controller. Please review the following [document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-the-Extensions-WorkBench/ta-p/30130) for how to use the Extensions WorkBench
@@ -224,17 +162,17 @@ If after going through the Troubleshooting Document, you haven't been able to ge
 
 4. Start the machine agent and please let it run for 10 mins. Then zip and upload all the logs in the directory <MachineAgent>/logs/*.
 5. Attach the zipped <MachineAgent>/conf/* directory.
-6. Attach the zipped <MachineAgent>/monitors/LogMonitor directory.
+6. Attach the zipped <MachineAgent>/monitors/FileWatcher directory.
 
 For any support related questions, you can also contact help@appdynamics.com.
 
 ## Contributing
-Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/log-monitoring-extension).
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/file-monitoring-extension).
 
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |4.0.0       |
+|Extension Version         |3.0       |
 |Controller Compatibility  |4.0 or Later|
-|Last Update               |12/11/2019 |
-|List of Changes           |[Change log](https://github.com/Appdynamics/log-monitoring-extension/blob/master/CHANGELOG.md) |
+|Last Update               |03/12/2020 |
+|List of Changes           |[Change log](https://github.com/Appdynamics/file-monitoring-extension/blob/master/CHANGELOG.md) |

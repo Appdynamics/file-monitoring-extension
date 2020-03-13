@@ -1,6 +1,7 @@
 Changes
 =======
 ## 3.0.0 (March 2020)
+* Upgraded to v2.2.1 of the Extensions SDK
 * Incorporated the NIO WatchService for superior performance and scalability
 * Added functionality to assess file and directory availability
 * Added functionality to calculate directory sizes on disk (recursive sizes)
@@ -13,20 +14,15 @@ Changes
 * Improved and easier to understand documentation
 * General bug fixes, enhancements, tweaks and additional logging statements
 
-## 3.0.0 (August 2018)
-* Complete revamp using Commons 2.1.0. Support for character sets that are not UTF-8 encoded. General bug fixes, performance improvements and detailed documentation
+## 2.2.1 (February 2018)
+* Added licensing information
 
-## 2.0.8 (August 2017)
-* Deeper concurrency to cover very fast log rollovers
+## 2.2.0 (October 2017)
+* General bug fixes and enhancements
 
-## 2.0.5 (July 2017)
-* Added global occurrence metric for all configured matches 
+## 1.5.0 (November 2016)
+* Upgraded to v1.6 of the Extensions SDK
+* General performance enhancements and testing 
 
-## 2.0.0 (May 2015) 
-* Added concurrency + support for dynamic filename and regex search strings
-
-## 1.1.0 (November 2014) 
-* Addition of a flag for reporting a complete matched string
-
-## 1.0.0 (June 2014)
+## 1.0.0 (August 2014)
 * Initial release
