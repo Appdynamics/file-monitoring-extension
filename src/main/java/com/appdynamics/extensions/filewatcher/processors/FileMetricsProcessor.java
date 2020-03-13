@@ -81,7 +81,7 @@ public class FileMetricsProcessor {
 
     private void addToMetricList(String name, Object value, String path) {
         Map<String, ?> metricProps = metricsFromConfig.get(name);
-        if (!value.equals(-1)) {
+        if (!String.valueOf(value).equals("-1")) {
             Metric metric = new Metric(name, String.valueOf(value), metricPrefix + METRIC_SEPARATOR +
                     path + METRIC_SEPARATOR + metricProps.get("alias"), metricProps);
             metrics.add(metric);
