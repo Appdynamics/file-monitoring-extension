@@ -27,8 +27,3 @@ public class Constants {
     public static final String RECURSIVE_FILE_COUNT = "recursiveFileCount";
     public static final String RECURSIVE_FILE_SIZE = "recursiveFileSize";
 }
-
-
-
-
-

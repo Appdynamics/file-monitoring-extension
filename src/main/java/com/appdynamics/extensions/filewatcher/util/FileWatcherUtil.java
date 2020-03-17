@@ -120,13 +120,11 @@ public class FileWatcherUtil {
         }
 
         File file = new File(path);
-
         if (!file.exists()) {
             return false;
         }
 
         path = file.getAbsolutePath();
-
         if (path.startsWith("//")
                 || path.startsWith("\\\\")) {
             return true;
