@@ -19,6 +19,7 @@ import com.appdynamics.extensions.filewatcher.processors.FilePathProcessor;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.WatchKey;
@@ -39,6 +40,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     private Map<WatchKey, Path> keys;
     private FileMetricsProcessor fileMetricsProcessor;
     private MonitorExecutorService executorService;
+    private WatchService watchService;
 
     FileMonitorTask(MonitorContextConfiguration monitorContextConfiguration,
                     MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
@@ -53,7 +55,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     @Override
     public void run() {
         try {
-            WatchService watchService = FileSystems.getDefault().newWatchService();
+            watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
             for (String baseDirectory : baseDirectories) {
                 if (isWindowsNetworkPath(baseDirectory)) {
@@ -70,8 +72,16 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
                             pathToProcess, fileMetricsProcessor));
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             LOGGER.error("Task failed for path {}", pathToProcess.getPath(), ex);
+        }
+        finally {
+            try {
+                watchService.close();
+            }
+            catch (IOException ex) {
+                LOGGER.error("Error encountered while closing WatchService", ex);
+            }
         }
     }
 
