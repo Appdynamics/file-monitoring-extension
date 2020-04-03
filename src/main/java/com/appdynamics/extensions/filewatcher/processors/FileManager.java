@@ -56,6 +56,7 @@ public class FileManager implements Runnable {
         }
     }
 
+    //#TODO walk method can be made as a utility method
     private void walk(String baseDirectory) throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,

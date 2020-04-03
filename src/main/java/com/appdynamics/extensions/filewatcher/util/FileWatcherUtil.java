@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 
 public class FileWatcherUtil {
 
+    //#TODO This does not has to be a utility method and one with a public visibility. This can be a private method in
+    // the FileMonitor class itself.
     public static List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
         List<PathToProcess> pathsToProcess = Lists.newArrayList();
         for (Map<String, ?> path : configuredPaths) {
