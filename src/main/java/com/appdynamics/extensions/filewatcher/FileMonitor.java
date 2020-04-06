@@ -10,25 +10,17 @@ package com.appdynamics.extensions.filewatcher;
 
 import com.appdynamics.extensions.ABaseMonitor;
 import com.appdynamics.extensions.TasksExecutionServiceProvider;
-import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
-import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.OutputStreamWriter;
-import java.nio.file.WatchService;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.Constants.*;
-import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getPathsToProcess;
 import static com.appdynamics.extensions.util.AssertUtils.assertNotNull;
 
 /*
@@ -86,6 +78,21 @@ public class FileMonitor extends ABaseMonitor {
 	        LOGGER.error("Error encountered while getting paths to process from config", ex);
         }
 	}
+
+    private List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
+        List<PathToProcess> pathsToProcess = Lists.newArrayList();
+        for (Map<String, ?> path : configuredPaths) {
+            pathsToProcess.add(new PathToProcess() {{
+                setDisplayName((String) path.get("displayName"));
+                setPath((String) path.get("path"));
+                setIgnoreHiddenFiles(Boolean.valueOf(path.get("ignoreHiddenFiles").toString()));
+                setEnableRecursiveFileCounts(Boolean.valueOf(path.get("recursiveFileCounts").toString()));
+                setExcludeSubdirectoryCount(Boolean.valueOf(path.get("excludeSubdirectoriesFromFileCount").toString()));
+                setEnableRecursiveFileSizes(Boolean.valueOf(path.get("recursiveFileSizes").toString()));
+            }});
+        }
+        return pathsToProcess;
+    }
 
 	@Override
     public void onComplete() {

@@ -24,6 +24,8 @@ import java.nio.file.*;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
+
 public class FileWatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatcher.class);
 
@@ -60,7 +62,7 @@ public class FileWatcher {
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         handleFileDeletion(child);
                     }
-                    walk(baseDirectory);
+                    walk(baseDirectory, pathToProcess, fileMetrics);
                 }
             }
 
@@ -71,13 +73,6 @@ public class FileWatcher {
         }
         fileMetricsProcessor.printMetrics(fileMetrics);
     }
-
-    // #TODO walk method can be made as a utility method
-    private void walk(String baseDirectory) throws IOException {
-        GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess, fileMetrics));
-    }
-
 
     private void handleFileDeletion(File childPath) {
         for (Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {

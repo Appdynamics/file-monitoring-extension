@@ -119,7 +119,6 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
             LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
-            // #TODO Check if "stat" command might be useful
             fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis());
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {

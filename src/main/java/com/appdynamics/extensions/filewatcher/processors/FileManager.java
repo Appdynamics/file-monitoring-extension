@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
+
 public class FileManager implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileManager.class);
 
@@ -48,19 +50,12 @@ public class FileManager implements Runnable {
     public void run() {
         LOGGER.info("Attempting to walk directory {}", baseDirectory);
         try {
-            walk(baseDirectory);
+            walk(baseDirectory, pathToProcess, fileMetrics);
             fileMetricsProcessor.printMetrics(fileMetrics);
             watch();
         } catch (InterruptedException | IOException ex) {
             LOGGER.error("Error encountered while walking {}", baseDirectory, ex);
         }
-    }
-
-    //#TODO walk method can be made as a utility method
-    private void walk(String baseDirectory) throws IOException {
-        GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
-                fileMetrics));
     }
 
     private void watch() throws IOException, InterruptedException {

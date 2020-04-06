@@ -11,15 +11,19 @@ package com.appdynamics.extensions.filewatcher.util;
  * @author Aditya Jagtiani
  */
 
+import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
+import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
+import com.appdynamics.extensions.filewatcher.processors.FileManager;
 import com.google.common.collect.Lists;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,21 +31,11 @@ import java.util.stream.Stream;
 
 public class FileWatcherUtil {
 
-    //#TODO This does not has to be a utility method and one with a public visibility. This can be a private method in
-    // the FileMonitor class itself.
-    public static List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
-        List<PathToProcess> pathsToProcess = Lists.newArrayList();
-        for (Map<String, ?> path : configuredPaths) {
-            pathsToProcess.add(new PathToProcess() {{
-                setDisplayName((String) path.get("displayName"));
-                setPath((String) path.get("path"));
-                setIgnoreHiddenFiles(Boolean.valueOf(path.get("ignoreHiddenFiles").toString()));
-                setEnableRecursiveFileCounts(Boolean.valueOf(path.get("recursiveFileCounts").toString()));
-                setExcludeSubdirectoryCount(Boolean.valueOf(path.get("excludeSubdirectoriesFromFileCount").toString()));
-                setEnableRecursiveFileSizes(Boolean.valueOf(path.get("recursiveFileSizes").toString()));
-            }});
-        }
-        return pathsToProcess;
+    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
+            throws IOException {
+        GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
+        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+                fileMetrics));
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
