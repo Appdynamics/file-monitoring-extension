@@ -1,30 +1,137 @@
-# List of files
-fileToProcess:
-
-  - displayName: ""
-    path: ""
-    ignoreHiddenFiles: true
-    includeFilesInDirectory: true
-
-#For the shared directory on windows the path should be like
+#For shared directories on windows the path should be like
 # path: "\\\\1.2.3.4\\abc\\def\\ProductI
 
+#Use this metric prefix when SIM is enabled.
+metricPrefix: "Custom Metrics|File Watcher|"
 
-# If true then an extra metric will be shown that will give age of the oldest file (in seconds when the file was last
-# modified and compared to current time) in the directory specified above.
-# For files given above it will not display this metric
-isOldestFileAgeMetricRequired: true
+# To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/LATEST/Build+a+Monitoring+Extension+Using+Java
+#metricPrefix: "Server|Component:<Component_ID OR Component_Name>|Custom Metrics|File Watcher|"
 
-# If true then an extra metric will be shown that will give number of files in the directories specified above.
-# For files given above it will not display this metric
-isFileCountRequired: true
+pathsToProcess:
+  # Matching all files and directories within TestFiles, recursively
+- displayName: "TestPath1 - Fully Recursive"
+  path: "src/test/resources/TestFiles/**"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false #Counts only the 'files' under the base directory and exclude subdirectories
+  recursiveFileCounts: false # Provides the total count (recursively) of files within the base directory and each subdirectory
+  recursiveFileSizes: true # Calculates a directory's size on disk
 
-# If true then all the hidden files will be ignored monitoring.
-ignoreHiddenFiles: true
+  #Matching all files and directories within TestFiles, non-recursively
+- displayName: "TestPath1 - Single level *"
+  path: "src/test/resources/TestFiles/*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
-# Make sure the metric prefix ends with a |
-# This will create it in specific Tier/Component. Make sure to replace <COMPONENT_ID> with the appropriate one from your environment.
-# To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/PRO42/Build+a+Monitoring+Extension+Using+Java
-metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|FileWatcher|"
+  #Matching only the configured directory
+- displayName: "TestPath1 - Specific Directory"
+  path: "src/test/resources/TestFiles"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
 
-numberOfThreads: 5
+  #Matching a specific file
+- displayName: "TestPath1 - Specific File"
+  path: "src/test/resources/TestFiles/TF1.txt"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
+
+  #Matching a specific file or files that match a file extension regex
+- displayName: "TestPath1 - File regex"
+  path: "src/test/resources/TestFiles/*.txt"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
+
+  #Matching all file extensions within a directory
+- displayName: "TestPath1 - All file extensions"
+  path: "src/test/resources/TestFiles/*.*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
+
+  #Matching a file with a regex in conjunction with a directory with a regex (any of the above can be used with this)
+- displayName: "TestPath1 - File and Dir regexes"
+  path: "src/test/resources/Test*/*.*"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false
+  recursiveFileCounts: false
+  recursiveFileSizes: true
+
+metrics:
+   fileSize:
+      alias: "File Size (Bytes)"
+      multiplier: 1
+      delta: false
+      aggregationType: "Average"
+      timeRollupType: "Average"
+      clusterRollupType: "Individual"
+   oldestFileAge:
+      alias: "Oldest File Age"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   fileCount:
+      alias: "File Count"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   numberOfLines:
+      alias: "Number of Lines"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   lastModifiedTime:
+      alias: "Last Modified Time"
+      multiplier:
+      delta:
+      aggregationType:
+      timeRollupType:
+      clusterRollupType:
+   available:
+      alias: "Available"
+      multiplier:
+      delta:
+      timeRollupType:
+      clusterRollupType:
+      convert:
+        "true": 1
+        "false": 0
+
+  # A metric to view the count of files in a directory and all its subdirectories.
+  #Set recursiveFileCounts to true for any configured paths to see this metric. Will only work for directories.
+   recursiveFileCount:
+      alias: "Recursive File Count"
+      multiplier:
+      delta:
+      timeRollupType:
+      clusterRollupType:
+   modified:
+     alias: "Modified"
+     multiplier:
+     delta:
+     timeRollupType:
+     clusterRollupType:
+     convert:
+       "true": 1
+       "false": 0
+   recursiveFileSize: #Calculates the size of a directory on disk
+     alias: "Size on Disk (Bytes)"
+     multiplier:
+     delta:
+     timeRollupType:
+     clusterRollupType:
+
+numberOfThreads: 20 #One thread per base directory + 1

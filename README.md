@@ -1,178 +1,178 @@
-FILE WATCHER EXTENSION
-======================
+# AppDynamics File Watcher Extension
 
-Use case
---------
+## Use Case
+The AppDynamics File Watcher Extension can be used to provide metrics from configured files and directories. 
 
-An AppDynamics extension to be used with a stand alone Java machine agent to provide metrics from file and directory monitoring.
+## Prerequisites
+In order to use this extension, you need a [Standalone JAVA Machine Agent](https://docs.appdynamics.com/display/PRO44/Java+Agent) or a [SIM Agent](https://docs.appdynamics.com/display/PRO44/Server+Visibility).
+For more details on downloading these products, please visit https://download.appdynamics.com/.
 
-The extension can be configured with various comibinations of patterns to include/exclude files and directories. 
+The extension can be deployed on the same box as the one with the files to be monitored, or remotely if monitoring shared network paths. For Windows network paths, it is recommended to map the paths locally prior to monitoring.
 
-Prerequisites
--------------
- 
-This extension requires a AppDynamics Java Machine Agent installed and running. 
+## Installation
+1. To build from source, clone this repository and run 'mvn clean install'. This will produce a FileWatcher-VERSION.zip in the target directory
+Alternatively, download the latest release archive from [GitHub](https://github.com/Appdynamics/file-monitoring-extension/releases)
+2. Unzip the file FileWatcher-[version].zip into `<MACHINE_AGENT_HOME>/monitors/`
+3. In the newly created directory "FileWatcher", edit the config.yml to configure the parameters (See Configuration section below)
+4. Restart the Machine Agent
+5. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance|\<Tier\>|Custom Metrics|File Watcher. If SIM is enabled, look for the 
+metric browser under the Servers tab. 
 
-Rebuilding the Project 
-----------------------
+## Configuration
 
-1. Clone the repo AppDynamics-File-Watcher-Extension from GitHub https://github.com/Appdynamics
-3. Run 'mvn clean install' from the cloned AppDynamics-File-Watcher-Extension directory.
-4. The AppDynamics-File-Watcher-Extension-<version>.zip should get built and found in the 'target' directory.
+Configure the File Watcher Extension by editing the ```config.yml``` & ```monitor.xml``` files in `<MACHINE_AGENT_HOME>/monitors/FileWatcher/`.
 
-Installation
-------------
+### 1. Tier Configuration
 
-1. Unzip contents of AppDynamics-File-Watcher-Extension-<version>.zip file and copy to <code><machine-agent-dir>/monitors</code> directory.
+Configure the Tier under which the metrics should be reported. This can be done by adding the Tier ID to the metric prefix. 
+```metricPrefix: "Server|Component:<TIER_ID>|Custom Metrics|File Watcher|"``` 
 
-2. Edit the config.yaml file.  An example config.yaml file follows these installation instructions.
+If SIM is enabled, please use the default metric prefix. 
+```metricPrefix: "Custom Metrics|File Watcher|```
 
-3. Restart the Machine Agent.
+### 2. Path Configuration
 
-Metrics Provided
-----------------
+The paths to be monitored must be configured under ```pathsToProcess```. The following fields are present in each:
 
-We provide following metric related to the state of a directory/file :
+####2.1 displayName
+A mandatory field that acts as an alias for a configured path in the Metric Browser. 
 
-- IsModified : 1 if file is modified in last minute and 0 if not.
-- Size : A positive integer indicating the current size of the file.
-- FileCount: Count of files in a directory.
-- OldestFileAge: Time in seconds from current time to the oldest modified file of the directory
+#### 2.2 path
+The actual path to the directories or files to be monitored. Consider our directory to be ```/src/test/resources/TestFiles```. 
+There are multiple scenarios that can be configured in the ```pathsToProcess``` section. The use cases supported are as follows: 
 
-Sample config.yaml
-------------------
- 
-The following is a sample config.yaml file that depicts three different file paths defined. The different fields are explained in the in-line comments.
+##### 2.2.1 Monitoring a specific directory
+```path: "src/test/resources/TestFiles"```
+Directory metrics for 'TestFiles' will be generated. Please ensure that the directory does not end with a slash for this scenario. 
 
-Note :
-Please make sure to not use tab (\t) while editing yaml files. You may want to validate the yaml file using a yaml validator [here](http://yamllint.com/)
+##### 2.2.2 Monitoring a specific file
+```path: "src/test/resources/TestFiles/TF1.txt"```
+File metrics for TF1.txt will be generated in this case. Refer to the Metrics section to differentiate between Directory metrics & File metrics. 
 
-1. Configure the file to be watched by editing the config.yaml file in `<MACHINE_AGENT_HOME>/monitors/AppDynamics-File-Watcher-Extension/`
-Below is the format :
+##### 2.2.3. Monitoring files of a specific type
+```path: "src/test/resources/TestFiles/*.txt"```
+This will generate file metrics for only ```txt``` files withing TestFiles.
+
+##### 2.2.4. Monitoring files of any type
+```path: "src/test/resources/TestFiles/*.*"```
+This will generate file metrics for files of all extensions within TestFiles.
+
+##### 2.2.5. Directory and File Glob Patterns
+```path: "src/test/resources/TestFiles/2020*/*.log"```
+This will generate file metrics for all log files within subdirectories of TestFiles that begin with '2020'. 
+
+##### 2.2.6 Non-recursive, single level
+```path: "src/test/resources/TestFiles/*"```
+This will generate file and directory metrics for all files and subdirectories within TestFiles only at the first level. 
+
+##### 2.2.7 Fully Recursive
+```path: "src/test/resources/TestFiles/**"```
+This will recursively generate file and directory metrics for all files and subdirectories within TestFiles at all levels. 
+
+##### 2.2.8 Fully Recursive + File Extensions
+```path: "src/test/resources/TestFiles/**/*.*"```
+This will recursively generate file metrics for all files that match the glob pattern within TestFiles at all levels. 
+
+
+#### 2.3 ignoreHiddenFiles
+A flag to include or exclude any hidden files or directories encountered. 
+
+#### 2.4 excludeSubdirectoriesFromFileCount
+Every directory has a metric that counts the number of files within that directory. When this flag is set to true, the 
+extension will simply exclude any subdirectories from this count. 
+
+#### 2.5 recursiveFileCounts
+The count mentioned in 2.4 only includes the files within a directory at the immediate next level. When this flag is set 
+to true, the extension will publish a new metric that recursively counts the number of files within the configured directory 
+and within all subdirectories. This can be used in conjunction with 2.3 & 2.4.  
+
+#### 2.6 recursiveFileSizes
+The File Size metric for each directory only shows the size of the directory's contents (in bytes) at the first level. 
+When this flag is set to true, the extension publishes a new metric that shows the size of the directory on the disk. Please note that 
+this metric is only available for directories. 
+
+
+## Metrics
+The extension provides the following metrics: 
+
+### 1. File Size (Bytes)
+Available for both, files and directories. 
+
+### 2. Oldest File Age
+Available only for directories.
+
+### 3. File Count
+Available only for directories. 
+
+### 4. Number of Lines
+Available only for files. 
+
+### 5. Last Modified Time
+Available for both, files and directories. 
+
+### 6. Available
+Available for both, files and directories. Will have a value of 0 when a previously 'available' file gets deleted.
+
+### 7. Recursive File Count
+Available only for directories. Refer to 2.5 for detailed information. 
+
+### 8. Size on Disk (Bytes)
+Available only for directories. Refer to 2.6 for detailed information. 
+
+### 9. Modified
+Available for both, files and directories. Will have a value of 1 if a file/directory being monitored was modified in the last 
+60 seconds. 
+
+
+### Number of Threads 
+Always include one thread per base directory + 1. 
+
+
+### Configuring the monitor.xml
+
+Configure the path to the config.yml by editing the ```<task-arguments>``` in the monitor.xml file in the `<MACHINE_AGENT_HOME>/monitors/FileWatcher/` directory: 
 
 ```
-
-    #For most purposes, no need to change this.
-    numberOfThreads: 5
-
-    #This will create this metric in all the tiers, under this path. Please make sure to have a trailing |
-    #metricPrefix: Custom Metrics|FileWatcher|
-
-    #This will create it in specific Tier. Replace <TIER_ID>. Please make sure to have a trailing |
-    metricPrefix: "Server|Component:<TIER_ID>|Custom Metrics|FileWatcher|"
-
-    fileToProcess:
-       -# List of file Paths
-		# Wildcards supported for field 'path' : "**" and "*".
-		# The following use cases are covered :
-
-		    # 1. Match only files and no directories. Eg. : /foo/bar/A*.java | It will match all java files starting with capital A letter inside bar directory of root directory foo.
-
-		    # 2. All files and all directories. Eg : /foo/bar/** | It will match all files and directories recursively(hunt down sub-directories) present inside bar directory of foo directory and add them all to monitoring.
-
-		    # 3. All files and directories non recusrsively. Eg : /foo/bar/* | It will match all files and directories present inside bar. It will not drill down another level from there.
-
-		    # 4. Only directories, no files inside them. Use isDirectoryDetailsRequired flag and set it to 'false'. This will make the monitor skip files for this path. Eg : /foo/bar/* , /foo/bar/**
-
-			# The above convention is very similar to ant-style conventions for defining directory tasks. For more info : http://ant.apache.org/manual/dirtasks.html#patterns
-
-		  - displayName: "test1"
-		    path: "/Users/deepak.kalra/Documents/appdynamics-docs/**"
-		    ignoreHiddenFiles: false
-		    isDirectoryDetailsRequired: true
-
-		    #ignoreHiddenFiles : When true, this will cause all hidden files under this file path to be ignored from metric reporting
-     		#isDirectoryDetailsRequired : When false, this will cause only directory details to be considered and files to be ignored from metric reporting
-            #Important - displayName has to be unique for the file/folder
-
-		  - displayName: "test2"
-		    path: "/Users/deepak.kalra/Documents/test/**"
-		    ignoreHiddenFiles: false
-		    isDirectoryDetailsRequired: true    
-
-		  - displayName: "test3"
-		    path: "/Users/deepak.kalra/Desktop/https___www.myutiitsl.pdf"
-		    ignoreHiddenFiles: false
-		    isDirectoryDetailsRequired: true   
-		    
-		    #For windows based searching regexes the paths should be like : 
-		    
-		  - displayName: "test4"
-		    path: "F:\\\\Users\\\\deepak.kalra\\\\Documents\\\\test\\\\**"
-		    ignoreHiddenFiles: false
-		    isDirectoryDetailsRequired: true   
-		    
-
-    # This is the global isDirectoryDetailsRequired flag. When an individual fileToProcess path has this flag missing, this global one will be used.    
-	# If false then all the files under the directory will be ignored and only the directory level metrics will be published
-	# for the directories specified above.
-	# For files given above it will have no effect
-	isDirectoryDetailsRequired: false
-
-	# If true then an extra metric will be shown that will give age of the oldest file (in seconds when the file was last
-	# modified and compared to current time) in the directory(ies) specified above.
-	# For files given above it will not display this metric
-	isOldestFileAgeMetricRequired: true
-
-	# If true then an extra metric will be shown that will give number of files in the directories specified above.
-	# For files given above it will not display this metric
-	isFileCountRequired: true
-
-	# This is the global ignoreHiddenFiles flag. When an individual fileToProcess path has this flag missing, this global one will be used.   
-	# If true then all the hidden files will be ignored monitoring.
-	ignoreHiddenFiles: true
-
+<task-arguments>
+     <!-- config file-->
+     <argument name="config-file" is-required="true" default-value="monitors/FileWatcher/config.yml" />
+      ....
+</task-arguments>
 ```
 
-2. Configure the path to the config.yaml file by editing the <task-arguments> in the monitor.xml file. Below is the sample
+Restart the machine agent once this is done. Note that this is a continuous extension, as it actively watches each configured path for changes. 
 
-     <task-arguments>
-         <!-- config file-->
-             <argument name="config-file" is-required="true" default-value="monitors/AppDynamics-File-Watcher-Extension/config.yml" />
-          ....
-     </task-arguments>
+## Extensions Workbench
+Workbench is an inbuilt feature provided with each extension in order to assist you to fine tune the extension setup before you actually deploy it on the controller. Please review the following [document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-use-the-Extensions-WorkBench/ta-p/30130) for how to use the Extensions WorkBench
 
+## Troubleshooting
+Please follow the steps listed in the [extensions troubleshooting document](https://community.appdynamics.com/t5/Knowledge-Base/How-to-troubleshoot-missing-custom-metrics-or-extensions-metrics/ta-p/28695) in order to troubleshoot your issue. These are a set of common issues that customers might face during the installation of the extension. If these don't solve your issue, please follow the last step on the troubleshooting-document to contact the support team.
 
-FILEWATCHER METRIC BROWSER
---------------------------
+## Support Tickets
+If after going through the Troubleshooting Document, you haven't been able to get your extension working, please file a ticket with the following information.
 
-![alt tag](/screenshots/FW_IsModified.png)
-File Watcher Snapshot For File Modified
- 
-![alt tag](/screenshots/FW_Directory_Size_Change.png)
-File Watcher Snapshot For Directory Size Change
- 
-![alt tag](/screenshots/FW_Count_Directory_Files.png)
-File Watcher Snapshot For Directory File Count Change
- 
-![alt tag](/screenshots/FW_Oldest_File_Age.png)
-File Watcher Snapshot For Directory Oldest File Age
+1. Stop the running machine agent .
+2. Delete all existing logs under <MachineAgent>/logs .
+3. Please enable debug logging by editing the file <MachineAgent>/conf/logging/log4j.xml. Change the level value of the following <logger> elements to debug. 
 
-Troubleshooting
----------------
+```
+   <logger name="com.singularity">
+   <logger name="com.appdynamics">
+```
 
-1. Verify Machine Agent Data: Please start the Machine Agent without the extension and make sure that it reports data. Verify that the machine agent status is UP and it is reporting Hardware Metrics.
-2. config.yml: Validate the file [here](http://www.yamllint.com/)
-3. Collect Debug Logs: Edit the file, <MachineAgent>/conf/logging/log4j.xml and update the level of the appender com.appdynamics to debug Let it run for 5-10 minutes and attach the logs to a support ticket
+4. Start the machine agent and please let it run for 10 mins. Then zip and upload all the logs in the directory <MachineAgent>/logs/*.
+5. Attach the zipped <MachineAgent>/conf/* directory.
+6. Attach the zipped <MachineAgent>/monitors/FileWatcher directory.
 
-Contributing
--------------
+For any support related questions, you can also contact help@appdynamics.com.
 
-Always feel free to fork and contribute any changes directly via [GitHub][].
+## Contributing
+Always feel free to fork and contribute any changes directly via [GitHub](https://github.com/Appdynamics/file-monitoring-extension).
 
-Community
-----------
-
-Find out more in the [Community][].
-
-Support
---------
-
-For any questions or feature request, please contact [AppDynamics Center of Excellence][].
-**Version:** 1.3 : Added support for wildcards
-**Version:** 1.2
-**Controller Compatibility:** 3.7 or later
-
-[GitHub]: https://github.com/Appdynamics/AppDynamics-File-Watcher-Extension
-[Community]: http://community.appdynamics.com/
-[AppDynamics Center of Excellence]: mailto:ace-request@appdynamics.com
+## Version
+|          Name            |  Version   |
+|--------------------------|------------|
+|Extension Version         |3.0       |
+|Controller Compatibility  |4.0 or Later|
+|Last Update               |03/12/2020 |
+|List of Changes           |[Change log](https://github.com/Appdynamics/file-monitoring-extension/blob/master/CHANGELOG.md) |
