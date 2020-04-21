@@ -1,0 +1,119 @@
+#For shared directories on windows the path should be like
+# path: "\\\\1.2.3.4\\abc\\def\\ProductI
+
+# Make sure the metric prefix ends with a |
+
+#Use this metric prefix when SIM is enabled.
+metricPrefix: "Custom Metrics|File Watcher|"
+
+# To find the <COMPONENT_ID> in your environment, please follow the screenshot https://docs.appdynamics.com/display/LATEST/Build+a+Monitoring+Extension+Using+Java
+#metricPrefix: "Server|Component:<Component_ID OR Component_Name>|Custom Metrics|File Watcher|"
+
+pathsToProcess:
+# Matching all files and directories within TestFiles, recursively
+- displayName: "TestPath"
+  path: "/opt/appdynamics/machine-agent/conf"
+  ignoreHiddenFiles: true
+  excludeSubdirectoriesFromFileCount: false #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
+  recursiveFileCounts: true # if set to true, this will provide the total count (recursively) of files within the base directory and each subdirectory
+  recursiveFileSizes: true
+
+metrics:
+  fileSize:
+    alias: "File Size (Bytes)"
+    multiplier: 1
+    delta: false
+    aggregationType: "Average"
+    timeRollupType: "Average"
+    clusterRollupType: "Individual"
+  oldestFileAge:
+    alias: "Oldest File Age"
+    multiplier:
+    delta:
+    aggregationType:
+    timeRollupType:
+    clusterRollupType:
+  fileCount:
+    alias: "File Count"
+    multiplier:
+    delta:
+    aggregationType:
+    timeRollupType:
+    clusterRollupType:
+  numberOfLines:
+    alias: "Number of Lines"
+    multiplier:
+    delta:
+    aggregationType:
+    timeRollupType:
+    clusterRollupType:
+  lastModifiedTime:
+    alias: "Last Modified Time"
+    multiplier:
+    delta:
+    aggregationType:
+    timeRollupType:
+    clusterRollupType:
+  available:
+    alias: "Available"
+    multiplier:
+    delta:
+    timeRollupType:
+    clusterRollupType:
+    convert:
+      "true": 1
+      "false": 0
+  modified:
+    alias: "Modified"
+    multiplier:
+    delta:
+    timeRollupType:
+    clusterRollupType:
+    convert:
+      "true": 1
+      "false": 0
+  # A metric to view the count of files in a directory and all its subdirectories.
+  #Set recursiveFileCounts to true for any configured paths to see this metric. Will only work for directories.
+  recursiveFileCount:
+    alias: "Recursive File Count"
+    multiplier:
+    delta:
+    timeRollupType:
+    clusterRollupType:
+  recursiveFileSize: #Calculates the size of a directory on disk
+    alias: "Size on Disk (Bytes)"
+    multiplier:
+    delta:
+    timeRollupType:
+    clusterRollupType:
+
+numberOfThreads: 20 #One thread per base directory + 1
+
+# Generate a custom dashboard based on the provided template
+customDashboard:
+  enabled: false
+  dashboardName: "Dashboard"
+  #  sslCertCheckEnabled: true
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: ""
+  periodicDashboardCheckInSeconds:
+
+# If any of the following fields are not set, the values of the specific fields are set from the system properties of the corresponding fields as specified in the comments.
+# If the system properties are not set for the field, then the data is retrieved from machine agent configFile. Please refer to ControllerInfoFactory for more details.
+controllerInfo:
+  controllerHost: "controller"
+  controllerPort: 8080
+  account: "customer1"
+  username: "user1"
+  password: "welcome"
+  encryptedPassword: ""
+  encryptionKey: ""
+  controllerSslEnabled: false
+  enableOrchestration: false
+  uniqueHostId: ""
+  accountAccessKey: "${APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY}"
+  machinePath: ""
+  simEnabled: true
+  applicationName: ""
+  tierName: ""
+  nodeName: ""
