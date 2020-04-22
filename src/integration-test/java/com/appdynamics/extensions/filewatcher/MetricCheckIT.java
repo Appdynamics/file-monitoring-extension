@@ -11,6 +11,7 @@ package com.appdynamics.extensions.filewatcher;
  * @author Aditya Jagtiani
  */
 
+import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIService;
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.util.JsonUtils;
 import org.codehaus.jackson.JsonNode;
@@ -21,10 +22,12 @@ import org.junit.Test;
 public class MetricCheckIT {
 
     private MetricAPIService metricAPIService;
+    private CustomDashboardAPIService customDashboardAPIService;
 
     @Before
     public void setup() {
         metricAPIService = ITUtils.initializeMetricAPIService();
+        customDashboardAPIService = ITUtils.initializeCustomDashboardAPIService();
     }
 
     @Test
@@ -41,6 +44,18 @@ public class MetricCheckIT {
             }
         } else {
             Assert.fail("Failed to connect to the Controller API");
+        }
+    }
+
+    @Test
+    public void checkDashboardsUploaded() {
+        boolean isDashboardPresent = false;
+        if (customDashboardAPIService != null) {
+            JsonNode allDashboardsNode = customDashboardAPIService.getAllDashboards();
+            isDashboardPresent = ITUtils.isDashboardPresent("File Watcher Dashboard", allDashboardsNode);
+            Assert.assertTrue(isDashboardPresent);
+        } else {
+            Assert.assertFalse(isDashboardPresent);
         }
     }
 }

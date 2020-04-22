@@ -4,16 +4,19 @@ import com.appdynamics.extensions.conf.processor.ConfigProcessor;
 import com.appdynamics.extensions.controller.*;
 import com.appdynamics.extensions.controller.apiservices.ControllerAPIService;
 import com.appdynamics.extensions.controller.apiservices.ControllerAPIServiceFactory;
+import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIService;
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.yml.YmlReader;
 import com.google.common.collect.Maps;
+import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.Map;
 
 import static com.appdynamics.extensions.Constants.ENCRYPTION_KEY;
+import static com.appdynamics.extensions.util.JsonUtils.getTextValue;
 
 public class ITUtils {
 
@@ -57,5 +60,27 @@ public class ITUtils {
             logger.error("Failed to initialize the Controller API Service");
         }
         return null;
+    }
+
+    static CustomDashboardAPIService initializeCustomDashboardAPIService() {
+        ControllerAPIService controllerAPIService = initializeControllerAPIService();
+        if (controllerAPIService != null) {
+            logger.info("Attempting to setup Dashboard API Service");
+            return controllerAPIService.getCustomDashboardAPIService();
+        } else {
+            logger.error("Failed to setup Dashboard API Service");
+            return null;
+        }
+    }
+
+    static boolean isDashboardPresent(String dashboardName, JsonNode existingDashboards) {
+        if (existingDashboards != null) {
+            for (JsonNode existingDashboard : existingDashboards) {
+                if (dashboardName.equals(getTextValue(existingDashboard.get("name")))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

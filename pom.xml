@@ -6,7 +6,7 @@
 
     <groupId>file-watcher-extension</groupId>
     <artifactId>file-watcher-extension</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <name>File Watcher Extension</name>
     <description>Inspects and monitors configured files and directories</description>
 
@@ -28,6 +28,11 @@
             <groupId>com.appdynamics</groupId>
             <artifactId>appd-exts-commons</artifactId>
             <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -59,11 +64,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
@@ -159,6 +159,8 @@
                                     <fileset dir="src/main/resources/conf" includes="config.yml"/>
                                     <fileset dir="${project.basedir}" includes="LICENSE.txt"/>
                                     <fileset dir="${project.basedir}" includes="NOTICE.txt"/>
+                                    <fileset dir="src/main/resources/conf" includes="APMDashboard.json"/>
+                                    <fileset dir="src/main/resources/conf" includes="SIMDashboard.json"/>
                                 </copy>
                                 <copy todir="${target.dir}">
                                     <fileset dir="${build.directory}" includes="${project.artifactId}.${project.packaging}"/>
