@@ -109,7 +109,7 @@
     },
     {
       "widgetType": "MetricLabelWidget",
-      "title": "CPU Percent",
+      "title": "Available",
       "height": 2,
       "width": 4,
       "minHeight": 0,
