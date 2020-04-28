@@ -25,6 +25,16 @@ object AE_FileWatcherExtension_Build : BuildType({
     triggers {
         vcs {
         }
+        schedule {
+            schedulingPolicy = cron {
+                hours = "4"
+            }
+            branchFilter = "+:master"
+            triggerBuild = always()
+            withPendingChangesOnly = false
+            param("revisionRule", "lastFinished")
+            param("dayOfWeek", "SUN-SAT")
+        }
     }
 
     artifactRules = """

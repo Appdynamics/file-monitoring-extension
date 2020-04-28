@@ -3,6 +3,7 @@ package AE_FileWatcherExtension.buildTypes
 import AE_FileWatcherExtension.publishCommitStatus
 import AE_FileWatcherExtension.vcsRoots.AE_FileWatcherExtension
 import AE_FileWatcherExtension.withDefaults
+import AE_FileWatcherExtension.triggerAfter
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.FailureAction
@@ -56,4 +57,7 @@ object AE_FileWatcherExtension_IntegrationTests : BuildType({
     }
 
     publishCommitStatus()
+
+    triggerAfter(AE_FileWatcherExtension_Build)
+
 })
