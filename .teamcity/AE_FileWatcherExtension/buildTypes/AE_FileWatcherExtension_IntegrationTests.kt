@@ -43,6 +43,10 @@ object AE_FileWatcherExtension_IntegrationTests : BuildType({
         }
     }
 
+    artifactRules = """
+ /opt/buildAgent/work/machine-agent-logs => target/
+""".trimIndent()
+
     dependencies {
         dependency(AE_FileWatcherExtension_Build) {
             snapshot {

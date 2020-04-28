@@ -96,7 +96,7 @@ customDashboard:
   #  sslCertCheckEnabled: true
   # Update the path to the dashboard file.
   pathToSIMDashboard: "monitors/FileWatcher/SIMDashboard.json"
-  pathToNormalDashboard: "monitors/FileWatcher/APMDashboard.json"
+  pathToNormalDashboard:
   periodicDashboardCheckInSeconds: 60
 
 # If any of the following fields are not set, the values of the specific fields are set from the system properties of the corresponding fields as specified in the comments.
