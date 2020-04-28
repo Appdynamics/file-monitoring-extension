@@ -6,6 +6,7 @@ import AE_FileWatcherExtension.withDefaults
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.schedule
 
 object AE_FileWatcherExtension_Build : BuildType({
     uuid = "0d57ff72-2662-4184-9564-b5009a9fd7af"
