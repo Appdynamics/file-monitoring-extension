@@ -6,7 +6,7 @@
 
     <groupId>file-watcher-extension</groupId>
     <artifactId>file-watcher-extension</artifactId>
-    <version>3.1</version>
+    <version>3.1.0</version>
     <name>File Watcher Extension</name>
     <description>Inspects and monitors configured files and directories</description>
 
@@ -30,31 +30,11 @@
             <version>2.2.2</version>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.13</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>-->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
