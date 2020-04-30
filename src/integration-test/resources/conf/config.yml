@@ -91,12 +91,13 @@ numberOfThreads: 20 #One thread per base directory + 1
 
 # Generate a custom dashboard based on the provided template
 customDashboard:
-  enabled: false
-  dashboardName: "Dashboard"
+  enabled: true
+  dashboardName: "File Watcher Dashboard"
   #  sslCertCheckEnabled: true
   # Update the path to the dashboard file.
-  pathToSIMDashboard: ""
-  periodicDashboardCheckInSeconds:
+  pathToSIMDashboard: "monitors/FileWatcher/SIMDashboard.json"
+  pathToNormalDashboard:
+  periodicDashboardCheckInSeconds: 60
 
 # If any of the following fields are not set, the values of the specific fields are set from the system properties of the corresponding fields as specified in the comments.
 # If the system properties are not set for the field, then the data is retrieved from machine agent configFile. Please refer to ControllerInfoFactory for more details.

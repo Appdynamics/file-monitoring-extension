@@ -53,3 +53,34 @@ metrics:
 metricPrefix: "Server|Component:<COMPONENT_ID>|Custom Metrics|FileWatcher|"
 
 numberOfThreads: 20
+
+# The sections [customDashboard] and [controllerInfo] need to be enabled for uploading dashboard to the controller UI
+customDashboard:
+  enabled: false
+  dashboardName: "File Watcher Dashboard"
+  sslCertCheckEnabled: false
+  # Update the path to the dashboard file.
+  pathToSIMDashboard: "monitors/FileWatcher/File+Watcher+Dashboard.json"
+  pathToNormalDashboard:
+  periodicDashboardCheckInSeconds: 300
+
+# If any of the following fields are not set, the values of the specific fields are set from the system properties of the corresponding fields as specified in the comments.
+# If the system properties are not set for the field, then the data is retrieved from machine agent configFile. Please refer to ControllerInfoFactory for more details.
+controllerInfo:
+  controllerHost: "" # -Dappdynamics.controller.hostName
+  controllerPort: 8090 # -Dappdynamics.controller.port
+  controllerSslEnabled: false # -Dappdynamics.controller.ssl.enabled
+  enableOrchestration: false # N/A
+  uniqueHostId: "" # -Dappdynamics.agent.uniqueHostId
+  username: "" # -Dappdynamics.agent.monitors.controller.username
+  password: "" # -Dappdynamics.agent.monitors.controller.password
+  encryptedPassword: "" # -Dappdynamics.agent.monitors.controller.encryptedPassword
+  accountAccessKey: "" # -Dappdynamics.agent.accountAccessKey
+  account: "" # -Dappdynamics.agent.accountName
+  machinePath: "" # -Dappdynamics.machine.agent.hierarchyPath
+  simEnabled: false # -Dappdynamics.sim.enabled
+  applicationName: "" # -Dappdynamics.agent.applicationName
+  tierName: "" # -Dappdynamics.agent.tierName
+  nodeName: "" # -Dappdynamics.agent.nodeName
+
+enableHealthChecks: true # If not set, will be retrieved from "-Dappdynamics.agent.monitors.healthchecks.enable=true". Defaults to true.
