@@ -75,16 +75,16 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         } catch (IOException ex) {
             LOGGER.error("Task failed for path {}", pathToProcess.getPath(), ex);
         }
-        finally {
-            try {
-                watchService.close();
-            }
-            catch (IOException ex) {
-                LOGGER.error("Error encountered while closing WatchService", ex);
-            }
-        }
     }
 
     @Override
-    public void onTaskComplete() {}
+    public void onTaskComplete() {
+        try {
+            LOGGER.debug("Attempting to close the WatchService");
+            watchService.close();
+        }
+        catch (IOException ex) {
+            LOGGER.error("Error encountered while closing the WatchService", ex);
+        }
+    }
 }
