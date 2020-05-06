@@ -58,7 +58,7 @@ public class FileWatcher {
                     Path eventPath = (Path) watchEvent.context();
                     Path directory = watchKeys.get(watchKey);
                     File child = directory.resolve(eventPath).toFile();
-                    LOGGER.info("Event {} detected for path {}. Processing", kind, child);
+                    LOGGER.info("Event {} detected for path {}. Processing..", kind, child);
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         handleFileDeletion(child);
                     }
