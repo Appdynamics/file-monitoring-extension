@@ -79,12 +79,5 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
 
     @Override
     public void onTaskComplete() {
-        try {
-            LOGGER.debug("Attempting to close the WatchService");
-            watchService.close();
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error encountered while closing the WatchService", ex);
-        }
     }
 }

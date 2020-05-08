@@ -18,7 +18,7 @@ public class FileMetric {
     private String recursiveFileSize;
     private int numberOfFiles;
     private long oldestFileAge;
-    private int numberOfLines;
+    private long numberOfLines;
     private long lastModifiedTime;
     private boolean isAvailable;
     private long recursiveNumberOfFiles;
@@ -26,10 +26,10 @@ public class FileMetric {
     public long getRecursiveNumberOfFiles() { return recursiveNumberOfFiles; }
     public void setRecursiveNumberOfFiles(long recursiveNumberOfFiles) { this.recursiveNumberOfFiles = recursiveNumberOfFiles; }
 
-    public int getNumberOfLines() {
+    public long getNumberOfLines() {
         return numberOfLines;
     }
-    public void setNumberOfLines(int numberOfLines) {
+    public void setNumberOfLines(long numberOfLines) {
         this.numberOfLines = numberOfLines;
     }
 

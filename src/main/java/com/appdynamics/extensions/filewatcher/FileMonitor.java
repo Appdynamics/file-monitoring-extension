@@ -13,9 +13,11 @@ import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.google.common.collect.Lists;
+import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -97,5 +99,13 @@ public class FileMonitor extends ABaseMonitor {
 	@Override
     public void onComplete() {
 	    LOGGER.info("File Monitoring Jobs Completed");
+    }
+
+    public static void main(String [] args) throws TaskExecutionException {
+        FileMonitor monitor = new FileMonitor();
+        Map<String, String> taskArgs = new HashMap<String, String>();
+        taskArgs.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/configTesting.yml");
+        monitor.execute(taskArgs, null);
+
     }
 }

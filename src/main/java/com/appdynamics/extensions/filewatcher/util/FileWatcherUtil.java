@@ -19,7 +19,9 @@ import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.processors.FileManager;
 import com.google.common.collect.Lists;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,11 +61,13 @@ public class FileWatcherUtil {
         return builder.toString();
     }
 
-    public static int getNumberOfLinesFromFile(Path file) throws IOException {
+    public static long getNumberOfLinesFromFile(Path file) throws IOException {
         if (file.toFile().exists()) {
-            try (Stream<String> fileStream = Files.lines(file)) {
-                return (int) fileStream.count();
-            }
+            BufferedReader reader = new BufferedReader(new FileReader(file.toFile().getAbsolutePath()));
+            long lines = 0;
+            while (reader.readLine() != null) lines++;
+            reader.close();
+            return lines;
         }
         return 0;
     }

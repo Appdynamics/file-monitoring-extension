@@ -77,9 +77,14 @@ public class FileManager implements Runnable {
     private void registerPath(Path path) throws IOException {
         if (!watchKeys.containsValue(path)) {
             LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-            WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-            watchKeys.put(key, path);
+            try {
+                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+                watchKeys.put(key, path);
+            }
+            catch (Exception e) {
+                LOGGER.error("Error occurred while registering path {}", path, e);
+            }
         }
     }
 }
