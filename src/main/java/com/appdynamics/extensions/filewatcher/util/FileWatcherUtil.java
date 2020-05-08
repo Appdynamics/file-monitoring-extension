@@ -154,6 +154,11 @@ public class FileWatcherUtil {
 
     public static boolean isNetworkPathAccessible(String path) {
         File file = new File(path);
-        return file.exists() && file.isDirectory() && file.canRead() && file.canWrite();
+        return file.exists() && file.isDirectory() && file.canRead() && file.canExecute();
+    }
+
+    public static boolean isPathAccessible(Path path) {
+        return Files.exists(path) && Files.isReadable(path) && Files.isExecutable(path)
+                && (Files.isRegularFile(path) || Files.isDirectory(path));
     }
 }

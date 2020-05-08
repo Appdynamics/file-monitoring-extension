@@ -14,8 +14,6 @@ package com.appdynamics.extensions.filewatcher.processors;
 
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
-import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
-import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
 
@@ -71,20 +68,22 @@ public class FileManager implements Runnable {
                 break;
             }
         }
-
     }
 
-    private void registerPath(Path path) throws IOException {
-        if (!watchKeys.containsValue(path)) {
-            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-            try {
-                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-                watchKeys.put(key, path);
+    private void registerPath(Path path) {
+        if (path.toFile().exists() && path.toFile().canRead()) {
+            if (!watchKeys.containsValue(path)) {
+                LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
+                try {
+                    WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                            StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+                    watchKeys.put(key, path);
+                } catch (Exception e) {
+                    LOGGER.error("Error occurred while registering path {}", path, e);
+                }
             }
-            catch (Exception e) {
-                LOGGER.error("Error occurred while registering path {}", path, e);
-            }
+        } else {
+            LOGGER.warn("The path {} cannot be registered by the watchservice due to insufficient permissions", path);
         }
     }
 }

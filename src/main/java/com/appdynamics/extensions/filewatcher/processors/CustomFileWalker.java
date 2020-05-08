@@ -53,10 +53,16 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             return FileVisitResult.CONTINUE;
         }
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.info("Match found for entered path {}. Visiting Directory", path.getFileName());
-            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
-            fileMetrics.put(metricSuffix,
-                    generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
+            LOGGER.info("Match found for entered path {}. Checking access to path..", path.getFileName());
+            if (isPathAccessible(path)) {
+                LOGGER.info("Path {} accessible. Visiting directory..", path.getFileName());
+                String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+                fileMetrics.put(metricSuffix,
+                        generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
+            }
+            else {
+                LOGGER.error("Directory {} is inaccessible. Assign execute permissions to directory to proceed.", path);
+            }
         }
         return FileVisitResult.CONTINUE;
     }
@@ -85,9 +91,15 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         }
 
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.debug("Found match for entered path {}. Visiting File", path.getFileName());
-            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
-            fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
+            LOGGER.info("Match found for entered path {}. Checking access to path..", path.getFileName());
+            if (isPathAccessible(path)) {
+                LOGGER.info("Path {} accessible. Visiting file..", path.getFileName());
+                String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+                fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
+            }
+            else {
+                LOGGER.error("File {} is inaccessible. Assign execute permissions to file to proceed.", path);
+            }
         }
         return FileVisitResult.CONTINUE;
     }
