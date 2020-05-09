@@ -13,14 +13,19 @@ package com.appdynamics.monitors.FileWatcher.processors;
 
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
+import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.processors.FileMetricsProcessor;
 import com.appdynamics.extensions.filewatcher.processors.FileWatcher;
+import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.google.common.collect.Maps;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

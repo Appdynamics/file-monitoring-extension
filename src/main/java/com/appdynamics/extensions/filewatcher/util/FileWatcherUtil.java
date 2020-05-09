@@ -16,8 +16,6 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
-import com.appdynamics.extensions.filewatcher.processors.FileManager;
-import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +27,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class FileWatcherUtil {
 
@@ -157,8 +154,12 @@ public class FileWatcherUtil {
         return file.exists() && file.isDirectory() && file.canRead() && file.canExecute();
     }
 
-    public static boolean isPathAccessible(Path path) {
+    public static boolean isDirectoryAccessible(Path path) {
         return Files.exists(path) && Files.isReadable(path) && Files.isExecutable(path)
-                && (Files.isRegularFile(path) || Files.isDirectory(path));
+                && Files.isDirectory(path);
+    }
+
+    public static boolean isFileAccessible(Path path) {
+        return Files.exists(path) && Files.isReadable(path) && Files.isRegularFile(path);
     }
 }

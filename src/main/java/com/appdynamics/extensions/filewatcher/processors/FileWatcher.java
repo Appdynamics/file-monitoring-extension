@@ -54,7 +54,7 @@ public class FileWatcher {
             for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
                 WatchEvent.Kind<?> kind = watchEvent.kind();
                 if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
-                        kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
+                        kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.OVERFLOW)) {
                     Path eventPath = (Path) watchEvent.context();
                     Path directory = watchKeys.get(watchKey);
                     File child = directory.resolve(eventPath).toFile();

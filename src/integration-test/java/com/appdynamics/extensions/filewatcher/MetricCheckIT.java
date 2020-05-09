@@ -13,9 +13,7 @@ package com.appdynamics.extensions.filewatcher;
 
 import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIService;
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
-import com.appdynamics.extensions.filewatcher.processors.FileManager;
 import com.appdynamics.extensions.util.JsonUtils;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,7 +77,7 @@ public class MetricCheckIT {
             if (jsonNode != null) {
                 JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
                 newFileCount = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-                Assert.assertEquals(oldFileCount+1, newFileCount);
+                Assert.assertEquals(oldFileCount + 1, newFileCount);
             } else {
                 Assert.fail("Failed to connect to the Controller API");
             }

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isPathAccessible;
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 
 public class FileMonitorTask implements AMonitorTaskRunnable {
 
@@ -52,7 +52,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
             WatchService watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
             for (String baseDirectory : baseDirectories) {
-                if (isPathAccessible(Paths.get(baseDirectory))) {
+                if (isDirectoryAccessible(Paths.get(baseDirectory))) {
                     LOGGER.info("Configured Path {} accessible, starting File Manager");
                     executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
                             pathToProcess, fileMetricsProcessor));

@@ -16,7 +16,12 @@ import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,10 +34,16 @@ import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFor
 /*
  * @author Aditya Jagtiani
  */
-
+@PrepareForTest({FileWatcherUtil.class, CustomFileWalker.class})
+@RunWith(PowerMockRunner.class)
 public class WindowsCustomFileWalkerTest {
 
     private CustomFileWalker classUnderTest;
+
+    @Before
+    public void setup() {
+        PowerMockito.spy(FileWatcherUtil.class);
+    }
 
     @Test
     public void visitDirectoryNonRecursively() throws Exception {
@@ -46,6 +57,11 @@ public class WindowsCustomFileWalkerTest {
         Path a = Paths.get("A\\B\\C\\D.TXT");
         Path b = Paths.get("A\\B\\C");
         List<Path> paths = Arrays.asList(a, b);
+
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
@@ -79,6 +95,11 @@ public class WindowsCustomFileWalkerTest {
         Path c = Paths.get("A\\This\\Is\\Too\\Much");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
@@ -110,6 +131,11 @@ public class WindowsCustomFileWalkerTest {
         Path b = Paths.get("A\\D\\Testing\\machine-agent.log");
         Path c = Paths.get("A\\D\\This\\Is\\Too\\Much");
         List<Path> paths = Arrays.asList(a, b, c);
+
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
@@ -143,6 +169,11 @@ public class WindowsCustomFileWalkerTest {
         Path c = Paths.get("A\\D\\NoMatch.txt");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
@@ -171,6 +202,11 @@ public class WindowsCustomFileWalkerTest {
         Path b = Paths.get("A\\D\\machine-agent.log");
         Path c = Paths.get("A\\D\\NoMatch.txt");
         List<Path> paths = Arrays.asList(a, b, c);
+
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
@@ -201,6 +237,11 @@ public class WindowsCustomFileWalkerTest {
         Path c = Paths.get("A\\D\\Adidas\\NoMatch.txt");
         Path d = Paths.get("A\\D\\Air Jordan 1\\1985");
         List<Path> paths = Arrays.asList(a, b, c, d);
+
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
@@ -236,6 +277,11 @@ public class WindowsCustomFileWalkerTest {
         Path c = Paths.get("\\A\\D\\Adidas\\NoMatch.txt");
         Path d = Paths.get("\\A\\D\\Air Jordan 1\\1985");
         List<Path> paths = Arrays.asList(a, b, c, d);
+
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();

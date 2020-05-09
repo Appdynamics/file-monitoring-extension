@@ -22,6 +22,7 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
 
 public class FileManager implements Runnable {
@@ -60,18 +61,17 @@ public class FileManager implements Runnable {
         registerPath(Paths.get(baseDirectory));
         FileWatcher fileWatcher = new FileWatcher(watchService, watchKeys, baseDirectory,
                 fileMetrics, pathToProcess, fileMetricsProcessor);
-        while(true) {
-            if(!watchKeys.isEmpty()) {
+        while (true) {
+            if (!watchKeys.isEmpty()) {
                 fileWatcher.processWatchEvents();
-            }
-            else {
+            } else {
                 break;
             }
         }
     }
 
     private void registerPath(Path path) {
-        if (path.toFile().exists() && path.toFile().canRead()) {
+        if (isDirectoryAccessible(path)) {
             if (!watchKeys.containsValue(path)) {
                 LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
                 try {
@@ -83,7 +83,7 @@ public class FileManager implements Runnable {
                 }
             }
         } else {
-            LOGGER.warn("The path {} cannot be registered by the watchservice due to insufficient permissions", path);
+            LOGGER.error("The path {} cannot be registered by the WatchService due to insufficient permissions.", path);
         }
     }
 }
