@@ -99,6 +99,7 @@ public class FileMonitor extends ABaseMonitor {
 	@Override
     public void onComplete() {
 	    LOGGER.info("File Monitoring Jobs Completed");
+
     }
 
     public static void main(String [] args) throws TaskExecutionException {
