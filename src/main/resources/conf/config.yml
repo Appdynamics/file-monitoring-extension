@@ -9,7 +9,7 @@ metricPrefix: "Custom Metrics|File Watcher|"
 
 pathsToProcess:
   # Matching all files and directories within TestFiles, recursively
-- displayName: "TestPath1 - Fully Recursive"
+- displayName: "Fully Recursive"
   path: "src/test/resources/TestFiles/**"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false #Counts only the 'files' under the base directory and exclude subdirectories
@@ -17,7 +17,7 @@ pathsToProcess:
   recursiveFileSizes: true # Calculates a directory's size on disk
 
   #Matching all files and directories within TestFiles, non-recursively
-- displayName: "TestPath1 - Single level *"
+- displayName: "Single Level"
   path: "src/test/resources/TestFiles/*"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false
@@ -25,7 +25,7 @@ pathsToProcess:
   recursiveFileSizes: true
 
   #Matching only the configured directory
-- displayName: "TestPath1 - Specific Directory"
+- displayName: "Specific Directory"
   path: "src/test/resources/TestFiles"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false
@@ -33,7 +33,7 @@ pathsToProcess:
   recursiveFileSizes: true
 
   #Matching a specific file
-- displayName: "TestPath1 - Specific File"
+- displayName: "Specific File"
   path: "src/test/resources/TestFiles/TF1.txt"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false
@@ -41,7 +41,7 @@ pathsToProcess:
   recursiveFileSizes: true
 
   #Matching a specific file or files that match a file extension regex
-- displayName: "TestPath1 - File regex"
+- displayName: "File Name Regex"
   path: "src/test/resources/TestFiles/*.txt"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false
@@ -49,7 +49,7 @@ pathsToProcess:
   recursiveFileSizes: true
 
   #Matching all file extensions within a directory
-- displayName: "TestPath1 - All file extensions"
+- displayName: "File Name & Extension Regex"
   path: "src/test/resources/TestFiles/*.*"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false
@@ -57,7 +57,7 @@ pathsToProcess:
   recursiveFileSizes: true
 
   #Matching a file with a regex in conjunction with a directory with a regex (any of the above can be used with this)
-- displayName: "TestPath1 - File and Dir regexes"
+- displayName: "Directory and File Name Regexes"
   path: "src/test/resources/Test*/*.*"
   ignoreHiddenFiles: true
   excludeSubdirectoriesFromFileCount: false

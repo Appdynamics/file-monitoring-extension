@@ -28,6 +28,10 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 
+/*
+ * @author Aditya Jagtiani
+ */
+
 public class FileMonitorTask implements AMonitorTaskRunnable {
 
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileMonitorTask.class);
@@ -81,7 +85,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
             try {
                 watchService.close();
             } catch (IOException e) {
-                LOGGER.error("Error encountered while closing watchservice", e);
+                LOGGER.error("Error encountered while closing WatchService", e);
             }
         }
     }

@@ -15,7 +15,6 @@ import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -39,13 +38,15 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private WatchService watchService;
 
     public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
-                            Map<String, FileMetric> fileMetrics, Map<WatchKey, Path> watchKeys, WatchService watchService) {
+                            Map<String, FileMetric> fileMetrics, Map<WatchKey, Path> watchKeys,
+                            WatchService watchService) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;
         this.fileMetrics = fileMetrics;
         this.watchKeys = watchKeys;
         this.watchService = watchService;
+        registerPath(Paths.get(baseDirectory));
     }
 
     @Override
@@ -66,18 +67,21 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                 registerPath(path);
 
             } else {
-                LOGGER.error("Directory {} is inaccessible. Assign read & execute permissions to directory to proceed.", path);
+                LOGGER.error("Directory {} is inaccessible. Assign read & execute permissions to directory to proceed.",
+                        path);
             }
         }
         return FileVisitResult.CONTINUE;
     }
 
-    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes, String metricSuffix) {
+    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes,
+                                                String metricSuffix) {
         LOGGER.info("Generating directory metrics for {}", path);
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis()/1000 > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() / 1000 >
+                    fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -101,11 +105,13 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                 LOGGER.info("Path {} accessible. Visiting file..", path.getFileName());
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
-                LOGGER.info("File metrics collected for {}. Now registering the file's parent directory {} with the WatchService..",
+                LOGGER.info("File metrics collected for {}. Now registering the file's parent directory {} with the " +
+                                "WatchService..",
                         path, path.getParent());
                 registerPath(path.getParent());
             } else {
-                LOGGER.error("File {} is inaccessible. Assign read permissions to file for machine agent user to proceed.", path);
+                LOGGER.error("File {} is inaccessible. Assign read permissions to file for the machine agent user to " +
+                        "proceed.", path);
             }
         }
         return FileVisitResult.CONTINUE;
@@ -118,7 +124,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis()/1000 > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() / 1000 > fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -138,7 +144,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
             LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
-            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis()/1000);
+            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis() / 1000);
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {
             LOGGER.debug("Couldn't find basic file attributes for {}", path.getFileName());

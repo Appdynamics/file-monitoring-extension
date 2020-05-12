@@ -18,12 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
 
 public class FileManager implements Runnable {
@@ -38,7 +39,8 @@ public class FileManager implements Runnable {
     private CountDownLatch countDownLatch;
 
     public FileManager(WatchService watchService, Map<WatchKey, Path> watchKeys, String baseDirectory,
-                       PathToProcess pathToProcess, FileMetricsProcessor fileMetricsProcessor, CountDownLatch countDownLatch) {
+                       PathToProcess pathToProcess, FileMetricsProcessor fileMetricsProcessor,
+                       CountDownLatch countDownLatch) {
         this.watchService = watchService;
         this.watchKeys = watchKeys;
         this.baseDirectory = baseDirectory;

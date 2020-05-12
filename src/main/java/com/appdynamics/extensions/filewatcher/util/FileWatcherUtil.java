@@ -18,7 +18,6 @@ import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 public class FileWatcherUtil {
-    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherUtil.class);
 
     public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics,
                             Map<WatchKey, Path> watchKeys, WatchService watchService)
@@ -152,11 +150,6 @@ public class FileWatcherUtil {
         }
     }
 
-    public static boolean isNetworkPathAccessible(String path) {
-        File file = new File(path);
-        return file.exists() && file.isDirectory() && file.canRead() && file.canExecute();
-    }
-
     public static boolean isDirectoryAccessible(Path path) {
         return Files.exists(path) && Files.isReadable(path) && Files.isExecutable(path)
                 && Files.isDirectory(path);
@@ -164,18 +157,5 @@ public class FileWatcherUtil {
 
     public static boolean isFileAccessible(Path path) {
         return Files.exists(path) && Files.isReadable(path) && Files.isRegularFile(path);
-    }
-
-    public static void registerPath(Path path, Map<WatchKey, Path> watchKeys, WatchService watchService) {
-        if (!watchKeys.containsValue(path)) {
-            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-            try {
-                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-                watchKeys.put(key, path);
-            } catch (Exception e) {
-                LOGGER.error("Error occurred while registering path {}", path, e);
-            }
-        }
     }
 }
