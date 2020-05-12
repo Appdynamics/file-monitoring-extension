@@ -21,9 +21,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 
@@ -36,13 +34,17 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
     private String baseDirectory;
+    private Map<WatchKey, Path> watchKeys;
+    private WatchService watchService;
 
     public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
-                            Map<String, FileMetric> fileMetrics) {
+                            Map<String, FileMetric> fileMetrics, Map<WatchKey, Path> watchKeys, WatchService watchService) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;
         this.fileMetrics = fileMetrics;
+        this.watchKeys = watchKeys;
+        this.watchService = watchService;
     }
 
     @Override
@@ -53,14 +55,17 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             return FileVisitResult.CONTINUE;
         }
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.info("Match found for entered path {}. Checking access to path..", path.getFileName());
+            LOGGER.info("Match found for entered path {}. Checking access to directory..", path.getFileName());
             if (isDirectoryAccessible(path)) {
                 LOGGER.info("Path {} accessible. Visiting directory..", path.getFileName());
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix,
                         generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
+                LOGGER.info("Directory metrics collected for {}. Now registering with the WatchService..");
+                registerPath(path);
+
             } else {
-                LOGGER.error("Directory {} is inaccessible. Assign execute permissions to directory to proceed.", path);
+                LOGGER.error("Directory {} is inaccessible. Assign read & execute permissions to directory to proceed.", path);
             }
         }
         return FileVisitResult.CONTINUE;
@@ -90,13 +95,16 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         }
 
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.info("Match found for entered path {}. Checking access to path..", path.getFileName());
+            LOGGER.info("Match found for entered path {}. Checking access to file..", path.getFileName());
             if (isFileAccessible(path)) {
                 LOGGER.info("Path {} accessible. Visiting file..", path.getFileName());
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
+                LOGGER.info("File metrics collected for {}. Now registering the file's parent directory {} with the WatchService..",
+                        path, path.getParent());
+                registerPath(path.getParent());
             } else {
-                LOGGER.error("File {} is inaccessible. Assign execute permissions to file to proceed.", path);
+                LOGGER.error("File {} is inaccessible. Assign read permissions to file for machine agent user to proceed.", path);
             }
         }
         return FileVisitResult.CONTINUE;
@@ -190,5 +198,18 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                     path.getFileName(), ex);
         }
         return -1;
+    }
+
+    private void registerPath(Path path) {
+        if (!watchKeys.containsValue(path)) {
+            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
+            try {
+                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+                watchKeys.put(key, path);
+            } catch (Exception e) {
+                LOGGER.error("Error occurred while registering path {}", path, e);
+            }
+        }
     }
 }

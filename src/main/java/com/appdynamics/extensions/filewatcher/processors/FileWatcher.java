@@ -62,7 +62,7 @@ public class FileWatcher {
                     if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         handleFileDeletion(child);
                     }
-                    walk(baseDirectory, pathToProcess, fileMetrics);
+                    walk(baseDirectory, pathToProcess, fileMetrics, watchKeys, watchService);
                 }
             }
 

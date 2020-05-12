@@ -99,7 +99,6 @@ public class FileMonitor extends ABaseMonitor {
 	@Override
     public void onComplete() {
 	    LOGGER.info("File Monitoring Jobs Completed");
-
     }
 
     public static void main(String [] args) throws TaskExecutionException {
@@ -107,6 +106,5 @@ public class FileMonitor extends ABaseMonitor {
         Map<String, String> taskArgs = new HashMap<String, String>();
         taskArgs.put("config-file", "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/main/resources/conf/configTesting.yml");
         monitor.execute(taskArgs, null);
-
     }
 }

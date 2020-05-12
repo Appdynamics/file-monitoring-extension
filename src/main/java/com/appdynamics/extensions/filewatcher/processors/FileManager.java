@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
@@ -34,21 +35,23 @@ public class FileManager implements Runnable {
     private PathToProcess pathToProcess;
     private FileMetricsProcessor fileMetricsProcessor;
     private Map<String, FileMetric> fileMetrics;
+    private CountDownLatch countDownLatch;
 
     public FileManager(WatchService watchService, Map<WatchKey, Path> watchKeys, String baseDirectory,
-                       PathToProcess pathToProcess, FileMetricsProcessor fileMetricsProcessor) {
+                       PathToProcess pathToProcess, FileMetricsProcessor fileMetricsProcessor, CountDownLatch countDownLatch) {
         this.watchService = watchService;
         this.watchKeys = watchKeys;
         this.baseDirectory = baseDirectory;
         this.pathToProcess = pathToProcess;
         this.fileMetricsProcessor = fileMetricsProcessor;
         this.fileMetrics = new HashMap<>();
+        this.countDownLatch = countDownLatch;
     }
 
     public void run() {
         LOGGER.info("Attempting to walk directory {}", baseDirectory);
         try {
-            walk(baseDirectory, pathToProcess, fileMetrics);
+            walk(baseDirectory, pathToProcess, fileMetrics, watchKeys, watchService);
             fileMetricsProcessor.printMetrics(fileMetrics);
             watch();
         } catch (InterruptedException | IOException ex) {
@@ -58,32 +61,15 @@ public class FileManager implements Runnable {
 
     private void watch() throws IOException, InterruptedException {
         LOGGER.info("Watching path {} for events", baseDirectory);
-        registerPath(Paths.get(baseDirectory));
         FileWatcher fileWatcher = new FileWatcher(watchService, watchKeys, baseDirectory,
                 fileMetrics, pathToProcess, fileMetricsProcessor);
         while (true) {
             if (!watchKeys.isEmpty()) {
                 fileWatcher.processWatchEvents();
             } else {
+                countDownLatch.countDown();
                 break;
             }
-        }
-    }
-
-    private void registerPath(Path path) {
-        if (isDirectoryAccessible(path)) {
-            if (!watchKeys.containsValue(path)) {
-                LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-                try {
-                    WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-                    watchKeys.put(key, path);
-                } catch (Exception e) {
-                    LOGGER.error("Error occurred while registering path {}", path, e);
-                }
-            }
-        } else {
-            LOGGER.error("The path {} cannot be registered by the WatchService due to insufficient permissions.", path);
         }
     }
 }

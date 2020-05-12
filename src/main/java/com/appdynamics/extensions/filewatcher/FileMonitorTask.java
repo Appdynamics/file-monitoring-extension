@@ -24,6 +24,7 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
 
@@ -35,6 +36,8 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     private Map<WatchKey, Path> keys;
     private FileMetricsProcessor fileMetricsProcessor;
     private MonitorExecutorService executorService;
+    private CountDownLatch countDownLatch;
+    private WatchService watchService;
 
     FileMonitorTask(MonitorContextConfiguration monitorContextConfiguration,
                     MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
@@ -49,13 +52,14 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     @Override
     public void run() {
         try {
-            WatchService watchService = FileSystems.getDefault().newWatchService();
+            watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
+            countDownLatch = new CountDownLatch(baseDirectories.size());
             for (String baseDirectory : baseDirectories) {
                 if (isDirectoryAccessible(Paths.get(baseDirectory))) {
                     LOGGER.info("Configured Path {} accessible, starting File Manager");
                     executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
-                            pathToProcess, fileMetricsProcessor));
+                            pathToProcess, fileMetricsProcessor, countDownLatch));
                 } else {
                     LOGGER.error("Cannot monitor configured path {} as its base directory {} either does not exist or " +
                             "has insufficient permissions. Assign read & execute permissions to the base directory for " +
@@ -69,5 +73,16 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
 
     @Override
     public void onTaskComplete() {
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            LOGGER.error(e.toString());
+        } finally {
+            try {
+                watchService.close();
+            } catch (IOException e) {
+                LOGGER.error("Error encountered while closing watchservice", e);
+            }
+        }
     }
 }

@@ -21,20 +21,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class FileWatcherUtil {
 
-    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
+    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics,
+                            Map<WatchKey, Path> watchKeys, WatchService watchService)
             throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
-                fileMetrics));
+                fileMetrics, watchKeys, watchService));
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
