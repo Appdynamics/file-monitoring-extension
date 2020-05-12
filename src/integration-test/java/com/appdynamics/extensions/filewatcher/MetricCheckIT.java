@@ -54,47 +54,6 @@ public class MetricCheckIT {
     }
 
     @Test
-    public void testWatchServiceUpdates() throws InterruptedException {
-        if (metricAPIService != null) {
-            int oldFileCount = 0;
-            int newFileCount;
-            JsonNode jsonNode = metricAPIService.getMetricData("", "Server%20&%20Infrastructure%" +
-                    "20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics" +
-                    "%7CFile%20Watcher%7CTestFiles%7CFile%20Count&time-range-" +
-                    "type=BEFORE_NOW&duration-in-mins=5");
-            if (jsonNode != null) {
-                JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
-                oldFileCount = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-            }
-
-            createNewFileInWatchedDirectory("/opt/appdynamics/machine-agent/conf/test.txt");
-
-            Thread.sleep(180000);
-            jsonNode = metricAPIService.getMetricData("", "Server%20&%20Infrastructure%" +
-                    "20Monitoring/metric-data?metric-path=Application%20Infrastructure%20Performance%7CRoot%7CCustom%20Metrics" +
-                    "%7CFile%20Watcher%7CTestFiles%7CFile%20Count&time-range-" +
-                    "type=BEFORE_NOW&duration-in-mins=5");
-            if (jsonNode != null) {
-                JsonNode valueNode = JsonUtils.getNestedObject(jsonNode, "*", "metricValues", "*", "value");
-                newFileCount = (valueNode == null) ? 0 : valueNode.get(0).asInt();
-                Assert.assertEquals(oldFileCount + 1, newFileCount);
-            } else {
-                Assert.fail("Failed to connect to the Controller API");
-            }
-        }
-    }
-
-    private void createNewFileInWatchedDirectory(String testFilePath) {
-        try {
-            File file = new File(testFilePath);
-            if (!file.exists())
-                file.createNewFile();
-        } catch (IOException ex) {
-            LOGGER.error("Error encountered while creating test file", ex);
-        }
-    }
-
-    @Test
     public void checkDashboardsUploaded() {
         boolean isDashboardPresent = false;
         if (customDashboardAPIService != null) {
