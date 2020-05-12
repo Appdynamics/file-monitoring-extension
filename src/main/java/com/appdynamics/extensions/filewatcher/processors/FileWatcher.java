@@ -13,8 +13,6 @@ package com.appdynamics.extensions.filewatcher.processors;
 
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
-import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
-import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +33,7 @@ public class FileWatcher {
     private Map<String, FileMetric> fileMetrics;
     private PathToProcess pathToProcess;
     private FileMetricsProcessor fileMetricsProcessor;
+    private boolean isEventDetected;
 
     public FileWatcher(WatchService watchService, Map<WatchKey, Path> watchKeys,
                        String baseDirectory, Map<String, FileMetric> fileMetrics,
@@ -59,7 +58,8 @@ public class FileWatcher {
                     Path directory = watchKeys.get(watchKey);
                     File child = directory.resolve(eventPath).toFile();
                     LOGGER.info("Event {} detected for path {}. Processing..", kind, child);
-                    if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                    isEventDetected = true;
+                    if (kind == StandardWatchEventKinds.ENTRY_DELETE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                         handleFileDeletion(child);
                     }
                     walk(baseDirectory, pathToProcess, fileMetrics, watchKeys, watchService);
@@ -71,12 +71,16 @@ public class FileWatcher {
                 watchKeys.remove(watchKey);
             }
         }
+
+        if(!isEventDetected) {
+            updateOldestFileAge(fileMetrics);
+        }
         fileMetricsProcessor.printMetrics(fileMetrics);
     }
 
     private void handleFileDeletion(File childPath) {
         for (Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
-            if (entry.getKey().contains(childPath.getName())) {
+            if (!childPath.exists() && entry.getKey().contains(childPath.getName())) {
                 FileMetric fileMetric = entry.getValue();
                 fileMetric.setAvailable(false);
                 fileMetric.setFileSize("0");
@@ -88,6 +92,17 @@ public class FileWatcher {
                     fileMetric.setNumberOfFiles(0);
                     fileMetric.setRecursiveNumberOfFiles(0);
                 }
+            }
+        }
+    }
+
+    private void updateOldestFileAge(Map<String, FileMetric> fileMetrics) {
+        for(Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
+            if(entry.getValue().getOldestFileAge() != -1) {
+                FileMetric fileMetric = entry.getValue();
+                long currentOldestFileAge = fileMetric.getOldestFileAge();
+                long offset = (System.currentTimeMillis() - currentOldestFileAge)/1000;
+                fileMetric.setOldestFileAge(currentOldestFileAge + offset);
             }
         }
     }

@@ -15,6 +15,7 @@ import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -76,7 +77,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis()/1000 > fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -117,7 +118,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis()/1000 > fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -137,7 +138,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
             LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
-            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis());
+            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis()/1000);
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {
             LOGGER.debug("Couldn't find basic file attributes for {}", path.getFileName());
@@ -201,7 +202,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     }
 
     private void registerPath(Path path) {
-        if (!watchKeys.containsValue(path)) {
+        if (path != null && !watchKeys.containsValue(path)) {
             LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
             try {
                 WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
