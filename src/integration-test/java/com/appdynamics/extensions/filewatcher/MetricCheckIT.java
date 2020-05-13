@@ -18,15 +18,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 
 public class MetricCheckIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetricCheckIT.class);
-
     private MetricAPIService metricAPIService;
     private CustomDashboardAPIService customDashboardAPIService;
 

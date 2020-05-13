@@ -85,12 +85,14 @@ public class FileWatcher {
                 fileMetric.setAvailable(false);
                 fileMetric.setFileSize("0");
                 fileMetric.setModified(true);
+                fileMetric.setLastModifiedTime(childPath.lastModified());
                 if(fileMetric.getNumberOfLines() != -1) {
                     fileMetric.setNumberOfLines(0);
                 }
                 else {
                     fileMetric.setNumberOfFiles(0);
                     fileMetric.setRecursiveNumberOfFiles(0);
+                    fileMetric.setOldestFileAge(0);
                 }
             }
         }

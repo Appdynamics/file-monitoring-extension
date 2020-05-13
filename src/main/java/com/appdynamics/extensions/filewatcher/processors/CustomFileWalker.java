@@ -63,7 +63,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix,
                         generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
-                LOGGER.info("Directory metrics collected for {}. Now registering with the WatchService..");
+                LOGGER.info("Directory metrics collected for {}. Now registering with the WatchService..", path);
                 registerPath(path);
 
             } else {
