@@ -52,7 +52,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes basicFileAttributes) {
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
-            LOGGER.info("Skipping directory {}. Ignore hidden files = true & the path to this file is hidden.",
+            LOGGER.debug("Skipping directory {}. Ignore hidden files = true & the path to this file is hidden.",
                     path.getFileName());
             return FileVisitResult.CONTINUE;
         }
@@ -80,7 +80,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() / 1000 >
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() >
                     fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
@@ -124,7 +124,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() / 1000 > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -144,7 +144,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
             LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
-            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis() / 1000);
+            fileMetric.setLastModifiedTime(basicFileAttributes.lastModifiedTime().toMillis());
             fileMetric.setFileSize(String.valueOf(basicFileAttributes.size()));
         } else {
             LOGGER.debug("Couldn't find basic file attributes for {}", path.getFileName());
@@ -212,7 +212,8 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
             try {
                 WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.OVERFLOW);
                 watchKeys.put(key, path);
             } catch (Exception e) {
                 LOGGER.error("Error occurred while registering path {}", path, e);

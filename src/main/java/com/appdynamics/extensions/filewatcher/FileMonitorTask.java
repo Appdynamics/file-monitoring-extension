@@ -80,7 +80,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            LOGGER.error(e.toString());
+            LOGGER.error("An unexpected error occurred while completing task", e);
         } finally {
             try {
                 watchService.close();

@@ -49,13 +49,14 @@ public class FileWatcher {
     public void processWatchEvents() throws InterruptedException, IOException {
         LOGGER.info("Polling the Watch Service for Events..");
         WatchKey watchKey = watchService.poll(60, TimeUnit.SECONDS);
+        Path directory = null;
         if (watchKey != null) {
             for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
                 WatchEvent.Kind<?> kind = watchEvent.kind();
                 if ((kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_DELETE ||
                         kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.OVERFLOW)) {
                     Path eventPath = (Path) watchEvent.context();
-                    Path directory = watchKeys.get(watchKey);
+                    directory = watchKeys.get(watchKey);
                     File child = directory.resolve(eventPath).toFile();
                     LOGGER.info("Event {} detected for path {}. Processing..", kind, child);
                     isEventDetected = true;
@@ -68,11 +69,14 @@ public class FileWatcher {
 
             boolean valid = watchKey.reset();
             if (!valid) {
+                LOGGER.debug("WatchKey invalidated for Path {}. Removing..", directory);
                 watchKeys.remove(watchKey);
             }
         }
 
         if(!isEventDetected) {
+            LOGGER.debug("No Event Detected for Directory {}. Re-evaluating oldestFileAge & printing metrics..",
+                    directory);
             updateOldestFileAge(fileMetrics);
         }
         fileMetricsProcessor.printMetrics(fileMetrics);
@@ -103,7 +107,7 @@ public class FileWatcher {
             if(entry.getValue().getOldestFileAge() != -1) {
                 FileMetric fileMetric = entry.getValue();
                 long currentOldestFileAge = fileMetric.getOldestFileAge();
-                long offset = (System.currentTimeMillis() - currentOldestFileAge)/1000;
+                long offset = System.currentTimeMillis() - currentOldestFileAge;
                 fileMetric.setOldestFileAge(currentOldestFileAge + offset);
             }
         }

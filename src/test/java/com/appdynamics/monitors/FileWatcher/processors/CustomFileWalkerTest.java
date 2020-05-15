@@ -370,13 +370,4 @@ public class CustomFileWalkerTest {
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/")));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/")));
     }
-
-    @Test
-    public void calculateRecursiveFileCountsTest() throws Exception {
-        Path path = Paths.get("src/test/resources/TestFiles/dir2");
-        Assert.assertEquals(5, FileWatcherUtil.calculateRecursiveFileCount(path,
-                true, false));
-        Assert.assertEquals(4, FileWatcherUtil.calculateRecursiveFileCount(path, true,
-                true));
-    }
 }

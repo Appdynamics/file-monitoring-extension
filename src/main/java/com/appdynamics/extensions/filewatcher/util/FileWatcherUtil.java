@@ -16,16 +16,12 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
-import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
-import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class FileWatcherUtil {
@@ -105,49 +101,6 @@ public class FileWatcherUtil {
         AppPathMatcher matcher = new GlobPathMatcher();
         matcher.setMatcher(fileToProcess);
         return matcher;
-    }
-
-    private static boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return os.startsWith("Windows");
-    }
-
-    public static boolean isWindowsNetworkPath(String path) {
-        if (!isWindows()) {
-            return false;
-        }
-
-        File file = new File(path);
-        if (!file.exists()) {
-            return false;
-        }
-
-        path = file.getAbsolutePath();
-        if (path.startsWith("//")
-                || path.startsWith("\\\\")) {
-            return true;
-        }
-
-        String driveLetter = path.substring(0, 1);
-        String colon = path.substring(1, 2);
-        if (!":".equals(colon)) {
-            throw new IllegalArgumentException("Expected 'X:': " + path);
-        }
-        return isNetworkPath(driveLetter);
-    }
-
-    private static boolean isNetworkPath(String driveLetter) {
-        List<String> cmd = Arrays.asList("cmd", "/c", "net", "use", driveLetter + ":");
-        try {
-            Process p = new ProcessBuilder(cmd)
-                    .redirectErrorStream(true)
-                    .start();
-            p.getOutputStream().close();
-            int rc = p.waitFor();
-            return rc == 0;
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to run 'net use' on " + driveLetter, e);
-        }
     }
 
     public static boolean isDirectoryAccessible(Path path) {

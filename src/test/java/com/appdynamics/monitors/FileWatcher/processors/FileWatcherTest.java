@@ -49,8 +49,8 @@ public class FileWatcherTest {
         WatchService watchService = FileSystems.getDefault().newWatchService();
         String baseDirectory = "src/test/resources/TestFiles/";
         Path path = Paths.get(baseDirectory);
-        WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+        WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+                StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.OVERFLOW);
         Map<WatchKey, Path> watchKeys = Maps.newHashMap();
         watchKeys.put(key, path);
 

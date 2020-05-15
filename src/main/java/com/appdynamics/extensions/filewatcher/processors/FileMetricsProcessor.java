@@ -90,7 +90,7 @@ public class FileMetricsProcessor {
     }
 
     private void resetFileModifiedFlag(Map<String, FileMetric> fileMetrics) {
-        for(Map.Entry<String, FileMetric> entry: fileMetrics.entrySet()) {
+        for (Map.Entry<String, FileMetric> entry : fileMetrics.entrySet()) {
             entry.getValue().setModified(false);
         }
     }

@@ -56,22 +56,27 @@ public class FileManager implements Runnable {
             walk(baseDirectory, pathToProcess, fileMetrics, watchKeys, watchService);
             fileMetricsProcessor.printMetrics(fileMetrics);
             watch();
-        } catch (InterruptedException | IOException ex) {
+        } catch (IOException ex) {
             LOGGER.error("Error encountered while walking {}", baseDirectory, ex);
         }
     }
 
-    private void watch() throws IOException, InterruptedException {
+    private void watch() {
         LOGGER.info("Watching path {} for events", baseDirectory);
         FileWatcher fileWatcher = new FileWatcher(watchService, watchKeys, baseDirectory,
                 fileMetrics, pathToProcess, fileMetricsProcessor);
-        while (true) {
-            if (!watchKeys.isEmpty()) {
-                fileWatcher.processWatchEvents();
-            } else {
-                countDownLatch.countDown();
-                break;
+        try {
+            while (true) {
+                if (!watchKeys.isEmpty()) {
+                    fileWatcher.processWatchEvents();
+                } else {
+                    break;
+                }
             }
+        } catch (Exception ex) {
+            LOGGER.error("Error encountered while processing watch events for {}", baseDirectory, ex);
+        } finally {
+            countDownLatch.countDown();
         }
     }
 }
