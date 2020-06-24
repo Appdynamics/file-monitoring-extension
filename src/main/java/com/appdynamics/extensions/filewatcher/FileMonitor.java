@@ -29,27 +29,27 @@ import static com.appdynamics.extensions.util.AssertUtils.assertNotNull;
 
 public class FileMonitor extends ABaseMonitor {
 
-	private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileMonitor.class);
+    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileMonitor.class);
     private List<PathToProcess> pathsToProcess;
 
-	@Override
-	public String getMonitorName() {
-		return MONITOR_NAME;
-	}
+    @Override
+    public String getMonitorName() {
+        return MONITOR_NAME;
+    }
 
-	@Override
-	protected String getDefaultMetricPrefix() {
-		return DEFAULT_METRIC_PREFIX;
-	}
+    @Override
+    protected String getDefaultMetricPrefix() {
+        return DEFAULT_METRIC_PREFIX;
+    }
 
-	@Override
-	protected void doRun(TasksExecutionServiceProvider tasksExecutionServiceProvider) {
-		initMonitor();
-		assertNotNull(pathsToProcess, "Please configure the paths to be processed in your config.yml");
-		for(PathToProcess pathToProcess : pathsToProcess) {
-		    FileMonitorTask task = new FileMonitorTask(getContextConfiguration(),
+    @Override
+    protected void doRun(TasksExecutionServiceProvider tasksExecutionServiceProvider) {
+        initMonitor();
+        assertNotNull(pathsToProcess, "Please configure the paths to be processed in your config.yml");
+        for (PathToProcess pathToProcess : pathsToProcess) {
+            FileMonitorTask task = new FileMonitorTask(getContextConfiguration(),
                     tasksExecutionServiceProvider.getMetricWriteHelper(), pathToProcess);
-		    tasksExecutionServiceProvider.submit(pathToProcess.getDisplayName(), task);
+            tasksExecutionServiceProvider.submit(pathToProcess.getDisplayName(), task);
         }
 
         CountDownLatch infiniteWait = new CountDownLatch(1);
@@ -58,26 +58,25 @@ public class FileMonitor extends ABaseMonitor {
         } catch (InterruptedException e) {
             LOGGER.error("Failed to wait indefinitely ", e);
         }
-	}
+    }
 
-	@Override
-	protected List<Map<String, ?>> getServers() {
-		return (List<Map<String, ?>>) getContextConfiguration().getConfigYml().get(CONFIGURED_PATHS);
-	}
+    @Override
+    protected List<Map<String, ?>> getServers() {
+        return (List<Map<String, ?>>) getContextConfiguration().getConfigYml().get(CONFIGURED_PATHS);
+    }
 
-	@Override
-	protected void onConfigReload(File file) {
-		initMonitor();
-	}
+    @Override
+    protected void onConfigReload(File file) {
+        initMonitor();
+    }
 
-	private void initMonitor() {
-	    try {
+    private void initMonitor() {
+        try {
             pathsToProcess = getPathsToProcess(getServers());
+        } catch (Exception ex) {
+            LOGGER.error("Error encountered while getting paths to process from config", ex);
         }
-        catch (Exception ex) {
-	        LOGGER.error("Error encountered while getting paths to process from config", ex);
-        }
-	}
+    }
 
     private List<PathToProcess> getPathsToProcess(List<Map<String, ?>> configuredPaths) {
         List<PathToProcess> pathsToProcess = Lists.newArrayList();
@@ -94,8 +93,8 @@ public class FileMonitor extends ABaseMonitor {
         return pathsToProcess;
     }
 
-	@Override
+    @Override
     public void onComplete() {
-	    LOGGER.info("File Monitoring Jobs Completed");
+        LOGGER.info("File Monitoring Jobs Completed");
     }
 }

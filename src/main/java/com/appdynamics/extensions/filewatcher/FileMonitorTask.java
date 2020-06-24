@@ -20,17 +20,17 @@ import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.HashMap;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
-import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isNetworkPathAccessible;
-import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isWindowsNetworkPath;
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
+
+/*
+ * @author Aditya Jagtiani
+ */
 
 public class FileMonitorTask implements AMonitorTaskRunnable {
 
@@ -40,6 +40,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     private Map<WatchKey, Path> keys;
     private FileMetricsProcessor fileMetricsProcessor;
     private MonitorExecutorService executorService;
+    private CountDownLatch countDownLatch;
     private WatchService watchService;
 
     FileMonitorTask(MonitorContextConfiguration monitorContextConfiguration,
@@ -57,19 +58,16 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         try {
             watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
+            countDownLatch = new CountDownLatch(baseDirectories.size());
             for (String baseDirectory : baseDirectories) {
-                if (isWindowsNetworkPath(baseDirectory)) {
-                    if (isNetworkPathAccessible(baseDirectory)) {
-                        LOGGER.info("Windows Network Path {} accessible, starting File Manager");
-                        executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
-                                pathToProcess, fileMetricsProcessor));
-                    } else {
-                        LOGGER.error("Windows Network Path {} inaccessible. Please check the file path and user permissions. " +
-                                "Skipping", baseDirectory);
-                    }
-                } else {
+                if (isDirectoryAccessible(Paths.get(baseDirectory))) {
+                    LOGGER.info("Configured Path {} accessible, starting File Manager");
                     executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
-                            pathToProcess, fileMetricsProcessor));
+                            pathToProcess, fileMetricsProcessor, countDownLatch));
+                } else {
+                    LOGGER.error("Cannot monitor configured path {} as its base directory {} either does not exist or " +
+                            "has insufficient permissions. Assign read & execute permissions to the base directory for " +
+                            "the current machine agent user in order to monitor this path.", pathToProcess.getPath(), baseDirectory);
                 }
             }
         } catch (IOException ex) {
@@ -80,11 +78,15 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
     @Override
     public void onTaskComplete() {
         try {
-            LOGGER.debug("Attempting to close the WatchService");
-            watchService.close();
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error encountered while closing the WatchService", ex);
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            LOGGER.error("An unexpected error occurred while completing task", e);
+        } finally {
+            try {
+                watchService.close();
+            } catch (IOException e) {
+                LOGGER.error("Error encountered while closing WatchService", e);
+            }
         }
     }
 }

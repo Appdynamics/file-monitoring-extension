@@ -16,26 +16,22 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
-import com.appdynamics.extensions.filewatcher.processors.FileManager;
-import com.google.common.collect.Lists;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.*;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class FileWatcherUtil {
 
-    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
+    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics,
+                            Map<WatchKey, Path> watchKeys, WatchService watchService)
             throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
-                fileMetrics));
+                fileMetrics, watchKeys, watchService));
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
@@ -59,11 +55,13 @@ public class FileWatcherUtil {
         return builder.toString();
     }
 
-    public static int getNumberOfLinesFromFile(Path file) throws IOException {
+    public static long getNumberOfLinesFromFile(Path file) throws IOException {
         if (file.toFile().exists()) {
-            try (Stream<String> fileStream = Files.lines(file)) {
-                return (int) fileStream.count();
-            }
+            BufferedReader reader = new BufferedReader(new FileReader(file.toFile().getAbsolutePath()));
+            long lines = 0;
+            while (reader.readLine() != null) lines++;
+            reader.close();
+            return lines;
         }
         return 0;
     }
@@ -105,51 +103,12 @@ public class FileWatcherUtil {
         return matcher;
     }
 
-    private static boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return os.startsWith("Windows");
+    public static boolean isDirectoryAccessible(Path path) {
+        return Files.exists(path) && Files.isReadable(path) && Files.isExecutable(path)
+                && Files.isDirectory(path);
     }
 
-    public static boolean isWindowsNetworkPath(String path) {
-        if (!isWindows()) {
-            return false;
-        }
-
-        File file = new File(path);
-        if (!file.exists()) {
-            return false;
-        }
-
-        path = file.getAbsolutePath();
-        if (path.startsWith("//")
-                || path.startsWith("\\\\")) {
-            return true;
-        }
-
-        String driveLetter = path.substring(0, 1);
-        String colon = path.substring(1, 2);
-        if (!":".equals(colon)) {
-            throw new IllegalArgumentException("Expected 'X:': " + path);
-        }
-        return isNetworkPath(driveLetter);
-    }
-
-    private static boolean isNetworkPath(String driveLetter) {
-        List<String> cmd = Arrays.asList("cmd", "/c", "net", "use", driveLetter + ":");
-        try {
-            Process p = new ProcessBuilder(cmd)
-                    .redirectErrorStream(true)
-                    .start();
-            p.getOutputStream().close();
-            int rc = p.waitFor();
-            return rc == 0;
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to run 'net use' on " + driveLetter, e);
-        }
-    }
-
-    public static boolean isNetworkPathAccessible(String path) {
-        File file = new File(path);
-        return file.exists() && file.isDirectory() && file.canRead() && file.canWrite();
+    public static boolean isFileAccessible(Path path) {
+        return Files.exists(path) && Files.isReadable(path) && Files.isRegularFile(path);
     }
 }

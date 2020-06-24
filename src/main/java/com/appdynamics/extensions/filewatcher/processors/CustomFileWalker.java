@@ -21,9 +21,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 
@@ -36,37 +34,54 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
     private String baseDirectory;
+    private Map<WatchKey, Path> watchKeys;
+    private WatchService watchService;
 
     public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
-                            Map<String, FileMetric> fileMetrics) {
+                            Map<String, FileMetric> fileMetrics, Map<WatchKey, Path> watchKeys,
+                            WatchService watchService) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;
         this.fileMetrics = fileMetrics;
+        this.watchKeys = watchKeys;
+        this.watchService = watchService;
+        registerPath(Paths.get(baseDirectory));
     }
 
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes basicFileAttributes) {
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
-            LOGGER.info("Skipping directory {}. Ignore hidden files = true & the path to this file is hidden.",
+            LOGGER.debug("Skipping directory {}. Ignore hidden files = true & the path to this file is hidden.",
                     path.getFileName());
             return FileVisitResult.CONTINUE;
         }
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.info("Match found for entered path {}. Visiting Directory", path.getFileName());
-            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
-            fileMetrics.put(metricSuffix,
-                    generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
+            LOGGER.info("Match found for entered path {}. Checking access to directory..", path.getFileName());
+            if (isDirectoryAccessible(path)) {
+                LOGGER.info("Path {} accessible. Visiting directory..", path.getFileName());
+                String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+                fileMetrics.put(metricSuffix,
+                        generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
+                LOGGER.info("Directory metrics collected for {}. Now registering with the WatchService..", path);
+                registerPath(path);
+
+            } else {
+                LOGGER.error("Directory {} is inaccessible. Assign read & execute permissions to directory to proceed.",
+                        path);
+            }
         }
         return FileVisitResult.CONTINUE;
     }
 
-    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes, String metricSuffix) {
+    private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes,
+                                                String metricSuffix) {
         LOGGER.info("Generating directory metrics for {}", path);
         FileMetric fileMetric;
         if (fileMetrics.containsKey(metricSuffix)) {
             fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
+            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() >
+                    fileMetric.getLastModifiedTime());
         } else {
             fileMetric = new FileMetric();
         }
@@ -85,9 +100,19 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         }
 
         if (globPathMatcher.getMatcher().matches(path)) {
-            LOGGER.debug("Found match for entered path {}. Visiting File", path.getFileName());
-            String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
-            fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
+            LOGGER.info("Match found for entered path {}. Checking access to file..", path.getFileName());
+            if (isFileAccessible(path)) {
+                LOGGER.info("Path {} accessible. Visiting file..", path.getFileName());
+                String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
+                fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
+                LOGGER.info("File metrics collected for {}. Now registering the file's parent directory {} with the " +
+                                "WatchService..",
+                        path, path.getParent());
+                registerPath(path.getParent());
+            } else {
+                LOGGER.error("File {} is inaccessible. Assign read permissions to file for the machine agent user to " +
+                        "proceed.", path);
+            }
         }
         return FileVisitResult.CONTINUE;
     }
@@ -180,5 +205,19 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                     path.getFileName(), ex);
         }
         return -1;
+    }
+
+    private void registerPath(Path path) {
+        if (path != null && !watchKeys.containsValue(path)) {
+            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
+            try {
+                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.OVERFLOW);
+                watchKeys.put(key, path);
+            } catch (Exception e) {
+                LOGGER.error("Error occurred while registering path {}", path, e);
+            }
+        }
     }
 }

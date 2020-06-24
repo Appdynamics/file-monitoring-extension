@@ -1,7 +1,7 @@
 # List of files
 pathsToProcess:
 - displayName: "TestPath1"
-  path: "/Users/aj89/repos/appdynamics/extensions/AppDynamics-File-Watcher-Extension/src/test/resources/TestFiles/new*/*.*"
+  path: "src/test/resources/TestFiles/new*/*.*"
   ignoreHiddenFiles: true
   excludeSubdirectoryCount: true #if set to true, this will count only the 'files' under the base directory and exclude subdirectories
   recursiveFileSizes: false # if set to true, this will provide a file size metric at the configured base directory level and each subdirectory

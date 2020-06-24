@@ -18,19 +18,40 @@ import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFormattedDisplayName;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
+@PrepareForTest({FileWatcherUtil.class, CustomFileWalker.class})
+@RunWith(PowerMockRunner.class)
 public class CustomFileWalkerTest {
 
     private CustomFileWalker classUnderTest;
+    private WatchService watchService;
+    private WatchKey watchKey;
+    private Map<WatchKey, Path> watchKeys;
+
+    @Before
+    public void setup() {
+        PowerMockito.spy(FileWatcherUtil.class);
+        watchService = mock(WatchService.class);
+        watchKey = mock(WatchKey.class);
+        watchKeys = Maps.newHashMap();
+    }
 
     @Test
     public void visitDirectoryNonRecursively() throws Exception {
@@ -43,12 +64,19 @@ public class CustomFileWalkerTest {
 
         Path a = Paths.get("/A/B/C/D.TXT");
         Path b = Paths.get("/A/B/C");
+
         List<Path> paths = Arrays.asList(a, b);
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
+        for(Path p : paths) {
+            watchKeys.put(watchKey, p);
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
+        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics, watchKeys, watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C")){
@@ -78,10 +106,15 @@ public class CustomFileWalkerTest {
         Path c = Paths.get("/A/B/C/E/F.txt");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -111,10 +144,17 @@ public class CustomFileWalkerTest {
         Path c = Paths.get("/A/B/C/E/F.txt");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            watchKeys.put(watchKey, p);
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -144,10 +184,15 @@ public class CustomFileWalkerTest {
         Path c = Paths.get("/A/B/C/F.txt");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -177,10 +222,16 @@ public class CustomFileWalkerTest {
         Path c = Paths.get("/A/B/C/F.txt");
         List<Path> paths = Arrays.asList(a, b, c);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -212,10 +263,16 @@ public class CustomFileWalkerTest {
         Path d = Paths.get("/A/B/Cat/G.txt");
         List<Path> paths = Arrays.asList(a, b, c, d);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){
@@ -247,10 +304,16 @@ public class CustomFileWalkerTest {
         Path d = Paths.get("/A/B/C/G.txt");
         List<Path> paths = Arrays.asList(a, b, c, d);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -282,10 +345,16 @@ public class CustomFileWalkerTest {
         Path d = Paths.get("/A/B/Cat/G.txt");
         List<Path> paths = Arrays.asList(a, b, c, d);
 
+        for(Path p : paths) {
+            PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
+            PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
+        }
+
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics, watchKeys,
+                watchService);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){
@@ -300,14 +369,5 @@ public class CustomFileWalkerTest {
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/")));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/")));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/")));
-    }
-
-    @Test
-    public void calculateRecursiveFileCountsTest() throws Exception {
-        Path path = Paths.get("src/test/resources/TestFiles/dir2");
-        Assert.assertEquals(5, FileWatcherUtil.calculateRecursiveFileCount(path,
-                true, false));
-        Assert.assertEquals(4, FileWatcherUtil.calculateRecursiveFileCount(path, true,
-                true));
     }
 }

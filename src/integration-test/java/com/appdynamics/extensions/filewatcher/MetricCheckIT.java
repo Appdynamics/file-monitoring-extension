@@ -14,14 +14,12 @@ package com.appdynamics.extensions.filewatcher;
 import com.appdynamics.extensions.controller.apiservices.CustomDashboardAPIService;
 import com.appdynamics.extensions.controller.apiservices.MetricAPIService;
 import com.appdynamics.extensions.util.JsonUtils;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class MetricCheckIT {
-
     private MetricAPIService metricAPIService;
     private CustomDashboardAPIService customDashboardAPIService;
 
