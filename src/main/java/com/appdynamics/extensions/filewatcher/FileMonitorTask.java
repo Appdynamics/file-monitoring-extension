@@ -12,21 +12,21 @@ import com.appdynamics.extensions.AMonitorTaskRunnable;
 import com.appdynamics.extensions.MetricWriteHelper;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.executorservice.MonitorExecutorService;
+import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
-import com.appdynamics.extensions.filewatcher.processors.FileManager;
 import com.appdynamics.extensions.filewatcher.processors.FileMetricsProcessor;
 import com.appdynamics.extensions.filewatcher.processors.FilePathProcessor;
+import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.nio.file.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDirectoryAccessible;
+import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.walk;
 
 /*
  * @author Aditya Jagtiani
@@ -35,58 +35,54 @@ import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.isDire
 public class FileMonitorTask implements AMonitorTaskRunnable {
 
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileMonitorTask.class);
-    private MetricWriteHelper metricWriteHelper;
     private PathToProcess pathToProcess;
-    private Map<WatchKey, Path> keys;
     private FileMetricsProcessor fileMetricsProcessor;
     private MonitorExecutorService executorService;
-    private CountDownLatch countDownLatch;
-    private WatchService watchService;
+    private Map<String, FileMetric> fileMetrics;
 
     FileMonitorTask(MonitorContextConfiguration monitorContextConfiguration,
                     MetricWriteHelper metricWriteHelper, PathToProcess pathToProcess) {
-        this.metricWriteHelper = metricWriteHelper;
         this.pathToProcess = pathToProcess;
-        this.keys = new ConcurrentHashMap<>();
         this.fileMetricsProcessor = new FileMetricsProcessor(monitorContextConfiguration.getMetricPrefix(),
                 (Map) monitorContextConfiguration.getConfigYml().get("metrics"), metricWriteHelper);
         this.executorService = monitorContextConfiguration.getContext().getExecutorService();
+        this.fileMetrics = new HashMap<>();
     }
 
     @Override
     public void run() {
         try {
-            watchService = FileSystems.getDefault().newWatchService();
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
-            countDownLatch = new CountDownLatch(baseDirectories.size());
             for (String baseDirectory : baseDirectories) {
                 if (isDirectoryAccessible(Paths.get(baseDirectory))) {
-                    LOGGER.info("Configured Path {} accessible, starting File Manager");
-                    executorService.execute("File Manager", new FileManager(watchService, keys, baseDirectory,
-                            pathToProcess, fileMetricsProcessor, countDownLatch));
+                    LOGGER.info("Configured Path {} accessible, starting to walk directory and collecting metrics.",baseDirectory);
+                    if(pathToProcess.getPath().contains("\\**") || pathToProcess.getPath().contains("/**")){
+                        LOGGER.info("Path is configured as fully recursive with ** wildcard. Calculating recursive directory count");
+                        long recursiveDirectoryCount = FileWatcherUtil.calculateRecursiveDirectoryCount(Paths.get(baseDirectory),pathToProcess.getIgnoreHiddenFiles());
+                        LOGGER.info("Recursive directory count is "+ recursiveDirectoryCount);
+                        if(recursiveDirectoryCount > 50){
+                            LOGGER.warn("Recursive directory count is more than 50. Printing base directory metrics only for path "+pathToProcess.getPath());
+                            String currentPath = pathToProcess.getPath();
+                            pathToProcess.setPath(currentPath.substring(0,currentPath.length()-1));
+                        } else {
+                            LOGGER.info("Collecting all metrics for path "+pathToProcess.getPath()+" since recursive directory count is less than 50");
+                        }
+                    }
+                    walk(baseDirectory, pathToProcess, fileMetrics);
+                    fileMetricsProcessor.printMetrics(fileMetrics);
                 } else {
                     LOGGER.error("Cannot monitor configured path {} as its base directory {} either does not exist or " +
                             "has insufficient permissions. Assign read & execute permissions to the base directory for " +
                             "the current machine agent user in order to monitor this path.", pathToProcess.getPath(), baseDirectory);
                 }
             }
-        } catch (IOException ex) {
-            LOGGER.error("Task failed for path {}", pathToProcess.getPath(), ex);
+        } catch (Exception ex) {
+            LOGGER.error("Task failed for name {}", pathToProcess.getDisplayName(), ex);
         }
     }
 
     @Override
     public void onTaskComplete() {
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            LOGGER.error("An unexpected error occurred while completing task", e);
-        } finally {
-            try {
-                watchService.close();
-            } catch (IOException e) {
-                LOGGER.error("Error encountered while closing WatchService", e);
-            }
-        }
+        LOGGER.info("Completed task for name "+pathToProcess.getDisplayName());
     }
 }

@@ -26,12 +26,11 @@ import java.util.Map;
 
 public class FileWatcherUtil {
 
-    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics,
-                            Map<WatchKey, Path> watchKeys, WatchService watchService)
+    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
             throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
-                fileMetrics, watchKeys, watchService));
+                fileMetrics));
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
@@ -94,6 +93,21 @@ public class FileWatcherUtil {
                     .parallel()
                     .filter(p -> !p.toFile().isDirectory())
                     .count();
+        }
+    }
+
+    public static long calculateRecursiveDirectoryCount(Path path, boolean ignoreHiddenFiles) throws IOException {
+
+        if(ignoreHiddenFiles){
+            return Files.walk(path)
+                    .parallel()
+                    .filter(p -> (p.toFile().isDirectory() && !p.toFile().isHidden()))
+                    .count() - 1;
+        }else{
+            return Files.walk(path)
+                    .parallel()
+                    .filter(p -> p.toFile().isDirectory() || (p.toFile().isDirectory() && p.toFile().isHidden()))
+                    .count() - 1;
         }
     }
 

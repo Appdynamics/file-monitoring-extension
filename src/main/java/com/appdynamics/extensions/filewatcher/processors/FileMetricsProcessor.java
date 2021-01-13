@@ -85,7 +85,6 @@ public class FileMetricsProcessor {
             Metric metric = new Metric(name, String.valueOf(value), metricPrefix + METRIC_SEPARATOR +
                     path + METRIC_SEPARATOR + metricProps.get("alias"), metricProps);
             metrics.add(metric);
-            LOGGER.info("Added metric {} to the queue for publishing", metric.getMetricPath());
         }
     }
 

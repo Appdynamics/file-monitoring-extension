@@ -14,13 +14,16 @@ package com.appdynamics.extensions.filewatcher.processors;
 import com.appdynamics.extensions.filewatcher.config.FileMetric;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
+import com.appdynamics.extensions.filewatcher.util.Constants;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import com.appdynamics.extensions.metrics.PerMinValueCalculator;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
@@ -34,25 +37,21 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
     private String baseDirectory;
-    private Map<WatchKey, Path> watchKeys;
-    private WatchService watchService;
+
+    private static PerMinValueCalculator perMinValueCalculator = new PerMinValueCalculator();
 
     public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
-                            Map<String, FileMetric> fileMetrics, Map<WatchKey, Path> watchKeys,
-                            WatchService watchService) {
+                            Map<String, FileMetric> fileMetrics) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;
         this.pathToProcess = pathToProcess;
         this.fileMetrics = fileMetrics;
-        this.watchKeys = watchKeys;
-        this.watchService = watchService;
-        registerPath(Paths.get(baseDirectory));
     }
 
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes basicFileAttributes) {
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
-            LOGGER.debug("Skipping directory {}. Ignore hidden files = true & the path to this file is hidden.",
+            LOGGER.debug("Skipping directory {}. Ignore hidden files = true & the path to this directory is hidden.",
                     path.getFileName());
             return FileVisitResult.CONTINUE;
         }
@@ -63,8 +62,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix,
                         generateDirectoryMetrics(path, basicFileAttributes, metricSuffix));
-                LOGGER.info("Directory metrics collected for {}. Now registering with the WatchService..", path);
-                registerPath(path);
+                LOGGER.info("Directory metrics collected for {}.", path);
 
             } else {
                 LOGGER.error("Directory {} is inaccessible. Assign read & execute permissions to directory to proceed.",
@@ -77,15 +75,14 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private FileMetric generateDirectoryMetrics(Path path, BasicFileAttributes basicFileAttributes,
                                                 String metricSuffix) {
         LOGGER.info("Generating directory metrics for {}", path);
-        FileMetric fileMetric;
-        if (fileMetrics.containsKey(metricSuffix)) {
-            fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() >
-                    fileMetric.getLastModifiedTime());
-        } else {
-            fileMetric = new FileMetric();
-        }
+        FileMetric fileMetric = new FileMetric();
         setBasicAttributes(path, basicFileAttributes, fileMetric);
+
+        BigDecimal prevTs = perMinValueCalculator.getPerMinuteValue(metricSuffix+ Constants.METRIC_SEPARATOR + Constants.MODIFIED,new BigDecimal(fileMetric.getLastModifiedTime()));
+        if(prevTs != null && (prevTs.compareTo(BigDecimal.ZERO) > 0)){
+            fileMetric.setModified(true);
+        }
+
         setOtherDirectoryAttributes(path, fileMetric);
         LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} ms", path.getFileName(),
                 fileMetric.getFileSize(), fileMetric.getNumberOfFiles(), fileMetric.getOldestFileAge());
@@ -95,7 +92,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
-            LOGGER.debug("Skipping file {} as it is hidden " + path.getFileName());
+            LOGGER.debug("Skipping file {} as it is hidden ", path.getFileName());
             return FileVisitResult.CONTINUE;
         }
 
@@ -105,10 +102,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                 LOGGER.info("Path {} accessible. Visiting file..", path.getFileName());
                 String metricSuffix = getFormattedDisplayName(pathToProcess.getDisplayName(), path, baseDirectory);
                 fileMetrics.put(metricSuffix, generateFileMetrics(path, basicFileAttributes, metricSuffix));
-                LOGGER.info("File metrics collected for {}. Now registering the file's parent directory {} with the " +
-                                "WatchService..",
-                        path, path.getParent());
-                registerPath(path.getParent());
+                LOGGER.info("File metrics collected for {}.", path);
             } else {
                 LOGGER.error("File {} is inaccessible. Assign read permissions to file for the machine agent user to " +
                         "proceed.", path);
@@ -121,14 +115,14 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private FileMetric generateFileMetrics(Path path, BasicFileAttributes basicFileAttributes, String metricSuffix)
             throws IOException {
         LOGGER.debug("Generating File Metrics for {}", path.getFileName());
-        FileMetric fileMetric;
-        if (fileMetrics.containsKey(metricSuffix)) {
-            fileMetric = fileMetrics.get(metricSuffix);
-            fileMetric.setModified(basicFileAttributes.lastModifiedTime().toMillis() > fileMetric.getLastModifiedTime());
-        } else {
-            fileMetric = new FileMetric();
-        }
+        FileMetric fileMetric = new FileMetric();
         setBasicAttributes(path, basicFileAttributes, fileMetric);
+
+        BigDecimal prevTs = perMinValueCalculator.getPerMinuteValue(metricSuffix+ Constants.METRIC_SEPARATOR + Constants.MODIFIED,new BigDecimal(fileMetric.getLastModifiedTime()));
+        if(prevTs != null && (prevTs.compareTo(BigDecimal.ZERO) > 0)){
+            fileMetric.setModified(true);
+        }
+
         fileMetric.setNumberOfFiles(-1);
         fileMetric.setOldestFileAge(-1);
         fileMetric.setRecursiveNumberOfFiles(-1);
@@ -205,19 +199,5 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
                     path.getFileName(), ex);
         }
         return -1;
-    }
-
-    private void registerPath(Path path) {
-        if (path != null && !watchKeys.containsValue(path)) {
-            LOGGER.debug("Now registering path {} with the Watch Service", path.getFileName());
-            try {
-                WatchKey key = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.OVERFLOW);
-                watchKeys.put(key, path);
-            } catch (Exception e) {
-                LOGGER.error("Error occurred while registering path {}", path, e);
-            }
-        }
     }
 }
