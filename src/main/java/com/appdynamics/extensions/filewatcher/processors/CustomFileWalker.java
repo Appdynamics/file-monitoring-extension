@@ -135,6 +135,17 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         return fileMetric;
     }
 
+    @Override
+    public FileVisitResult visitFileFailed(Path path, IOException exc){
+
+        if(Files.isDirectory(path)){
+            LOGGER.error("Error occurred while visiting directory at path "+path,exc);
+        } else {
+            LOGGER.warn("Ignoring file at path {} because it does not exist in the file system anymore.",path);
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
     private void setBasicAttributes(Path path, BasicFileAttributes basicFileAttributes, FileMetric fileMetric) {
         if (basicFileAttributes != null) {
             LOGGER.debug("Setting Basic Directory Attributes for {}", path.getFileName());
@@ -185,8 +196,9 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         fileMetric.setNumberOfLines(-1);
         fileMetric.setRecursiveNumberOfFiles(pathToProcess.getEnableRecursiveFileCounts() ?
                 evaluateRecursiveFileCounts(path) : -1);
-        fileMetric.setRecursiveFileSize(pathToProcess.getEnableRecursiveFileSizes() ?
-                String.valueOf(FileUtils.sizeOfDirectoryAsBigInteger(path.toFile())) : "-1");
+//        fileMetric.setRecursiveFileSize(pathToProcess.getEnableRecursiveFileSizes() ?
+//                String.valueOf(FileUtils.sizeOfDirectoryAsBigInteger(path.toFile())) : "-1");
+        fileMetric.setRecursiveFileSize(evaluateRecursiveFileSize(path));
     }
 
     private long evaluateRecursiveFileCounts(Path path) {
@@ -194,10 +206,23 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
             LOGGER.debug("Calculating recursive file count for {}", path);
             return calculateRecursiveFileCount(path, pathToProcess.getIgnoreHiddenFiles(),
                     pathToProcess.getExcludeSubdirectoryCount());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error("Error encountered while calculating recursive file count for directory {}",
                     path.getFileName(), ex);
         }
         return -1;
+    }
+
+    private String evaluateRecursiveFileSize(Path path){
+        try{
+            LOGGER.debug("Calculating recursive file size for {}", path);
+            if(pathToProcess.getEnableRecursiveFileSizes()){
+                return String.valueOf(FileUtils.sizeOfDirectoryAsBigInteger(path.toFile()));
+            }
+        }catch (Exception ex){
+            LOGGER.error("Error encountered while calculating recursive File Size for directory {}",
+                    path.getFileName(), ex);
+        }
+        return "-1";
     }
 }

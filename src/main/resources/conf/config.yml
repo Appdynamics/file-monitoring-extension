@@ -1,5 +1,8 @@
+# For windows, path should be configured with 4 backslashes as separator
+# path: "C:\\\\src\\\\test\\\\resources\\\\TestFiles"
+
 #For shared directories on windows the path should be like
-# path: "\\\\\\\\1.2.3.4\\\\abc\\\\def\\\\ProductI
+# path: "\\\\\\\\1.2.3.4\\\\abc\\\\def\\\\ProductI"
 
 #Use this metric prefix when SIM is enabled.
 #metricPrefix: "Custom Metrics|File Watcher|"

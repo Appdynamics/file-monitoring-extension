@@ -46,7 +46,6 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         this.fileMetricsProcessor = new FileMetricsProcessor(monitorContextConfiguration.getMetricPrefix(),
                 (Map) monitorContextConfiguration.getConfigYml().get("metrics"), metricWriteHelper);
         this.executorService = monitorContextConfiguration.getContext().getExecutorService();
-        this.fileMetrics = new HashMap<>();
     }
 
     @Override
@@ -54,9 +53,10 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
         try {
             List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
             for (String baseDirectory : baseDirectories) {
+                fileMetrics = new HashMap<>();
                 if (isDirectoryAccessible(Paths.get(baseDirectory))) {
                     LOGGER.info("Configured Path {} accessible, starting to walk directory and collecting metrics.",baseDirectory);
-                    if(pathToProcess.getPath().contains("\\**") || pathToProcess.getPath().contains("/**")){
+                    if(pathToProcess.getPath().endsWith("\\**") || pathToProcess.getPath().endsWith("/**")){
                         LOGGER.info("Path is configured as fully recursive with ** wildcard. Calculating recursive directory count");
                         long recursiveDirectoryCount = FileWatcherUtil.calculateRecursiveDirectoryCount(Paths.get(baseDirectory),pathToProcess.getIgnoreHiddenFiles());
                         LOGGER.info("Recursive directory count is "+ recursiveDirectoryCount);

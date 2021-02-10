@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 
 public class FileWatcherUtil {
@@ -97,18 +98,25 @@ public class FileWatcherUtil {
     }
 
     public static long calculateRecursiveDirectoryCount(Path path, boolean ignoreHiddenFiles) throws IOException {
+        int[] count = {0};
+        Files.walkFileTree(path,new SimpleFileVisitor<Path>(){
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if(ignoreHiddenFiles && dir.toFile().isHidden()){
+                    return FileVisitResult.CONTINUE;
+                } else {
+                    count[0]++;
+                    return FileVisitResult.CONTINUE;
+                }
+            }
 
-        if(ignoreHiddenFiles){
-            return Files.walk(path)
-                    .parallel()
-                    .filter(p -> (p.toFile().isDirectory() && !p.toFile().isHidden()))
-                    .count() - 1;
-        }else{
-            return Files.walk(path)
-                    .parallel()
-                    .filter(p -> p.toFile().isDirectory() || (p.toFile().isDirectory() && p.toFile().isHidden()))
-                    .count() - 1;
-        }
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException e) throws IOException {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+
+        });
+        return count[0]-1;
     }
 
     public static AppPathMatcher getPathMatcher(PathToProcess fileToProcess) {
