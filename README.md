@@ -41,6 +41,9 @@ A mandatory field that acts as an alias for a configured path in the Metric Brow
 The actual path to the directories or files to be monitored. Consider our directory to be ```/src/test/resources/TestFiles```. 
 There are multiple scenarios that can be configured in the ```pathsToProcess``` section. The use cases supported are as follows: 
 
+(Note: For Windows, path should be configured with 4 backslashes as separator - ```C:\\\\src\\\\test\\\\resources\\\\TestFiles```.
+For Windows Network paths, you can configure path like - ```\\\\\\\\1.2.3.4\\\\abc\\\\def\\\\ProductI```)
+
 ##### 2.2.1 Monitoring a specific directory
 ```path: "src/test/resources/TestFiles"```
 Directory metrics for 'TestFiles' will be generated. Please ensure that the directory does not end with a slash for this scenario. 
@@ -172,7 +175,7 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |3.0       |
+|Extension Version         |3.1.3       |
 |Controller Compatibility  |4.0 or Later|
-|Last Update               |03/12/2020 |
+|Last Update               |13/01/2021 |
 |List of Changes           |[Change log](https://github.com/Appdynamics/file-monitoring-extension/blob/master/CHANGELOG.md) |

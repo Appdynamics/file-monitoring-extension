@@ -1,5 +1,12 @@
 Changes
 =======
+
+## 3.1.3 (Jan 2021)
+* Upgraded extension to appd-exts-commons 2.2.4
+* Changed execution style to periodic
+* Implemented limit for better handling of files and directories in case of fully recursive 
+* Bug Fixes
+
 ## 3.0.0 (March 2020)
 * Upgraded to v2.2.1 of the Extensions SDK
 * Incorporated the NIO WatchService for superior performance and scalability

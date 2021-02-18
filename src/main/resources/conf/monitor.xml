@@ -11,7 +11,8 @@
     <type>managed</type>
     <description>File Watcher Extension</description>
     <monitor-run-task>
-        <execution-style>continuous</execution-style>
+        <execution-style>periodic</execution-style>
+        <execution-frequency-in-seconds>60</execution-frequency-in-seconds>
         <name>File Watcher Extension Run Task</name>
         <display-name>File Watcher Extension Task</display-name>
         <description>File Watcher Extension Task</description>

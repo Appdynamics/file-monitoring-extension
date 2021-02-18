@@ -14,7 +14,6 @@ package com.appdynamics.monitors.FileWatcher.processors;
 
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.processors.FilePathProcessor;
-import com.appdynamics.extensions.filewatcher.processors.FileWatcher;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import org.junit.Assert;
 import org.junit.Test;

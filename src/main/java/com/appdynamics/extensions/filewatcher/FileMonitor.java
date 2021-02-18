@@ -13,12 +13,12 @@ import com.appdynamics.extensions.TasksExecutionServiceProvider;
 import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import static com.appdynamics.extensions.filewatcher.util.Constants.*;
 import static com.appdynamics.extensions.util.AssertUtils.assertNotNull;
@@ -50,13 +50,6 @@ public class FileMonitor extends ABaseMonitor {
             FileMonitorTask task = new FileMonitorTask(getContextConfiguration(),
                     tasksExecutionServiceProvider.getMetricWriteHelper(), pathToProcess);
             tasksExecutionServiceProvider.submit(pathToProcess.getDisplayName(), task);
-        }
-
-        CountDownLatch infiniteWait = new CountDownLatch(1);
-        try {
-            infiniteWait.await();
-        } catch (InterruptedException e) {
-            LOGGER.error("Failed to wait indefinitely ", e);
         }
     }
 

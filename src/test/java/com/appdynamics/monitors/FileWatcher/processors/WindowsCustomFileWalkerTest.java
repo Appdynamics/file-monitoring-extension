@@ -15,7 +15,6 @@ import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
 import com.appdynamics.extensions.filewatcher.util.FileWatcherUtil;
 import com.google.common.collect.Maps;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,14 +25,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static com.appdynamics.extensions.filewatcher.util.FileWatcherUtil.getFormattedDisplayName;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
 /*
@@ -44,22 +40,14 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 public class WindowsCustomFileWalkerTest {
 
     private CustomFileWalker classUnderTest;
-    private WatchService watchService;
-    private Map<WatchKey, Path> watchKeys;
-    private WatchKey watchKey;
+
 
     @Before
     public void setup() {
         spy(FileWatcherUtil.class);
-        watchService = mock(WatchService.class);
-        watchKey = mock(WatchKey.class);
-        watchKeys = Maps.newHashMap();
+
     }
 
-    @After
-    public void teardown() {
-        watchKeys.clear();
-    }
 
     @Test
     public void visitDirectoryNonRecursively() throws Exception {
@@ -75,7 +63,7 @@ public class WindowsCustomFileWalkerTest {
         List<Path> paths = Arrays.asList(a, b);
 
         for(Path p : paths) {
-            watchKeys.put(watchKey, p);
+
             PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
             PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
         }
@@ -83,8 +71,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\B\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\B\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\B\\C")) {
@@ -116,14 +103,12 @@ public class WindowsCustomFileWalkerTest {
         for(Path p : paths) {
             PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
             PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
-            watchKeys.put(watchKey, p);
         }
 
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\This\\Is\\Too\\Much")) {
@@ -154,7 +139,6 @@ public class WindowsCustomFileWalkerTest {
         List<Path> paths = Arrays.asList(a, b, c);
 
         for(Path p : paths) {
-            watchKeys.put(watchKey, p);
             PowerMockito.when(FileWatcherUtil.isDirectoryAccessible(p)).thenReturn(true);
             PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
         }
@@ -162,8 +146,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\D\\This\\Is\\Too\\Much")) {
@@ -201,8 +184,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             classUnderTest.visitFile(p, null);
@@ -239,8 +221,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             classUnderTest.visitFile(p, null);
@@ -278,8 +259,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\D\\Air Jordan 1\\1985")) {
@@ -323,8 +303,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("\\", matcher, pathToProcess, fileMetrics, watchKeys,
-                watchService);
+        classUnderTest = new CustomFileWalker("\\", matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("\\A\\D\\Air Jordan 1\\1985")) {
