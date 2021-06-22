@@ -16,6 +16,8 @@ import com.appdynamics.extensions.filewatcher.config.PathToProcess;
 import com.appdynamics.extensions.filewatcher.helpers.AppPathMatcher;
 import com.appdynamics.extensions.filewatcher.helpers.GlobPathMatcher;
 import com.appdynamics.extensions.filewatcher.processors.CustomFileWalker;
+import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,15 +25,29 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
 import java.util.Map;
 
 public class FileWatcherUtil {
 
+    private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherUtil.class);
+
     public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
             throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
-        Files.walkFileTree(Paths.get(baseDirectory), new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
-                fileMetrics));
+        if(pathToProcess.getPath().contains("**")){
+            LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+baseDirectory+" path to walkFileTree");
+            Files.walkFileTree(Paths.get(baseDirectory), new HashSet<>(), Integer.MAX_VALUE, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+                    fileMetrics));
+        } else if(pathToProcess.getPath().contains("*")) {
+            LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+baseDirectory+" path to walkFileTree");
+            Files.walkFileTree(Paths.get(baseDirectory), new HashSet<>(), 2, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+                    fileMetrics));
+        } else{
+            LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+pathToProcess.getPath()+" path to walkFileTree");
+            Files.walkFileTree(Paths.get(pathToProcess.getPath()), new HashSet<>(), 1, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+                    fileMetrics));
+        }
     }
 
     public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
