@@ -175,7 +175,8 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |3.1.3       |
-|Controller Compatibility  |4.0 or Later|
-|Last Update               |13/01/2021 |
+|Extension Version         |3.1.4       |
+|Controller Compatibility  |4.5 or Later|
+|Agent Compatibility  |4.5.13 or Later|
+|Last Update               |22/06/2021 |
 |List of Changes           |[Change log](https://github.com/Appdynamics/file-monitoring-extension/blob/master/CHANGELOG.md) |

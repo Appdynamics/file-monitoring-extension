@@ -50,6 +50,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes basicFileAttributes) {
+        LOGGER.trace("CustomFileWalker - preVisitDirectory :: previsit directory path "+path);
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
             LOGGER.debug("Skipping directory {}. Ignore hidden files = true & the path to this directory is hidden.",
                     path.getFileName());
@@ -91,6 +92,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+        LOGGER.trace("CustomFileWalker - visitFile :: visitFile path "+path);
         if (pathToProcess.getIgnoreHiddenFiles() && path.toFile().isHidden()) {
             LOGGER.debug("Skipping file {} as it is hidden ", path.getFileName());
             return FileVisitResult.CONTINUE;
@@ -137,7 +139,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFileFailed(Path path, IOException exc){
-
+        LOGGER.trace("CustomFileWalker - visitFileFailed :: path "+path+" is failed to visit,Exception is ",exc);
         if(Files.isDirectory(path)){
             LOGGER.error("Error occurred while visiting directory at path "+path,exc);
         } else {

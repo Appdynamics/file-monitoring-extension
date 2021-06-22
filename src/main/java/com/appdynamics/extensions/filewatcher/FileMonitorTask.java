@@ -68,7 +68,9 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
                             LOGGER.info("Collecting all metrics for path "+pathToProcess.getPath()+" since recursive directory count is less than 50");
                         }
                     }
+                    LOGGER.trace("FileMonitorTask :: run - Starting to walk...");
                     walk(baseDirectory, pathToProcess, fileMetrics);
+                    LOGGER.trace("FileMonitorTask :: run - Completed walk!!!");
                     fileMetricsProcessor.printMetrics(fileMetrics);
                 } else {
                     LOGGER.error("Cannot monitor configured path {} as its base directory {} either does not exist or " +

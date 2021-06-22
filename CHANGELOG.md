@@ -1,6 +1,9 @@
 Changes
 =======
 
+## 3.1.4 (Jun 2021)
+* Fixed file walking issue for single level and specific file/directory
+
 ## 3.1.3 (Jan 2021)
 * Upgraded extension to appd-exts-commons 2.2.4
 * Changed execution style to periodic
