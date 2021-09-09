@@ -34,7 +34,7 @@ If SIM is enabled, please use the default metric prefix.
 
 The paths to be monitored must be configured under ```pathsToProcess```. The following fields are present in each:
 
-####2.1 displayName
+### 2.1 displayName
 A mandatory field that acts as an alias for a configured path in the Metric Browser. 
 
 #### 2.2 path
