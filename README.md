@@ -4,16 +4,19 @@
 The AppDynamics File Watcher Extension can be used to provide metrics from configured files and directories. 
 
 ## Prerequisites
-Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
+1. Before the extension is installed, the prerequisites mentioned [here](https://community.appdynamics.com/t5/Knowledge-Base/Extensions-Prerequisites-Guide/ta-p/35213) need to be met. Please do not proceed with the extension installation if the specified prerequisites are not met.
 
-The extension can be deployed on the same box as the one with the files to be monitored, or remotely if monitoring shared network paths. For Windows network paths, it is recommended to map the paths locally prior to monitoring.
+2. Download and install [Apache Maven](https://maven.apache.org/) which is configured with `Java 8` to build the extension artifact from source. You can check the java version used in maven using command `mvn -v` or `mvn --version`. If your maven is using some other java version then please download java 8 for your platform and set JAVA_HOME parameter before starting maven.
+
+3. The extension can be deployed on the same box as the one with the files to be monitored, or remotely if monitoring shared network paths. For Windows network paths, it is recommended to map the paths locally prior to monitoring.
 
 ## Installation
-1. To build from source, clone this repository and run 'mvn clean install'. This will produce a FileWatcher-VERSION.zip in the target directory
-2. Unzip the file FileWatcher-[version].zip into `<MACHINE_AGENT_HOME>/monitors/`
-3. In the newly created directory "FileWatcher", edit the config.yml to configure the parameters (See Configuration section below)
-4. Restart the Machine Agent
-5. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance|\<Tier\>|Custom Metrics|File Watcher. If SIM is enabled, look for the 
+1. Clone the "file-monitoring-extension" repo using `git clone <repoUrl>` command.
+2. Run 'mvn clean install' from "file-monitoring-extension". This will produce a FileWatcher-VERSION.zip in the target directory
+3. Unzip the file FileWatcher-[version].zip into `<MACHINE_AGENT_HOME>/monitors/`
+4. In the newly created directory "FileWatcher", edit the config.yml to configure the parameters (See Configuration section below)
+5. Restart the Machine Agent
+6. In the AppDynamics Metric Browser, look for: Application Infrastructure Performance|\<Tier\>|Custom Metrics|File Watcher. If SIM is enabled, look for the 
 metric browser under the Servers tab. 
 
 ## Configuration
