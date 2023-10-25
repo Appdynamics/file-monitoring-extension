@@ -85,7 +85,7 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
         }
 
         setOtherDirectoryAttributes(path, fileMetric);
-        LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} ms", path.getFileName(),
+        LOGGER.info("For directory {}, Size = {}, File Count = {} & Oldest File Age = {} s", path.getFileName(),
                 fileMetric.getFileSize(), fileMetric.getNumberOfFiles(), fileMetric.getOldestFileAge());
         return fileMetric;
     }
