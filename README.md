@@ -158,7 +158,7 @@ Always feel free to fork and contribute any changes directly via [GitHub](https:
 ## Version
 |          Name            |  Version   |
 |--------------------------|------------|
-|Extension Version         |3.1.5       |
+|Extension Version         |3.1.6       |
 |Last Update               |28/08/2024 |
 |List of Changes           |[Change log](https://github.com/Appdynamics/file-monitoring-extension/blob/master/CHANGELOG.md) |
 
