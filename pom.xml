@@ -6,7 +6,7 @@
 
     <groupId>file-watcher-extension</groupId>
     <artifactId>file-watcher-extension</artifactId>
-    <version>3.1.4</version>
+    <version>3.1.6</version>
     <name>File Watcher Extension</name>
     <description>Inspects and monitors configured files and directories</description>
 
