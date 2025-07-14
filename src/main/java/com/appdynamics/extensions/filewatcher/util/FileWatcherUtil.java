@@ -32,16 +32,16 @@ public class FileWatcherUtil {
 
     private static final Logger LOGGER = ExtensionsLoggerFactory.getLogger(FileWatcherUtil.class);
 
-    public static void walk(String baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
+    public static void walk(Path baseDirectory, PathToProcess pathToProcess, Map<String, FileMetric> fileMetrics)
             throws IOException {
         GlobPathMatcher globPathMatcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         if(pathToProcess.getPath().contains("**")){
             LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+baseDirectory+" path to walkFileTree");
-            Files.walkFileTree(Paths.get(baseDirectory), new HashSet<>(), Integer.MAX_VALUE, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+            Files.walkFileTree(baseDirectory, new HashSet<>(), Integer.MAX_VALUE, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
                     fileMetrics));
         } else if(pathToProcess.getPath().contains("*")) {
             LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+baseDirectory+" path to walkFileTree");
-            Files.walkFileTree(Paths.get(baseDirectory), new HashSet<>(), 2, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
+            Files.walkFileTree(baseDirectory, new HashSet<>(), 2, new CustomFileWalker(baseDirectory, globPathMatcher, pathToProcess,
                     fileMetrics));
         } else{
             LOGGER.trace("FileWatcherUtil :: walk - feeding basedirectory "+pathToProcess.getPath()+" path to walkFileTree");
@@ -50,17 +50,10 @@ public class FileWatcherUtil {
         }
     }
 
-    public static String getFormattedDisplayName(String fileDisplayName, Path path, String baseDir) {
-        if (!baseDir.endsWith("/") || !baseDir.endsWith("\\")) {
-            if (baseDir.contains("/")) {
-                baseDir += "/";
-            } else {
-                baseDir += "\\";
-            }
-        }
+    public static String getFormattedDisplayName(String fileDisplayName, Path path, Path baseDir) {
         StringBuilder builder = new StringBuilder();
         builder.append(fileDisplayName);
-        String suffix = path.toString().replace(baseDir.substring(0, baseDir.length() - 1), "")
+        String suffix = path.toString().replace(baseDir.toString(), "")
                 .replace(File.separator, "|");
         if (!suffix.startsWith("|")) {
             builder.append('|');

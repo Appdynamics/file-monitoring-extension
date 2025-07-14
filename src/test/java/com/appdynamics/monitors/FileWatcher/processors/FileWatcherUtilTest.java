@@ -39,7 +39,7 @@ public class FileWatcherUtilTest {
         List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
 
         for (String baseDirectory : baseDirectories) {
-            String formattedDisplayName = FileWatcherUtil.getFormattedDisplayName(pathToProcess.getDisplayName(), a, baseDirectory);
+            String formattedDisplayName = FileWatcherUtil.getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get(baseDirectory));
             Assert.assertEquals("Testing Linux|D.txt", formattedDisplayName);
         }
     }
@@ -58,7 +58,7 @@ public class FileWatcherUtilTest {
         List<String> baseDirectories = new FilePathProcessor().getBaseDirectories(pathToProcess);
 
         for (String baseDirectory : baseDirectories) {
-            String formattedDisplayName = FileWatcherUtil.getFormattedDisplayName(pathToProcess.getDisplayName(), a, baseDirectory);
+            String formattedDisplayName = FileWatcherUtil.getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get(baseDirectory));
             Assert.assertEquals("Testing Windows|D.txt", formattedDisplayName);
         }
     }

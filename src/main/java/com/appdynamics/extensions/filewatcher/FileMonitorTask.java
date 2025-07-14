@@ -69,7 +69,7 @@ public class FileMonitorTask implements AMonitorTaskRunnable {
                         }
                     }
                     LOGGER.trace("FileMonitorTask :: run - Starting to walk...");
-                    walk(baseDirectory, pathToProcess, fileMetrics);
+                    walk(Paths.get(baseDirectory), pathToProcess, fileMetrics);
                     LOGGER.trace("FileMonitorTask :: run - Completed walk!!!");
                     fileMetricsProcessor.printMetrics(fileMetrics);
                 } else {

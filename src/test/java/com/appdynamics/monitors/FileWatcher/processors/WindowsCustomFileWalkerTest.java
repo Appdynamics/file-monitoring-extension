@@ -71,7 +71,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\B\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\B\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\B\\C")) {
@@ -82,8 +82,8 @@ public class WindowsCustomFileWalkerTest {
         }
 
         Assert.assertEquals(1, fileMetrics.size());
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "A\\B\\")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "A\\B\\")));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("A\\B\\"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("A\\B\\"))));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\This\\Is\\Too\\Much")) {
@@ -120,7 +120,7 @@ public class WindowsCustomFileWalkerTest {
         Assert.assertEquals(0, fileMetrics.size());
         for (Path p : paths) {
             Assert.assertTrue(!fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), p,
-                    "A\\")));
+                    Paths.get("A\\"))));
         }
     }
 
@@ -146,7 +146,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\D\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\D\\This\\Is\\Too\\Much")) {
@@ -158,7 +158,7 @@ public class WindowsCustomFileWalkerTest {
         Assert.assertEquals(3, fileMetrics.size());
         for (Path p : paths) {
             Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), p,
-                    "A\\D\\")));
+                    Paths.get("A\\D\\"))));
         }
     }
 
@@ -184,7 +184,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\D\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             classUnderTest.visitFile(p, null);
@@ -192,11 +192,11 @@ public class WindowsCustomFileWalkerTest {
 
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
     }
 
     @Test
@@ -221,7 +221,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\D\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             classUnderTest.visitFile(p, null);
@@ -229,11 +229,11 @@ public class WindowsCustomFileWalkerTest {
 
         Assert.assertEquals(1, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
     }
 
     @Test
@@ -259,7 +259,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("A\\D\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("A\\D\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("A\\D\\Air Jordan 1\\1985")) {
@@ -271,13 +271,13 @@ public class WindowsCustomFileWalkerTest {
 
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d,
-                "A\\D\\")));
+                Paths.get("A\\D\\"))));
     }
 
     @Test
@@ -303,7 +303,7 @@ public class WindowsCustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("\\", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("\\"), matcher, pathToProcess, fileMetrics);
 
         for (Path p : paths) {
             if (p.toString().equals("\\A\\D\\Air Jordan 1\\1985")) {
@@ -315,12 +315,12 @@ public class WindowsCustomFileWalkerTest {
 
         Assert.assertEquals(2, fileMetrics.size());
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a,
-                "\\")));
+                Paths.get("\\"))));
         Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b,
-                "\\")));
+                Paths.get("\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c,
-                "\\")));
+                Paths.get("\\"))));
         Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d,
-                "\\")));
+                Paths.get("\\"))));
     }
 }

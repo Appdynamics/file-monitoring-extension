@@ -67,7 +67,7 @@ public class CustomFileWalkerTest {
             PowerMockito.when(FileWatcherUtil.isFileAccessible(p)).thenReturn(true);
         }
 
-        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C")){
@@ -79,8 +79,8 @@ public class CustomFileWalkerTest {
         }
 
         Assert.assertEquals(1, fileMetrics.size());
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/")));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/"))));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/C/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -115,9 +115,9 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(2, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/A/B/C")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/C"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/C"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/A/B/C"))));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/C/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -153,9 +153,9 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(3, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/A/B/C/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/C/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/C/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/A/B/C/"))));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/C/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -190,9 +190,9 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(1, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/A/B/C/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/C/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/C/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/A/B/C/"))));
     }
 
     @Test
@@ -217,7 +217,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/C/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/C/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -228,9 +228,9 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(2, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/C/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/C/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/A/B/C/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/C/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/C/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/A/B/C/"))));
     }
 
 
@@ -257,7 +257,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/A/B/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/A/B/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){
@@ -268,10 +268,10 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(2, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/A/B/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/A/B/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/A/B/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/A/B/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/A/B/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/A/B/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/A/B/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, Paths.get("/A/B/"))));
     }
 
     @Test
@@ -297,7 +297,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/C/E")){
@@ -308,10 +308,10 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(2, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, Paths.get("/"))));
     }
 
     @Test
@@ -337,7 +337,7 @@ public class CustomFileWalkerTest {
         GlobPathMatcher matcher = (GlobPathMatcher) FileWatcherUtil.getPathMatcher(pathToProcess);
         Map<String, FileMetric> fileMetrics = Maps.newHashMap();
 
-        classUnderTest = new CustomFileWalker("/", matcher, pathToProcess, fileMetrics);
+        classUnderTest = new CustomFileWalker(Paths.get("/"), matcher, pathToProcess, fileMetrics);
 
         for(Path p: paths) {
             if(p.toString().equals("/A/B/Cat/E")){
@@ -348,9 +348,9 @@ public class CustomFileWalkerTest {
             }
         }
         Assert.assertEquals(2, fileMetrics.size());
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, "/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, "/")));
-        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, "/")));
-        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, "/")));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), a, Paths.get("/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), b, Paths.get("/"))));
+        Assert.assertFalse(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), c, Paths.get("/"))));
+        Assert.assertTrue(fileMetrics.containsKey(getFormattedDisplayName(pathToProcess.getDisplayName(), d, Paths.get("/"))));
     }
 }
