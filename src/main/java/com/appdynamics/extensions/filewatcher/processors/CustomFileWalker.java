@@ -36,11 +36,11 @@ public class CustomFileWalker extends SimpleFileVisitor<Path> {
     private GlobPathMatcher globPathMatcher;
     private PathToProcess pathToProcess;
     private Map<String, FileMetric> fileMetrics;
-    private String baseDirectory;
+    private Path baseDirectory;
 
     private static PerMinValueCalculator perMinValueCalculator = new PerMinValueCalculator();
 
-    public CustomFileWalker(String baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
+    public CustomFileWalker(Path baseDirectory, GlobPathMatcher globPathMatcher, PathToProcess pathToProcess,
                             Map<String, FileMetric> fileMetrics) {
         this.baseDirectory = baseDirectory;
         this.globPathMatcher = globPathMatcher;

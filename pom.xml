@@ -6,7 +6,7 @@
 
     <groupId>file-watcher-extension</groupId>
     <artifactId>file-watcher-extension</artifactId>
-    <version>3.1.6</version>
+    <version>3.1.7</version>
     <name>File Watcher Extension</name>
     <description>Inspects and monitors configured files and directories</description>
 
@@ -82,7 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.6.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <filters>

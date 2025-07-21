@@ -12,6 +12,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class WalkMethodTest {
 
         Map<String, FileMetric> fileMetricMap = new HashMap<>();
 
-        String baseDirPath = "src/test/resources/TestFiles/";
+        Path baseDirPath = Paths.get("src/test/resources/TestFiles/");
 
         PathToProcess pathToProcess = new PathToProcess();
         pathToProcess.setDisplayName("Fully Recursive");
@@ -67,7 +69,7 @@ public class WalkMethodTest {
 
         Map<String, FileMetric> fileMetricMap = new HashMap<>();
 
-        String baseDirPath = "src/test/resources/TestFiles/";
+        Path baseDirPath = Paths.get("src/test/resources/TestFiles/");
 
         PathToProcess pathToProcess = new PathToProcess();
         pathToProcess.setDisplayName("Single Level");
@@ -103,7 +105,7 @@ public class WalkMethodTest {
 
         Map<String, FileMetric> fileMetricMap = new HashMap<>();
 
-        String baseDirPath = "src/test/resources/TestFiles/";
+        Path baseDirPath = Paths.get("src/test/resources/TestFiles/");
 
         PathToProcess pathToProcess = new PathToProcess();
         pathToProcess.setDisplayName("Specific Directory");
@@ -125,7 +127,7 @@ public class WalkMethodTest {
 
         Map<String, FileMetric> fileMetricMap = new HashMap<>();
 
-        String baseDirPath = "src/test/resources/TestFiles/";
+        Path baseDirPath = Paths.get("src/test/resources/TestFiles/");
 
         PathToProcess pathToProcess = new PathToProcess();
         pathToProcess.setDisplayName("Specific File");
